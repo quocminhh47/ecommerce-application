@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+
+<head>
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+    <link th:href="@{/indexsrc/css/style.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <h1 id="h1Element">Hello world</h1>
+    <div id="root"></div>
+<script type="text/javascript" th:src="@{indexsrc/js/main.js}"></script>
+<script type="text/babel">
+    var dataArray = [
+        {
+            id: 1,
+            image: 'https://topdev.vn/blog/wp-content/uploads/2017/06/java-1.jpg',
+            alt: 'Alt for image1',
+            title: 'title1',
+            description: 'mo ta 1',
+            publishedAt: '01/02/2000'
+        },
+        {
+            id: 2,
+            image: 'https://topdev.vn/blog/wp-content/uploads/2017/06/java-1.jpg',
+            alt: 'alt1',
+            title: 'title for image2',
+            description: 'mo ta 2',
+            publishedAt: '02/02/2000'
+        },
+        {
+            id: 3,
+            image: 'https://topdev.vn/blog/wp-content/uploads/2017/06/java-1.jpg',
+            alt: 'alt1',
+            title: 'title for image3',
+            description: 'mo ta 3',
+            publishedAt: '03/02/2000'
+        },
+        {
+            id: 4,
+            image: 'https://topdev.vn/blog/wp-content/uploads/2017/06/java-1.jpg',
+            alt: 'alt1',
+            title: 'title for image4',
+            description: 'mo ta 3',
+            publishedAt: '04/02/2000'
+        }
+
+    ]
+
+    function PostItem() {
+        return (
+            <div className="posts-item">
+                <img src='https://topdev.vn/blog/wp-content/uploads/2017/06/java-1.jpg'
+                     alt='anh 1' />
+                <h2
+                    className="post-title"
+                >
+                    Hoc lap tirnh tai F8
+                </h2>
+                <p className="post-desc">Khoa hoc lap trinh mien phi</p>
+                <p className="post-published">2 minutes ago</p>
+            </div>
+        )
+    }
+
+    //Container
+    function App() {
+        console.log( <PostItem/>)
+        return (
+            <div id='wrapper'>
+                <PostItem/>
+                <PostItem/>
+                <PostItem/>
+            </div>
+        )
+    }
+
+    ReactDOM.render(<App/>, document.getElementById('root'))
+</script>
+</body>
+</html>
