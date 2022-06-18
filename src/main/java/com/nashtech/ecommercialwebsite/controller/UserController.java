@@ -3,6 +3,7 @@ package com.nashtech.ecommercialwebsite.controller;
 import com.nashtech.ecommercialwebsite.entity.Brand;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,4 +17,5 @@ public class UserController {
         Brand brand = new Brand(1, "ASUS", "ASUS Company");
         return ResponseEntity.ok(brand);
     }
+
 }

@@ -20,7 +20,7 @@ public class Role {
     private  Integer id;
 
     @Column(name = "role")
-    private String role;
+    private String roleName;
 
     @Column(name = "description")
     private String description;
