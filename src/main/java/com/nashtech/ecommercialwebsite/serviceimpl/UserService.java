@@ -44,7 +44,6 @@ public class UserService implements UserDetailsService {
     }
 
     public int enableUser(String email) {
-        //Này trên api nha, gọi trực tiếp qua userRepo
         return userRepository.enableUser(email);
     }
 
