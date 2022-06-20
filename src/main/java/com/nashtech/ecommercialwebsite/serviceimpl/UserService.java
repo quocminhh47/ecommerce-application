@@ -31,7 +31,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username)  throws UsernameNotFoundException {
-        Optional<Account> user = userRepository.findById(username);
+        Optional<Account> user = userRepository.findAccountByUsername(username);
         if(user.isPresent()){
             return new org.springframework.security.core.userdetails.User(
                     user.get().getUsername(),
@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
     //Handle when user register - and this give token
     public String signUpUser(Account userAccount){
         boolean isUserExist = userRepository.
-                findById(userAccount.getUsername())
+                findAccountByUsername(userAccount.getUsername())
                 .isPresent();
         if(isUserExist){
             //TODO check if account is not confirmed then resend email to confirm
@@ -69,6 +69,7 @@ public class UserService implements UserDetailsService {
                 LocalDateTime.now().plusMinutes(15),
                 userAccount
         );
+        System.out.println(confirmationToken.toString());
         //save confirmation token
         confirmationTokenService.saveConfirmationToken(confirmationToken);
         return token;
@@ -78,11 +79,15 @@ public class UserService implements UserDetailsService {
 
     private Collection<GrantedAuthority> getGrantedAuthorities (Account account){
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        if(account.getRole().getRoleName().equalsIgnoreCase("admin"))
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-        if(account.getRole().getRoleName().equalsIgnoreCase("user"))
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+//        account.getRoles()
+//                .stream()
+//                .filter( a -> a.getRoleName().equalsIgnoreCase("admin"))
+//                .
+//        if(account.getRole().getRoleName().equalsIgnoreCase("admin"))
+//            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+//
+//        if(account.getRole().getRoleName().equalsIgnoreCase("user"))
+//            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
         return authorities;
     }

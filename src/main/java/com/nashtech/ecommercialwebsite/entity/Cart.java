@@ -22,11 +22,11 @@ public class Cart {
 
     @Column(name = "status")
     private Integer status;
-
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "MM/dd/yyyy")
-    @Column(name = "create_date")
-    private Date createDate;
+//
+//    @Temporal(TemporalType.DATE)
+//    @DateTimeFormat(pattern = "MM/dd/yyyy")
+//    @Column(name = "create_date")
+//    private Date createDate;
 
     @JsonIgnore
     @OneToOne(mappedBy = "cart", fetch = FetchType.LAZY)

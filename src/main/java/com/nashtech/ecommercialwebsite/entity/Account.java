@@ -11,28 +11,31 @@ import java.util.Set;
 @Entity
 @Table(name = "accounts")
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 public class Account {
 
-    public Account(String username,
-                   String first_name,
-                   String last_name,
-                   String password,
-                   Role role) {
-        this.username = username;
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.password = password;
-        this.role = role;
-    }
 
     @Id
-    @Column(name = "email")
-    private String username;
-    private String first_name;
-    private String last_name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "email", unique = true)
+    private String username; //username = email
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "password")
     private String password;
+
+    @Column(name = "locked")
     private Boolean locked = false;
+
+    @Column(name = "enabled")
     private Boolean enabled = false;
 
     @ManyToOne
@@ -48,7 +51,24 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private Set<Bill> bills;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    Set<ProductImage> productImages;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
+    Set<Rating> ratings;
 
 
-
+    public Account(String username,
+                   String first_name,
+                   String last_name,
+                   String password,
+                   Role role) {
+        this.username = username;
+        this.firstName = first_name;
+        this.lastName = last_name;
+        this.password = password;
+        this.role = role;
+    }
 }

@@ -57,5 +57,15 @@ public class ConfirmationToken {
         this.confirmedAt = confirmedAt;
     }*/
 
-
+    @Override
+    public String toString() {
+        return "ConfirmationToken{" +
+                "id=" + id +
+                ", token='" + token + '\'' +
+                ", createAt=" + createAt +
+                ", account=" + account +
+                ", expiredAt=" + expiredAt +
+                ", confirmedAt=" + confirmedAt +
+                '}';
+    }
 }

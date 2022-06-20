@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -29,41 +30,38 @@ public class Product {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "created_date")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_date")
+    private LocalDateTime updatedAt;
+
     @Column(name = "description")
     private String description;
 
-    @Column(name = "photo")
-    private String urlImage;
-
-    @Column(name = "photo2")
-    private String urlImage2;
-
-    @Column(name = "photo3")
-    private String urlImage3;
-
-    @Column(name = "photo4")
-    private String urlImage4;
+    @Column(name = "thumbnail")
+    private String thumbnail;
 
     @Column(name = "discount")
-    private Integer discount;
+    private Long discount;
 
     @Column(name = "hidden")
-    private Boolean hidden;
+    private Boolean hidden = false;
 
     @Column(name = "ram_slot")
     private Integer ramSlot;
 
-    @Column(name = "ram_info")
-    private String ramInfo;
+    @Column(name = "ram_size")
+    private String ramSize;
 
-    @Column(name = "chip_info")
-    private String chipInfo;
+    @Column(name = "cpu")
+    private String cpu;
 
-    @Column(name = "monitor_info")
-    private String monitorInfo;
+    @Column(name = "monitor")
+    private String monitot;
 
-    @Column(name = "storage_info")
-    private String storageInfo;
+    @Column(name = "storage")
+    private String storage;
 
     @ManyToOne
     @JoinColumn(name = "brand_id")
@@ -76,5 +74,15 @@ public class Product {
     @JsonIgnore
     @OneToMany(mappedBy = "product")
     Set<CartDetail> cartDetails;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    Set<ProductImage> productImages;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    Set<Rating> ratings;
+
 
 }

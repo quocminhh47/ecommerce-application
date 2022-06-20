@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<Account, String> {
+public interface UserRepository extends JpaRepository<Account, Long> {
     Optional<Account> findAccountByUsername(String email);
     @Transactional
     @Modifying
