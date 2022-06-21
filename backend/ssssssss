@@ -1,0 +1,30 @@
+[33mcommit dc45acced02ee4a5a2f5c228771c4bfdeaf61097[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: quocminhh47 <quocminhh47@gmail.com>
+Date:   Sat Jun 18 21:38:03 2022 +0700
+
+    add register and mail verification function
+
+[33mcommit 32a5dc26a4a23490b6a38717c983b1456a65f40c[m
+Merge: 9811d61 0a59df5
+Author: quocminhh47 <quocminhh47@gmail.com>
+Date:   Sat Jun 18 21:35:58 2022 +0700
+
+    Merge https://github.com/quocminhh47/ecommerce-application
+
+[33mcommit 9811d61731c27ac95328665288c5d21129f79636[m
+Author: quocminhh47 <quocminhh47@gmail.com>
+Date:   Sat Jun 18 20:21:48 2022 +0700
+
+    Add spring security config
+
+[33mcommit 0a59df5317944f644f19aa1dc2b962c2bd8cc901[m
+Author: quocminhh47 <103627485+quocminhh47@users.noreply.github.com>
+Date:   Fri Jun 17 15:45:48 2022 +0700
+
+    Create README.md
+
+[33mcommit ee90cd51b7773d264af948408a330a4907e5f166[m
+Author: quocminhh47 <quocminhh47@gmail.com>
+Date:   Fri Jun 17 15:42:01 2022 +0700
+
+    Complete database mapping and config
