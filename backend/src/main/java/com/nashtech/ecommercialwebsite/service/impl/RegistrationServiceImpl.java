@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private final RoleRepository roleRepository;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
@@ -33,7 +33,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                     userRole.get()
             );
 
-            String token = userService.signUpUser(userAccount);
+            String token = userServiceImpl.signUpUser(userAccount);
             String confirmLink = "http://localhost:8080/v1/api/registration/confirm?token=" + token;
             emailSender.send(request.getEmail(),
                     buildEmail(request.getLastName(), confirmLink));
@@ -60,7 +60,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         confirmationTokenService.setConfirmedAt(token);
-        userService.enableUser(
+        userServiceImpl.enableUser(
                 confirmationToken.getAccount().getUsername());
         return "confirmed";
     }

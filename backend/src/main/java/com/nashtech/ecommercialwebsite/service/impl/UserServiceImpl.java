@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 @Service
 @AllArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserServiceImpl implements com.nashtech.ecommercialwebsite.service.UserService, UserDetailsService{
     private final static String USER_NOT_FOUND_MSG =
             "user with email %s not found";
     private final ConfirmationTokenService confirmationTokenService;
