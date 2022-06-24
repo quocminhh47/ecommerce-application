@@ -6,6 +6,8 @@ import com.nashtech.ecommercialwebsite.dto.request.ProductDto;
 import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
 import com.nashtech.ecommercialwebsite.service.ProductService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +19,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ModelMapper mapper;
 
     @Override
     public Optional<Product> findByID(String id) {
@@ -53,14 +56,17 @@ public class ProductServiceImpl implements ProductService {
 
     //convert product entity to ProductDto
     private ProductDto maptoDTO(Product product) {
-        return new ProductDto(
-                product.getId(),
-                product.getName(),
-                product.getBrand().getName(),
-                product.getCpu(),
-                product.getMonitor(),
-                product.getRamSize(),
-                product.getPrice()
-        );
+        ProductDto productDto = mapper.map(product, ProductDto.class);
+        System.out.println(productDto.toString());
+        return productDto;
+//        return new ProductDto(
+//                product.getId(),
+//                product.getName(),
+//                product.getBrand().getName(),
+//                product.getCpu(),
+//                product.getMonitor(),
+//                product.getRamSize(),
+//                product.getPrice()
+//        );
     }
 }

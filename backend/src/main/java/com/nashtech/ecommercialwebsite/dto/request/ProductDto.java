@@ -13,4 +13,17 @@ public class ProductDto {
     private String monitor;
     private String ramSize;
     private Long price;
+
+    @Override
+    public String toString() {
+        return "ProductDto{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", brandName='" + brandName + '\'' +
+                ", cpu='" + cpu + '\'' +
+                ", monitor='" + monitor + '\'' +
+                ", ramSize='" + ramSize + '\'' +
+                ", price=" + price +
+                '}';
+    }
 }
