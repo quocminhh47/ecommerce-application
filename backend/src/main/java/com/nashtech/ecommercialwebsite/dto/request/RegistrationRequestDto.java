@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.dto;
+package com.nashtech.ecommercialwebsite.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @Getter @Setter
-public class RegistrationRequest {
+public class RegistrationRequestDto {
     private final String firstName;
     private final String lastName;
     private final String email;

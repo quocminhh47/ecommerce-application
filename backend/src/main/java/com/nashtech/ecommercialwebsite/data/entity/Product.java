@@ -16,13 +16,13 @@ import java.util.Set;
 public class Product {
     @Id
     @Column(name = "id")
-    private String ID;
+    private String id;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "price")
-    private Integer price;
+    private Long price;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -43,7 +43,7 @@ public class Product {
     private String thumbnail;
 
     @Column(name = "discount")
-    private Long discount;
+    private Float discount;
 
     @Column(name = "hidden")
     private Boolean hidden = false;
@@ -58,7 +58,7 @@ public class Product {
     private String cpu;
 
     @Column(name = "monitor")
-    private String monitot;
+    private String monitor;
 
     @Column(name = "storage")
     private String storage;
