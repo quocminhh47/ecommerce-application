@@ -107,40 +107,38 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public SingleProductResponse updateProduct(int id, ProductUpdateRequest productRequest) {
-        Optional<Product> existProduct = productRepository.findById(id);
-        if (existProduct.isPresent()) {
-            Product product = existProduct.get();
-            mapper.map(productRequest, product);
-            product.setUpdatedAt(LocalDateTime.now());
-            product.setId(id);
-            Optional<Brand> optionalBrand = brandRepository.findById(productRequest.getBrandId());
-            if(optionalBrand.isEmpty()) throw new IllegalStateException(String.format(
-                    "Brand id: %s not found",
-                    productRequest.getBrandId()));
-            product.setBrand(optionalBrand.get());
-            //update product:
-            Product updatedProduct = productRepository.save(product);
-            SingleProductResponse response = mapper.map(updatedProduct, SingleProductResponse.class);
-            //save all images of product
-            productRequest.getImages().forEach(image -> {
-                ProductImage productImage = mapper.map(image, ProductImage.class);
-                productImage.setProduct(updatedProduct);
-                //save to DB
-                imagesRepository.save(productImage);
-                //add to SingleProductResponse
-                response.getProductImages().add(productImage);
-            });
-            return response;
-        } else throw new IllegalStateException(String.format("Product with ID: %s not found", id));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException(String.format("Product with ID: %s not found", id)) );
+        mapper.map(productRequest, product);
+        product.setUpdatedAt(LocalDateTime.now());
+        product.setId(id);
+        Brand brand =  brandRepository.findById(productRequest.getBrandId())
+                .orElseThrow(
+                        () -> new IllegalStateException(String.format(
+                                "Brand id: %s not found",
+                                productRequest.getBrandId())));
+        product.setBrand(brand);
+        //update product:
+        Product updatedProduct = productRepository.save(product);
+        SingleProductResponse response = mapper.map(updatedProduct, SingleProductResponse.class);
+        //save all images of product
+        productRequest.getImages().forEach(image -> {
+            ProductImage productImage = mapper.map(image, ProductImage.class);
+            productImage.setProduct(updatedProduct);
+            //save to DB
+            imagesRepository.save(productImage);
+            //add to SingleProductResponse
+            response.getProductImages().add(productImage);
+        });
+        return response;
     }
 
     @Override
     public void deleteProduct(int id) {
-        Optional<Product> optionalProduct = productRepository.findById(id);
-        if (optionalProduct.isPresent()) {
-            optionalProduct.get().setHidden(true);
-            productRepository.save(optionalProduct.get());
-        } else throw new IllegalStateException(String.format("Product with ID: %s not found", id));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException(String.format("Product with ID: %s not found", id)));
+        product.setHidden(true);
+        productRepository.save(product);
     }
 
 
@@ -151,11 +149,12 @@ public class ProductServiceImpl implements ProductService {
 
     private Product mapToEntity(ProductRequest productRequest) {
         Product productEntity = mapper.map(productRequest, Product.class);
-        Optional<Brand> optionalBrand = brandRepository.findById(productRequest.getBrandId());
-        if(optionalBrand.isEmpty()) throw new IllegalStateException(String.format(
-                "Brand id: %s not found",
-                productRequest.getBrandId()));
-        productEntity.setBrand(optionalBrand.get());
+        Brand brand =  brandRepository.findById(productRequest.getBrandId())
+                .orElseThrow(
+                        () -> new IllegalStateException(String.format(
+                        "Brand id: %s not found",
+                        productRequest.getBrandId())));
+        productEntity.setBrand(brand);
         return productEntity;
     }
 
