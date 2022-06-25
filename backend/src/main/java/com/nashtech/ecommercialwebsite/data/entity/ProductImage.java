@@ -1,9 +1,6 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -23,9 +20,19 @@ public class ProductImage {
     @Column(name = "description")
     private String description;
 
+
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @Getter(AccessLevel.NONE)
     private Product product;
 
-
+    @Override
+    public String toString() {
+        return "ProductImage{" +
+                "id=" + id +
+                ", image='" + image + '\'' +
+                ", description='" + description + '\'' +
+                ", product=" + product +
+                '}';
+    }
 }

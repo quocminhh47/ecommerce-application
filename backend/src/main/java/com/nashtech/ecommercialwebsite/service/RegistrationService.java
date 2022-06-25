@@ -1,10 +1,10 @@
 package com.nashtech.ecommercialwebsite.service;
 
-import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequestDto;
+import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
 
 public interface RegistrationService {
 
-    String register(RegistrationRequestDto request);
+    String register(RegistrationRequest request);
     String confirmToken(String token);
     String buildEmail(String name, String link);
 }

@@ -9,11 +9,13 @@ import java.util.Set;
 @Entity
 @Table(name = "brands")
 @Getter @Setter
-@RequiredArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
 public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
+    @Setter(AccessLevel.NONE)
     private  Integer id;
 
     @Column(name = "name")
@@ -23,12 +25,18 @@ public class Brand {
     private String description;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "brand")
+    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     Set<Product> products;
 
-    public Brand(Integer id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
+
+//    @Override
+//    public String toString() {
+//        return "Brand{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", description='" + description + '\'' +
+//                '}';
+//    }
 }

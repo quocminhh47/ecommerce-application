@@ -1,6 +1,5 @@
 package com.nashtech.ecommercialwebsite.dto.response;
 
-import com.nashtech.ecommercialwebsite.dto.request.ProductDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

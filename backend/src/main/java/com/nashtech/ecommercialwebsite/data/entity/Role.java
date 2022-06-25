@@ -26,7 +26,7 @@ public class Role {
     private String description;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "role",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Account> accounts;
 
 }

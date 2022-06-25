@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     //test api
-    @GetMapping("/test")
-    public ResponseEntity<Brand> getBrand(){
-        Brand brand = new Brand(1, "ASUS", "ASUS Company");
-        return ResponseEntity.ok(brand);
-    }
+//    @GetMapping("/test")
+//    public ResponseEntity<Brand> getBrand(){
+//        Brand brand = new Brand(1, "ASUS", "ASUS Company");
+//        return ResponseEntity.ok(brand);
+//    }
 
 }

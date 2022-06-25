@@ -48,15 +48,12 @@ public class Account {
     private Cart cart;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Bill> bills;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "product")
-    Set<ProductImage> productImages;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Rating> ratings;
 
 

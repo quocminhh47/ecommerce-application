@@ -3,7 +3,7 @@ package com.nashtech.ecommercialwebsite.service.impl;
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.entity.Role;
-import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequestDto;
+import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
 import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
 import com.nashtech.ecommercialwebsite.service.ConfirmationTokenService;
 import com.nashtech.ecommercialwebsite.service.EmailSender;
@@ -22,7 +22,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
     @Override
-    public String register(RegistrationRequestDto request) {
+    public String register(RegistrationRequest request) {
         Optional<Role> userRole = roleRepository.findRolesByRoleName("USER");
         if(userRole.isPresent()){
             Account userAccount = new Account(

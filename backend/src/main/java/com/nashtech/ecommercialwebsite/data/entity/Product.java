@@ -1,6 +1,7 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,8 @@ import java.util.Set;
 public class Product {
     @Id
     @Column(name = "id")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(name = "name")
     private String name;
@@ -48,41 +50,62 @@ public class Product {
     @Column(name = "hidden")
     private Boolean hidden = false;
 
-    @Column(name = "ram_slot")
-    private Integer ramSlot;
+    @Column(name = "guarantee")
+    private Integer guaranteeTime;
 
-    @Column(name = "ram_size")
-    private String ramSize;
+    @Column(name = "gender")
+    private Boolean gender;
 
-    @Column(name = "cpu")
-    private String cpu;
+    @Column(name = "water_proof")
+    private Boolean isWaterProof;
 
-    @Column(name = "monitor")
-    private String monitor;
-
-    @Column(name = "storage")
-    private String storage;
+    @Column(name = "size")
+    private Float size;
 
     @ManyToOne
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Comment> comments;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<CartDetail> cartDetails;
 
+
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     Set<ProductImage> productImages;
 
-
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Rating> ratings;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", status='" + status + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", description='" + description + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", discount=" + discount +
+                ", hidden=" + hidden +
+                ", guaranteeTime=" + guaranteeTime +
+                ", gender=" + gender +
+                ", isWaterProof=" + isWaterProof +
+                ", size=" + size +
+                ", brand=" + brand +
+                '}';
+    }
 
 
 }

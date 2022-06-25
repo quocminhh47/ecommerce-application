@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @Getter @Setter
-public class RegistrationRequestDto {
+public class RegistrationRequest {
     private final String firstName;
     private final String lastName;
     private final String email;
