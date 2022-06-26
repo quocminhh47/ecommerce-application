@@ -1,8 +1,8 @@
-package com.nashtech.ecommercialwebsite.service.impl;
+package com.nashtech.ecommercialwebsite.services.impl;
 
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.repository.ConfirmationTokenRepository;
-import com.nashtech.ecommercialwebsite.service.ConfirmationTokenService;
+import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.service;
+package com.nashtech.ecommercialwebsite.services;
 
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 

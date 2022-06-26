@@ -1,7 +1,6 @@
-package com.nashtech.ecommercialwebsite.service;
+package com.nashtech.ecommercialwebsite.services;
 
 
-import com.nashtech.ecommercialwebsite.data.entity.Product;
 import com.nashtech.ecommercialwebsite.dto.request.ProductRequest;
 import com.nashtech.ecommercialwebsite.dto.request.ProductUpdateRequest;
 import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
@@ -14,6 +13,8 @@ public interface ProductService {
     SingleProductResponse findProductById(int id);
 
     ProductResponse getAllProducts(int pageNo, int pageSize, String sortBy, String sortDir);
+
+    ProductResponse getAllAvailableProducts( boolean hiddnen ,int pageNo, int pageSize, String sortBy, String sortDir);
 
     ProductResponse getProductsByBrandName(String brandName, int pageNo, int pageSize, String sortBy, String sortDir);
 

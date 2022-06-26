@@ -23,6 +23,7 @@ public class ProductController {
         this.productService = productService;
     }
 
+    //get all available product (hidden = false)
     @GetMapping("/product")
     public ResponseEntity<ProductResponse> getAllProducts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -30,7 +31,10 @@ public class ProductController {
             @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
             @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
     ) {
-        return new ResponseEntity<>( productService.getAllProducts(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
+        return new
+                    ResponseEntity<>(
+                    productService.getAllAvailableProducts( false,pageNo, pageSize, sortBy, sortDir),
+                    HttpStatus.OK);
     }
 
     @GetMapping("/product/{id}")

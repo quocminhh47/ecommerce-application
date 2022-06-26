@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl implements ProductService  {
 
     private final ProductRepository productRepository;
     private final ModelMapper mapper;
@@ -54,6 +54,21 @@ public class ProductServiceImpl implements ProductService {
         //create pageable instance
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Product> products = productRepository.findAll(pageable);
+        return getContent(products);
+    }
+
+    @Override
+    public ProductResponse getAllAvailableProducts(boolean hiddnen ,
+                                                   int pageNo,
+                                                   int pageSize,
+                                                   String sortBy,
+                                                   String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        //create pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Product> products = productRepository.findProductByHidden(false, pageable);
         return getContent(products);
     }
 
@@ -151,13 +166,14 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDto> content = listOfProducts.stream()
                 .map(this::maptoDTO)
                 .collect(Collectors.toList());
-        ProductResponse productResponse = new ProductResponse();
-        productResponse.setProductContent(content);
-        productResponse.setPageNo(products.getNumber());
-        productResponse.setPageSize(products.getSize());
-        productResponse.setTotalElements(products.getTotalElements());
-        productResponse.setTotalPages(products.getTotalPages());
-        productResponse.setLast(products.isLast());
-        return productResponse;
+
+        return ProductResponse.builder()
+                .productContent(content)
+                .pageNo(products.getNumber())
+                .pageSize(products.getSize())
+                .totalElements(products.getTotalElements())
+                .totalPages(products.getTotalPages())
+                .last(products.isLast())
+                .build();
     }
 }

@@ -1,15 +1,13 @@
-package com.nashtech.ecommercialwebsite.service.impl;
+package com.nashtech.ecommercialwebsite.services.impl;
 
-import com.nashtech.ecommercialwebsite.service.EmailSender;
+import com.nashtech.ecommercialwebsite.services.EmailSender;
 import lombok.AllArgsConstructor;
-import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.logging.Logger;
 
 @Service
 @AllArgsConstructor

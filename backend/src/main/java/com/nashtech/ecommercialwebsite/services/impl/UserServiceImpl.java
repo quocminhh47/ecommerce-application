@@ -1,9 +1,9 @@
-package com.nashtech.ecommercialwebsite.service.impl;
+package com.nashtech.ecommercialwebsite.services.impl;
 
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
-import com.nashtech.ecommercialwebsite.service.ConfirmationTokenService;
+import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements com.nashtech.ecommercialwebsite.service.UserService, UserDetailsService{
+public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services.UserService, UserDetailsService{
     private final static String USER_NOT_FOUND_MSG =
             "user with email %s not found";
     private final ConfirmationTokenService confirmationTokenService;

@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.service;
+package com.nashtech.ecommercialwebsite.services;
 
 public interface EmailSender {
     void send(String to, String email);

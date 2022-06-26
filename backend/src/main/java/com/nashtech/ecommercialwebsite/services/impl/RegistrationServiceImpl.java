@@ -1,13 +1,13 @@
-package com.nashtech.ecommercialwebsite.service.impl;
+package com.nashtech.ecommercialwebsite.services.impl;
 
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.entity.Role;
 import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
 import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
-import com.nashtech.ecommercialwebsite.service.ConfirmationTokenService;
-import com.nashtech.ecommercialwebsite.service.EmailSender;
-import com.nashtech.ecommercialwebsite.service.RegistrationService;
+import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
+import com.nashtech.ecommercialwebsite.services.EmailSender;
+import com.nashtech.ecommercialwebsite.services.RegistrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

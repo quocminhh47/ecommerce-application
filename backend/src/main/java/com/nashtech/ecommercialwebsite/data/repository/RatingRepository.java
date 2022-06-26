@@ -3,8 +3,10 @@ package com.nashtech.ecommercialwebsite.data.repository;
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.Product;
 import com.nashtech.ecommercialwebsite.data.entity.Rating;
+import com.nashtech.ecommercialwebsite.dto.response.RatingResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 public interface RatingRepository extends JpaRepository<Rating, Long > {
@@ -18,4 +20,7 @@ public interface RatingRepository extends JpaRepository<Rating, Long > {
     Integer getUserRatingPointsByProduct(int userId, int productId);
 
     Rating findRatingByAccountAndProduct(Account account, Product product);
+
+   /* @Query(nativeQuery = true)
+    RatingResponse getUserRatingByProduct(@Param("productId") int productId, @Param("userId") int userId);*/
 }
