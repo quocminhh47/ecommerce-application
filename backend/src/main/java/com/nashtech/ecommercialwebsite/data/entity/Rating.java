@@ -1,9 +1,6 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 @Entity
@@ -11,13 +8,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
+@Builder
 public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "rating_points")
-    private Double ratingPoints;
+    private Integer ratingPoints;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -26,4 +24,14 @@ public class Rating {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Account account;
+
+    @Override
+    public String toString() {
+        return "Rating{" +
+                "id=" + id +
+                ", ratingPoints=" + ratingPoints +
+                ", product=" + product +
+                ", account=" + account +
+                '}';
+    }
 }
