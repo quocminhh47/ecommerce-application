@@ -4,12 +4,13 @@ import com.nashtech.ecommercialwebsite.dto.request.ProductRequest;
 import com.nashtech.ecommercialwebsite.dto.request.ProductUpdateRequest;
 import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
 import com.nashtech.ecommercialwebsite.dto.response.SingleProductResponse;
-import com.nashtech.ecommercialwebsite.service.ProductService;
+import com.nashtech.ecommercialwebsite.services.ProductService;
 import com.nashtech.ecommercialwebsite.utils.AppConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 
 
 @RestController
@@ -50,14 +51,14 @@ public class ProductController {
 
     @PostMapping("/product")
     @ResponseStatus(HttpStatus.CREATED)
-    public SingleProductResponse saveProduct(@RequestBody ProductRequest productRequest){
+    public SingleProductResponse saveProduct( @Valid @RequestBody ProductRequest productRequest){
         return productService.saveProduct(productRequest) ;
     }
 
     @PutMapping("product/{id}")
     @ResponseStatus(HttpStatus.OK)
     public SingleProductResponse updateProduct(@PathVariable("id") int id,
-                                                 @RequestBody ProductUpdateRequest productRequest) {
+                                               @Valid @RequestBody ProductUpdateRequest productRequest) {
         return productService.updateProduct(id, productRequest);
     }
 
