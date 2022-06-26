@@ -2,6 +2,7 @@ package com.nashtech.ecommercialwebsite.exceptions.handlers;
 
 
 import com.nashtech.ecommercialwebsite.dto.response.ErrorResponse;
+import com.nashtech.ecommercialwebsite.exceptions.ResourceConfictException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                             WebRequest request) {
         ErrorResponse error = new ErrorResponse("404", exception.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({ResourceConfictException.class})
+    protected ResponseEntity<ErrorResponse> handleResourceConflictException(RuntimeException exception,
+                                                                            WebRequest request) {
+        ErrorResponse error = new ErrorResponse("409", exception.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     @Override

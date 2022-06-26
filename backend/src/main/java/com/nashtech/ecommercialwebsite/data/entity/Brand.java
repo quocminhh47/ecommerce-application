@@ -12,14 +12,19 @@ import java.util.Set;
 //@AllArgsConstructor
 //@NoArgsConstructor
 public class Brand {
+
+    private static final String THUMBNAIL_LINK = "https://aceo.vn/images/logo-google.png";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     @Setter(AccessLevel.NONE)
     private  Integer id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
+
+    @Column(name = "thumbnail")
+    private String thumbnail = THUMBNAIL_LINK;
 
     @Column(name = "description")
     private String description;
@@ -30,13 +35,4 @@ public class Brand {
     @Setter(AccessLevel.NONE)
     Set<Product> products;
 
-
-//    @Override
-//    public String toString() {
-//        return "Brand{" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-//                ", description='" + description + '\'' +
-//                '}';
-//    }
 }
