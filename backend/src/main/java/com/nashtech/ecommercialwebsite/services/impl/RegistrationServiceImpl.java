@@ -3,43 +3,72 @@ package com.nashtech.ecommercialwebsite.services.impl;
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.entity.Role;
+import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
 import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
 import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
+import com.nashtech.ecommercialwebsite.exceptions.ResourceConfictException;
+import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
 import com.nashtech.ecommercialwebsite.services.EmailSender;
 import com.nashtech.ecommercialwebsite.services.RegistrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
     private final UserServiceImpl userServiceImpl;
+    private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
+    private final static String EMAIL_ALREADY_TAKEN = "Email %s already exist!";
     @Override
-    public String register(RegistrationRequest request) {
-        Optional<Role> userRole = roleRepository.findRolesByRoleName("USER");
-        if(userRole.isPresent()){
-            Account userAccount = new Account(
+    public String register(RegistrationRequest request, String roleName) {
+
+        Role userRole = roleRepository.findRolesByRoleName(roleName)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(roleName +" ROLE IS NOT EXIST"));
+
+        Optional<Account> optionalAccount = userRepository.findAccountByUsername(request.getEmail());
+
+        //check if account already register and confirmed -> throw exception
+        if(optionalAccount.isPresent() && optionalAccount.get().getEnabled())
+            throw new ResourceConfictException(String.format(EMAIL_ALREADY_TAKEN, request.getEmail()));
+
+        // check if account already register but not confirmed
+        // then permit to register again with latest information
+        if(optionalAccount.isPresent() && !optionalAccount.get().getEnabled()) {
+            long userId = optionalAccount.get().getId();
+            Account newAccount = new Account(
+                    userId,
                     request.getEmail(),
                     request.getFirstName(),
                     request.getLastName(),
                     request.getPassword(),
-                    userRole.get()
+                    userRole
             );
-
-            String token = userServiceImpl.signUpUser(userAccount);
+            String token = userServiceImpl.signUpUser(newAccount);
             String confirmLink = "http://localhost:8080/v1/api/registration/confirm?token=" + token;
-            emailSender.send(request.getEmail(),
-                    buildEmail(request.getLastName(), confirmLink));
-            return token;
+            emailSender.send(request.getEmail(), buildEmail(request.getLastName(), confirmLink));
+            return userServiceImpl.signUpUser(newAccount);
         }
-        else throw new IllegalStateException("Role USER is not exist!");
+
+        //if new -> create new account
+            Account userAccount = new Account(
+                request.getEmail(),
+                request.getFirstName(),
+                request.getLastName(),
+                request.getPassword(),
+                userRole
+        );
+        String token = userServiceImpl.signUpUser(userAccount);
+        String confirmLink = "http://localhost:8080/v1/api/registration/confirm?token=" + token;
+        emailSender.send(request.getEmail(), buildEmail(request.getLastName(), confirmLink));
+        return token;
     }
 
     @Transactional
@@ -47,16 +76,16 @@ public class RegistrationServiceImpl implements RegistrationService {
         ConfirmationToken confirmationToken = confirmationTokenService
                 .getToken(token)
                 .orElseThrow(() ->
-                        new IllegalStateException("token not found"));
+                        new ResourceNotFoundException("Token is incorrect"));
 
         if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("email already confirmed");
+            throw new IllegalStateException("Your email already confirmed");
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiredAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("token expired");
+            throw new IllegalStateException("Token expired");
         }
 
         confirmationTokenService.setConfirmedAt(token);

@@ -1,8 +1,18 @@
 package com.nashtech.ecommercialwebsite.services;
 
 import com.nashtech.ecommercialwebsite.data.entity.Account;
+import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
+import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
 
 public interface UserService {
-    public String signUpUser(Account userAccount);
-    public int enableUser(String email);
+     String signUpUser(Account userAccount);
+
+     int enableUser(String email);
+
+     UserAccountResponse getAllUserAccounts(int pageNo, int pageSize, String sortBy, String sortDir);
+
+     UserAccountDto getAccountById(long id);
+
+     UserAccountDto changeUserAccountStatus(UserAccountDto accountDto);
+
 }

@@ -2,9 +2,19 @@ package com.nashtech.ecommercialwebsite.services.impl;
 
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
+import com.nashtech.ecommercialwebsite.data.entity.Role;
+import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
 import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
+import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
+import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
+import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,50 +22,45 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services.UserService, UserDetailsService{
-    private final static String USER_NOT_FOUND_MSG =
-            "user with email %s not found";
+    private static final String USER_NOT_FOUND_MSG = "User with email %s not found";
+    private static final String USER_ROLE_NOT_FOUND_MSG = "Role %s not found in the database";
+    private static final String USER_ROLE_NAME = "USER";
     private final ConfirmationTokenService confirmationTokenService;
-
     private final UserRepository userRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RoleRepository roleRepository;
+    private final ModelMapper mapper;
 
     @Override
     public UserDetails loadUserByUsername(String username)  throws UsernameNotFoundException {
-        Optional<Account> user = userRepository.findAccountByUsername(username);
-        if(user.isPresent()){
-            return new org.springframework.security.core.userdetails.User(
-                    user.get().getUsername(),
-                    user.get().getPassword(),
-                    getGrantedAuthorities(user.get())
-            );
-        }
-        else throw  new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username));
-
+        Account user  = userRepository.findAccountByUsername(username)
+                .orElseThrow(
+                        () -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                getGrantedAuthorities(user)
+        );
     }
 
     public int enableUser(String email) {
         return userRepository.enableUser(email);
     }
 
+
+
     //Handle when user register - and this give token
     public String signUpUser(Account userAccount){
-        boolean isUserExist = userRepository.
-                findAccountByUsername(userAccount.getUsername())
-                .isPresent();
-        if(isUserExist){
-            //TODO check if account is not confirmed then resend email to confirm
-            throw new IllegalStateException("email already taken");
-        }
         //encoded password
         String encodedPassword = bCryptPasswordEncoder.encode(userAccount.getPassword());
         userAccount.setPassword(encodedPassword);
@@ -69,7 +74,6 @@ public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services
                 LocalDateTime.now().plusMinutes(15),
                 userAccount
         );
-        System.out.println(confirmationToken.toString());
         //save confirmation token
         confirmationTokenService.saveConfirmationToken(confirmationToken);
         return token;
@@ -87,5 +91,59 @@ public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
         return authorities;
+    }
+    @Override
+    public UserAccountResponse getAllUserAccounts(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        //create pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        // get role where name = "USER"
+        Role role = roleRepository.findRolesByRoleName(USER_ROLE_NAME)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                String.format(USER_ROLE_NOT_FOUND_MSG,
+                                        USER_ROLE_NAME)));
+        Page<Account> accounts = userRepository.findAllByRole(pageable, role);
+        return getContent(accounts);
+    }
+
+
+    private UserAccountDto mapToDto(Account account) {
+        return mapper.map(account, UserAccountDto.class);
+    }
+
+    @Override
+    public UserAccountDto getAccountById(long id) {
+        Account account = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("User with ID: %s not found", id)
+                ));
+        return mapper.map(account, UserAccountDto.class);
+    }
+
+    @Override
+    public UserAccountDto changeUserAccountStatus(UserAccountDto accountDto) {
+        Account accountEntity = mapper.map(accountDto, Account.class);
+        Account savedAccount = userRepository.save(accountEntity);
+        return mapper.map(savedAccount, UserAccountDto.class);
+    }
+
+
+    private UserAccountResponse getContent(Page<Account> accounts) {
+        List<Account> listOfAccounts = accounts.getContent();
+        List<UserAccountDto> content = listOfAccounts.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+
+        return UserAccountResponse.builder()
+                .userAccountContent(content)
+                .pageNo(accounts.getNumber())
+                .pageSize(accounts.getSize())
+                .totalElements(accounts.getTotalElements())
+                .totalPages(accounts.getTotalPages())
+                .last(accounts.isLast())
+                .build();
+
     }
 }

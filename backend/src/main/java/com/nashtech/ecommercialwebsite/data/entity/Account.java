@@ -1,6 +1,7 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,8 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "accounts")
 @NoArgsConstructor
-@Getter
-@Setter
+@Getter @Setter
 public class Account {
 
 
@@ -67,5 +67,33 @@ public class Account {
         this.lastName = last_name;
         this.password = password;
         this.role = role;
+    }
+
+    public Account(Long id,
+                   String username,
+                   String firstName,
+                   String lastName,
+                   String password,
+                   Role role) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", password='" + password + '\'' +
+                ", locked=" + locked +
+                ", enabled=" + enabled +
+                ", role=" + role +
+                '}';
     }
 }

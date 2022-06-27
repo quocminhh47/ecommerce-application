@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,15 +20,19 @@ import java.util.Map;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ResourceNotFoundException.class})
-    protected ResponseEntity<ErrorResponse> handleResourceNotFoundException(RuntimeException exception,
-                                                                            WebRequest request) {
+    protected ResponseEntity<ErrorResponse> handleResourceNotFoundException(RuntimeException exception) {
         ErrorResponse error = new ErrorResponse("404", exception.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({ResourceConfictException.class})
-    protected ResponseEntity<ErrorResponse> handleResourceConflictException(RuntimeException exception,
-                                                                            WebRequest request) {
+    protected ResponseEntity<ErrorResponse> handleResourceConflictException(RuntimeException exception) {
+        ErrorResponse error = new ErrorResponse("409", exception.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler({IllegalStateException.class})
+    protected ResponseEntity<ErrorResponse> handleResourceIllegalException(RuntimeException exception) {
         ErrorResponse error = new ErrorResponse("409", exception.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
