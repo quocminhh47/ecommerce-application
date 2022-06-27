@@ -1,7 +1,6 @@
 package com.nashtech.ecommercialwebsite.security.config;
 
-import com.nashtech.ecommercialwebsite.filter.CustomAuthenticationFilter;
-import com.nashtech.ecommercialwebsite.filter.CustomAuthorizationFilter;
+import com.nashtech.ecommercialwebsite.security.filter.CustomAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity

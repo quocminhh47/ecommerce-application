@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.filter;
+package com.nashtech.ecommercialwebsite.security.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

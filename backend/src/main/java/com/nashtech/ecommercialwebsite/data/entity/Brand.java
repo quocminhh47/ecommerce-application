@@ -9,11 +9,9 @@ import java.util.Set;
 @Entity
 @Table(name = "brands")
 @Getter @Setter
-//@AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 public class Brand {
 
-    private static final String THUMBNAIL_LINK = "https://aceo.vn/images/logo-google.png";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
@@ -24,7 +22,7 @@ public class Brand {
     private String name;
 
     @Column(name = "thumbnail")
-    private String thumbnail = THUMBNAIL_LINK;
+    private String thumbnail ;
 
     @Column(name = "description")
     private String description;
@@ -35,4 +33,9 @@ public class Brand {
     @Setter(AccessLevel.NONE)
     Set<Product> products;
 
+    public Brand( String name, String thumbnail, String description) {
+        this.name = name;
+        this.thumbnail = thumbnail;
+        this.description = description;
+    }
 }

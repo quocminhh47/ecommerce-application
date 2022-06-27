@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService  {
     }
 
     @Override
-    public ProductResponse getAllAvailableProducts(boolean hiddnen ,
+    public ProductResponse getAllAvailableProducts(boolean hidden ,
                                                    int pageNo,
                                                    int pageSize,
                                                    String sortBy,
@@ -106,7 +106,7 @@ public class ProductServiceImpl implements ProductService  {
             return response;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new IllegalStateException("Error while save product / product image");
+            throw new IllegalStateException(e.getMessage());
         }
     }
 

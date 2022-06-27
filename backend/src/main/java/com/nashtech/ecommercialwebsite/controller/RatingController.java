@@ -22,8 +22,7 @@ public class RatingController {
     @GetMapping("/rating")
     public ResponseEntity<RatingResponse> getRatingInfo(
             @RequestParam("user-id") int userId,
-            @RequestParam("product-id") int productId
-    ){
+            @RequestParam("product-id") int productId) {
         return new ResponseEntity<>(ratingService.getUserRatingByProduct(userId, productId), HttpStatus.OK);
     }
 

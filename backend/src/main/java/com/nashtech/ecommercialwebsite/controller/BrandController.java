@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/admin/api")
+@RequestMapping("/admin/api/brand")
 public class BrandController {
 
     private final BrandService brandService;
@@ -21,12 +21,12 @@ public class BrandController {
         this.brandService = brandService;
     }
 
-    @GetMapping("/brand/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<BrandDto> getBrandById(@PathVariable("id") int id) {
         return new ResponseEntity<>(brandService.getBrandById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/brand")
+    @GetMapping()
     public ResponseEntity<BrandResponse> getAllBrands(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -38,14 +38,14 @@ public class BrandController {
                 HttpStatus.OK);
     }
 
-    @PostMapping("/brand")
+    @PostMapping()
     public ResponseEntity<BrandDto> createNewBrand(@Valid @RequestBody BrandRequest brandRequest) {
         return new ResponseEntity<>(brandService.save(brandRequest), HttpStatus.CREATED);
     }
 
-    @PutMapping("/brand/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<BrandDto> updateBrand(@PathVariable("id") int id,
-                                                     @Valid @RequestBody BrandRequest brandRequest) {
+                                                @Valid @RequestBody BrandRequest brandRequest) {
         return new ResponseEntity<>(brandService.update(id, brandRequest), HttpStatus.OK);
 
     }

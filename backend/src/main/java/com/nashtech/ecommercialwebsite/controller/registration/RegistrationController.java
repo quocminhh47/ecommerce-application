@@ -9,13 +9,17 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/api")
-@AllArgsConstructor
 public class RegistrationController {
+    private static final String USER_ROLE = "USER";
     private final RegistrationService registrationService;
+
+    public RegistrationController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
 
     @PostMapping("/registration")
     public String register( @Valid @RequestBody RegistrationRequest registrationRequest){
-        return registrationService.register(registrationRequest);
+        return registrationService.register(registrationRequest, USER_ROLE);
     }
 
     @GetMapping(path = "/registration/confirm")
