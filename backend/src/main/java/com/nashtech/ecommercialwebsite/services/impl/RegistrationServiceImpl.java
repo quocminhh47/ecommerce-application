@@ -6,6 +6,7 @@ import com.nashtech.ecommercialwebsite.data.entity.Role;
 import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
 import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
 import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
+import com.nashtech.ecommercialwebsite.exceptions.BadRequestException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceConfictException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
@@ -86,13 +87,13 @@ public class RegistrationServiceImpl implements RegistrationService {
                         new ResourceNotFoundException("Token is incorrect"));
 
         if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("Your email already confirmed");
+            throw new ResourceConfictException("Your email already confirmed");
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiredAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Token expired");
+            throw new BadRequestException("Token has been expired!");
         }
 
         confirmationTokenService.setConfirmedAt(token);

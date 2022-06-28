@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/admin/api/brand")
+@RequestMapping("/admin/api/brands")
 public class BrandController {
 
     private final BrandService brandService;

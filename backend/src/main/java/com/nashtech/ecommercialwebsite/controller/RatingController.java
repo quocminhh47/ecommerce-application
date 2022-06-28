@@ -20,7 +20,7 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-    @GetMapping("/rating")
+    @GetMapping("/ratings")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<RatingResponse> getRatingInfo(
             @RequestParam("user-id") int userId,
@@ -28,7 +28,7 @@ public class RatingController {
         return new ResponseEntity<>(ratingService.getUserRatingByProduct(userId, productId), HttpStatus.OK);
     }
 
-    @PostMapping("/rating")
+    @PostMapping("/ratings")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserRatingResponse> rateProduct(@Valid @RequestBody UserRatingRequest userRatingRequest){
         return new ResponseEntity<>(ratingService.rateProduct(userRatingRequest), HttpStatus.CREATED);
