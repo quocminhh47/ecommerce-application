@@ -7,7 +7,9 @@ import java.util.Map;
 
 public class ErrorResponse {
 	String code;
+
 	String message;
+
 	@JsonInclude(Include.NON_NULL)
 	Map<String, String> validationErrors;
 

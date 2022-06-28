@@ -11,8 +11,10 @@ import java.io.Serializable;
 @Embeddable
 @Getter @Setter
 public class CartDetailId implements Serializable {
+
     @Column(name = "product_id")
     String productID;
+
     @Column(name = "cart_id")
     Integer cartID;
 

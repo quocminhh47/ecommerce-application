@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class BrandServiceImpl implements BrandService {
 
     private final BrandRepository brandRepository;
+
     private final ModelMapper mapper;
 
     @Override

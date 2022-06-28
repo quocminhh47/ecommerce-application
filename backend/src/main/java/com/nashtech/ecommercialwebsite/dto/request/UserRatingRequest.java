@@ -10,6 +10,7 @@ import javax.validation.constraints.Min;
 @Getter @Setter
 @NoArgsConstructor
 public class UserRatingRequest {
+
     @Min(value = 1, message = "Rating points must at least 1 ")
     @Max(value = 5, message = "Rating points max is 5")
     private int ratingPoints;

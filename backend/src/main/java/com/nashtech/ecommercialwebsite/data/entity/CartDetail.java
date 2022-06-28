@@ -9,8 +9,10 @@ import javax.persistence.*;
 @Table(name = "cart_detail")
 @Getter @Setter
 public class CartDetail {
+
     @EmbeddedId
     CartDetailId id;
+
     @Column(name = "quantity")
     private Integer quantity;
 

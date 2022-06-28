@@ -10,16 +10,22 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserAccountDto {
+
     private Long id;
+
     @JsonProperty("email")
     @NotBlank(message = "Email is required")
     private String userName;
+
     @NotBlank(message = "First name is required")
     private String firstName;
+
     @NotBlank(message = "Last name is required")
     private String lastName;
+
     @NotNull(message ="Enabled status is required")
     Boolean enabled;
+
     @NotNull(message ="Locked status is required")
     Boolean locked;
 

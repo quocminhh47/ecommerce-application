@@ -12,7 +12,9 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
+
     ConfirmationTokenRepository confirmationTokenRepository;
+
     @Override
     public void saveConfirmationToken(ConfirmationToken confirmationToken) {
         confirmationTokenRepository.save(confirmationToken);

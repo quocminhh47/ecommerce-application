@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class ProductRequest {
+
     @NotNull(message = "Name cannot be null")
     private String name;
 

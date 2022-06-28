@@ -6,6 +6,7 @@ import com.nashtech.ecommercialwebsite.dto.response.UserRatingResponse;
 import com.nashtech.ecommercialwebsite.services.RatingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
@@ -20,6 +21,7 @@ public class RatingController {
     }
 
     @GetMapping("/rating")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<RatingResponse> getRatingInfo(
             @RequestParam("user-id") int userId,
             @RequestParam("product-id") int productId) {
@@ -27,6 +29,7 @@ public class RatingController {
     }
 
     @PostMapping("/rating")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserRatingResponse> rateProduct(@Valid @RequestBody UserRatingRequest userRatingRequest){
         return new ResponseEntity<>(ratingService.rateProduct(userRatingRequest), HttpStatus.CREATED);
     }

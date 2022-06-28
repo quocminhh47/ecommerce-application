@@ -10,8 +10,10 @@ import java.io.Serializable;
 @Embeddable
 @Getter @Setter
 public class BillDetailId implements Serializable {
+
     @Column(name="bill_id")
     Integer billId;
+
     @Column(name = "product_id")
     String productId;
 

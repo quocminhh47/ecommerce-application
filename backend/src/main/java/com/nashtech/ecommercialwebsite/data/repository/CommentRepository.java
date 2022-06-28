@@ -9,7 +9,4 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    //@Query("SELEC")
-    List<Comment> findCommentByProduct(String productID);
-
 }

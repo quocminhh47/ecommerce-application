@@ -22,8 +22,11 @@ import org.springframework.stereotype.Service;
 public class RatingServiceImpl implements RatingService {
 
     private final RatingRepository ratingRepository;
+
     private final ProductRepository productRepository;
+
     private final UserRepository userRepository;
+
     private final ModelMapper mapper;
 
     @Override

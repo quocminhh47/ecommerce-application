@@ -11,6 +11,8 @@ import lombok.Setter;
 public class UserRatingResponse {
 
     private int ratingPoints;
+
     private int productId;
+
     private int accountId;
 }

@@ -34,13 +34,21 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services.UserService, UserDetailsService{
+
     private static final String USER_NOT_FOUND_MSG = "User with email %s not found";
+
     private static final String USER_ROLE_NOT_FOUND_MSG = "Role %s not found in the database";
+
     private static final String USER_ROLE_NAME = "USER";
+
     private final ConfirmationTokenService confirmationTokenService;
+
     private final UserRepository userRepository;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
     private final RoleRepository roleRepository;
+
     private final ModelMapper mapper;
 
     @Override
