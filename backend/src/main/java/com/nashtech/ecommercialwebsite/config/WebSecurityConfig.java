@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.security.config;
+package com.nashtech.ecommercialwebsite.config;
 
 import com.nashtech.ecommercialwebsite.security.filter.CustomAuthenticationFilter;
 import com.nashtech.ecommercialwebsite.security.filter.CustomAuthorizationFilter;
@@ -37,7 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/token/refresh/**",
                 "/v1/api/registration/**").permitAll();
         http.authorizeRequests().antMatchers( "/admin/api/**").hasRole("ADMIN");
-        http.authorizeRequests().antMatchers( "/api/rating/**").hasRole("USER");
+        http.authorizeRequests().antMatchers( "/api/ratings/**",
+                "/api/products/gallery/**").hasRole("USER");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

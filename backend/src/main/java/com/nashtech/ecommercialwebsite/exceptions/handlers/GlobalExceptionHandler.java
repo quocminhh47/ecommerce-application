@@ -2,8 +2,7 @@ package com.nashtech.ecommercialwebsite.exceptions.handlers;
 
 
 import com.nashtech.ecommercialwebsite.dto.response.ErrorResponse;
-import com.nashtech.ecommercialwebsite.exceptions.ResourceConfictException;
-import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
+import com.nashtech.ecommercialwebsite.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,10 +30,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({IllegalStateException.class})
-    protected ResponseEntity<ErrorResponse> handleResourceIllegalException(RuntimeException exception) {
-        ErrorResponse error = new ErrorResponse("409", exception.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    @ExceptionHandler({BadRequestException.class})
+    protected ResponseEntity<ErrorResponse> handleBadRequestException(RuntimeException exception) {
+        ErrorResponse error = new ErrorResponse("400", exception.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({UnsupportedMediaException.class})
+    protected ResponseEntity<ErrorResponse> handleUnsupportedMediaException(RuntimeException exception) {
+        ErrorResponse error = new ErrorResponse("415", exception.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    @ExceptionHandler({InternalServerException.class})
+    protected ResponseEntity<ErrorResponse> handleInternalServerException(RuntimeException exception) {
+        ErrorResponse error = new ErrorResponse("500", exception.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
