@@ -7,11 +7,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
+@Repository
 public interface UserRepository extends JpaRepository<Account, Long> {
     Optional<Account> findAccountByUsername(String email);
+
     @Transactional
     @Modifying
     @Query("UPDATE Account a " +
@@ -20,9 +24,13 @@ public interface UserRepository extends JpaRepository<Account, Long> {
 
     Page<Account> findAllByRole(Pageable pageable, Role role);
 
+    //@Transactional
+    @Modifying
     @Query( "UPDATE Account a " +
-            "SET a.enabled = ?2 , a.locked = ?3 WHERE a.id = ?1")
-    int changeUserAccountStatus(long id, boolean isEnabled, boolean isLocked);
+            "SET a.enabled = :enabled , a.locked = :locked WHERE a.id = :id")
+    void changeUserAccountStatus(@Param("id") long id,
+                                 @Param("enabled") boolean isLocked,
+                                 @Param("locked") boolean isEnabled);
 
 
 }

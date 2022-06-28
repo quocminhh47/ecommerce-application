@@ -22,6 +22,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,11 +124,20 @@ public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services
         return mapper.map(account, UserAccountDto.class);
     }
 
+    @Transactional
     @Override
     public UserAccountDto changeUserAccountStatus(UserAccountDto accountDto) {
-        Account accountEntity = mapper.map(accountDto, Account.class);
-        Account savedAccount = userRepository.save(accountEntity);
-        return mapper.map(savedAccount, UserAccountDto.class);
+        //TODO: Check others property ( name, password, id,..) has changed or not
+        userRepository.changeUserAccountStatus(
+                accountDto.getId(),
+                accountDto.getEnabled(),
+                accountDto.getLocked()
+        );
+        Account updatedAccount = userRepository.findById(accountDto.getId())
+                .orElseThrow( () -> new ResourceNotFoundException(
+                        String.format("User account with ID: %s not found", accountDto.getId())
+                ));
+        return mapper.map(updatedAccount, UserAccountDto.class);
     }
 
 
