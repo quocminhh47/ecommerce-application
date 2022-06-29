@@ -1,12 +1,14 @@
 package com.nashtech.ecommercialwebsite.services;
 
+import com.nashtech.ecommercialwebsite.controller.user.RegistrationResponse;
 import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
+import com.nashtech.ecommercialwebsite.dto.response.TokenResponse;
 
 public interface RegistrationService {
 
-    String register(RegistrationRequest request, String roleName);
+    TokenResponse register(RegistrationRequest request, String roleName);
 
-    String confirmToken(String token);
+    RegistrationResponse confirmToken(String token);
 
     String buildEmail(String name, String link);
 }

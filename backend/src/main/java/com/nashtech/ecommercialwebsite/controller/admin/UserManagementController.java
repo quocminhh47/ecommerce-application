@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.controller;
+package com.nashtech.ecommercialwebsite.controller.admin;
 
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
@@ -13,11 +13,11 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/admin/api/users")
-public class UserController {
+public class UserManagementController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public UserManagementController(UserService userService) {
         this.userService = userService;
     }
 
@@ -42,11 +42,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserAccountDto> getUserById(@PathVariable("id") long id) {
         return new ResponseEntity<>(userService.getAccountById(id), HttpStatus.OK);
     }
 
     @PutMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserAccountDto> changeAccountStatus(@Valid @RequestBody UserAccountDto accountDto) {
         return new ResponseEntity<>(userService.changeUserAccountStatus(accountDto), HttpStatus.OK);
     }

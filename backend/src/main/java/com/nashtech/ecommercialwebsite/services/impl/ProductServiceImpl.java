@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService  {
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ModelMapper mapper;
@@ -37,8 +37,8 @@ public class ProductServiceImpl implements ProductService  {
 
     @Override
     public SingleProductResponse findProductById(int id) {
-        Product product =  productRepository.findById(id)
-                .orElseThrow( () -> new ResourceNotFoundException(
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Product not found with id: %s", id)));
         SingleProductResponse singleProductResponse = mapper.map(product, SingleProductResponse.class);
         List<ProductImage> images = imagesRepository.findProductImagesByProduct(product);
@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService  {
     }
 
     @Override
-    public ProductResponse getAllAvailableProducts(boolean hidden ,
+    public ProductResponse getAllAvailableProducts(boolean hidden,
                                                    int pageNo,
                                                    int pageSize,
                                                    String sortBy,
@@ -90,51 +90,32 @@ public class ProductServiceImpl implements ProductService  {
     public SingleProductResponse saveProduct(ProductRequest productRequest) {
         Product product = mapToEntity(productRequest);
         product.setCreatedAt(LocalDateTime.now());
-        try {
-            //save product
-            Product savedProduct = productRepository.save(product);
-            SingleProductResponse response = mapper.map(savedProduct, SingleProductResponse.class);
-            //save all images of  product
-            productRequest.getImages().forEach(image -> {
-                ProductImage productImage = mapper.map(image, ProductImage.class);
-                productImage.setProduct(savedProduct);
-                //save image to DB
-                imagesRepository.save(productImage);
-                //add image to response
-                response.getProductImages().add(productImage);
-            });
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new IllegalStateException(e.getMessage());
-        }
+
+        product.getProductImages().forEach(image -> image.setProduct(product));
+        product.getProductImages().forEach(System.out::println);
+
+        Product savedProduct = productRepository.save(product);
+        SingleProductResponse response = mapper.map(savedProduct, SingleProductResponse.class);
+
+        return response;
     }
 
     @Override
     public SingleProductResponse updateProduct(int id, ProductUpdateRequest productRequest) {
+
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Product not found with id: %s", id)));
+
         mapper.map(productRequest, product);
         product.setUpdatedAt(LocalDateTime.now());
         product.setId(id);
-        Brand brand =  brandRepository.findById(productRequest.getBrandId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Brand not found with id: %s", id)));
-        product.setBrand(brand);
-        //update product:
+
+        product.getProductImages().forEach(System.out::println);
+
         Product updatedProduct = productRepository.save(product);
-        SingleProductResponse response = mapper.map(updatedProduct, SingleProductResponse.class);
-        //save all images of product
-        productRequest.getImages().forEach(image -> {
-            ProductImage productImage = mapper.map(image, ProductImage.class);
-            productImage.setProduct(updatedProduct);
-            //save to DB
-            imagesRepository.save(productImage);
-            //add to SingleProductResponse
-            response.getProductImages().add(productImage);
-        });
-        return response;
+
+        return mapper.map(updatedProduct, SingleProductResponse.class);
     }
 
     @Override
@@ -154,7 +135,7 @@ public class ProductServiceImpl implements ProductService  {
 
     private Product mapToEntity(ProductRequest productRequest) {
         Product productEntity = mapper.map(productRequest, Product.class);
-        Brand brand =  brandRepository.findById(productRequest.getBrandId())
+        Brand brand = brandRepository.findById(productRequest.getBrandId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Brand not found with id: %s", productRequest.getBrandId())));
         productEntity.setBrand(brand);

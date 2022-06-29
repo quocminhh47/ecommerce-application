@@ -1,8 +1,10 @@
-package com.nashtech.ecommercialwebsite.controller.registration;
+package com.nashtech.ecommercialwebsite.controller.user;
 
 import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
+import com.nashtech.ecommercialwebsite.dto.response.TokenResponse;
 import com.nashtech.ecommercialwebsite.services.RegistrationService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,12 +20,14 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String register( @Valid @RequestBody RegistrationRequest registrationRequest){
+    @ResponseStatus(HttpStatus.CREATED)
+    public TokenResponse register(@Valid @RequestBody RegistrationRequest registrationRequest){
         return registrationService.register(registrationRequest, USER_ROLE);
     }
 
     @GetMapping(path = "/registration/confirm")
-    public String confirm(@RequestParam("token") String token) {
+    @ResponseStatus(HttpStatus.OK)
+    public RegistrationResponse confirm(@RequestParam("token") String token) {
         return registrationService.confirmToken(token);
     }
 }

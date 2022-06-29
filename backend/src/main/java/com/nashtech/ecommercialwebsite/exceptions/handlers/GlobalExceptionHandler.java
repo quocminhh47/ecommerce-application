@@ -36,12 +36,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({UnsupportedMediaException.class})
-    protected ResponseEntity<ErrorResponse> handleUnsupportedMediaException(RuntimeException exception) {
-        ErrorResponse error = new ErrorResponse("415", exception.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-    }
-
     @ExceptionHandler({InternalServerException.class})
     protected ResponseEntity<ErrorResponse> handleInternalServerException(RuntimeException exception) {
         ErrorResponse error = new ErrorResponse("500", exception.getMessage());

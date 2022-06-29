@@ -1,11 +1,13 @@
 package com.nashtech.ecommercialwebsite.services.impl;
 
+import com.nashtech.ecommercialwebsite.controller.user.RegistrationResponse;
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.entity.Role;
 import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
 import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
 import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
+import com.nashtech.ecommercialwebsite.dto.response.TokenResponse;
 import com.nashtech.ecommercialwebsite.exceptions.BadRequestException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceConfictException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
@@ -35,7 +37,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final static String EMAIL_ALREADY_TAKEN = "Email %s already exist!";
 
     @Override
-    public String register(RegistrationRequest request, String roleName) {
+    public TokenResponse register(RegistrationRequest request, String roleName) {
 
         Role userRole = roleRepository.findRolesByRoleName(roleName)
                 .orElseThrow(
@@ -62,7 +64,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             String token = userServiceImpl.signUpUser(newAccount);
             String confirmLink = "http://localhost:8080/v1/api/registration/confirm?token=" + token;
             emailSender.send(request.getEmail(), buildEmail(request.getLastName(), confirmLink));
-            return userServiceImpl.signUpUser(newAccount);
+            return new TokenResponse("SUCCESS", token);
         }
 
         //if new -> create new account
@@ -76,11 +78,11 @@ public class RegistrationServiceImpl implements RegistrationService {
         String token = userServiceImpl.signUpUser(userAccount);
         String confirmLink = "http://localhost:8080/v1/api/registration/confirm?token=" + token;
         emailSender.send(request.getEmail(), buildEmail(request.getLastName(), confirmLink));
-        return token;
+        return new TokenResponse("SUCCESS", token);
     }
 
     @Transactional
-    public String confirmToken(String token) {
+    public RegistrationResponse confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService
                 .getToken(token)
                 .orElseThrow(() ->
@@ -99,7 +101,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         confirmationTokenService.setConfirmedAt(token);
         userServiceImpl.enableUser(
                 confirmationToken.getAccount().getUsername());
-        return "confirmed";
+        return new RegistrationResponse("Your account has been actived!!");
     }
 
     public String buildEmail(String name, String link) {

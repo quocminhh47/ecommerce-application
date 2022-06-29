@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "product_image")
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter @Setter
 public class ProductImage {
     @Id
@@ -34,5 +33,11 @@ public class ProductImage {
                 ", description='" + description + '\'' +
                 ", product=" + product +
                 '}';
+    }
+
+    public ProductImage(String image, String description, Product product) {
+        this.image = image;
+        this.description = description;
+        this.product = product;
     }
 }

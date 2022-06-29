@@ -1,13 +1,14 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -77,9 +78,9 @@ public class Product {
 
     @JsonIgnore
     @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    Set<ProductImage> productImages;
+    //@Getter(AccessLevel.NONE)
+    //@Setter(AccessLevel.NONE)
+    List<ProductImage> productImages = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)

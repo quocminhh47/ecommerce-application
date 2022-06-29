@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.controller;
+package com.nashtech.ecommercialwebsite.controller.user;
 
 import com.nashtech.ecommercialwebsite.dto.request.UserRatingRequest;
 import com.nashtech.ecommercialwebsite.dto.response.RatingResponse;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/user/api")
 public class RatingController {
 
     private final RatingService ratingService;

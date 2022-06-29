@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.controller.jwt;
+package com.nashtech.ecommercialwebsite.controller.admin;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

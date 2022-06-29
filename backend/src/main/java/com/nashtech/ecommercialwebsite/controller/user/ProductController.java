@@ -1,7 +1,5 @@
-package com.nashtech.ecommercialwebsite.controller;
+package com.nashtech.ecommercialwebsite.controller.user;
 
-import com.nashtech.ecommercialwebsite.dto.request.ProductRequest;
-import com.nashtech.ecommercialwebsite.dto.request.ProductUpdateRequest;
 import com.nashtech.ecommercialwebsite.dto.response.FileUploadResponse;
 import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
 import com.nashtech.ecommercialwebsite.dto.response.SingleProductResponse;
@@ -14,11 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import javax.validation.Valid;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/user/api/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -30,7 +27,7 @@ public class ProductController {
     }
 
     //get all available product (hidden = false)
-    @GetMapping("/products")
+    @GetMapping()
     public ResponseEntity<ProductResponse> getAllProducts(
             @RequestParam(
                     value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false  )
@@ -51,13 +48,13 @@ public class ProductController {
                     HttpStatus.OK);
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<SingleProductResponse> findProductById(@PathVariable("id") int id) {
         return new ResponseEntity<>(productService.findProductById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/products-{brandName}")
+    @GetMapping("/{brandName}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponse> getAllProductsByBrand(
             @RequestParam(
@@ -77,31 +74,10 @@ public class ProductController {
         return new ResponseEntity<>( productService.getProductsByBrandName(brandName.toUpperCase(), pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
 
-    @PostMapping("/products")
+    @PostMapping("/gallery")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
-    public SingleProductResponse saveProduct( @Valid @RequestBody ProductRequest productRequest){
-        return productService.saveProduct(productRequest) ;
-    }
-
-    @PutMapping("products/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ADMIN')")
-    public SingleProductResponse updateProduct(@PathVariable("id") int id,
-                                               @Valid @RequestBody ProductUpdateRequest productRequest) {
-        return productService.updateProduct(id, productRequest);
-    }
-
-    @DeleteMapping("products/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") int id) {
-        productService.deleteProduct(id);
-        return new ResponseEntity<>("DELETED", HttpStatus.OK);
-    }
-
-    @PostMapping("/products/gallery")
-    @ResponseStatus(HttpStatus.CREATED)
-    public FileUploadResponse upLoad(@RequestParam("file") MultipartFile multipartFile) {
+    public FileUploadResponse upLoad(
+            @RequestParam(value = "file", required = true) MultipartFile multipartFile) {
         return cloudinaryService.upload(multipartFile);
     }
 

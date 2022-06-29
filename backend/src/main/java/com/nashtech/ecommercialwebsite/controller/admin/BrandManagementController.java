@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.controller;
+package com.nashtech.ecommercialwebsite.controller.admin;
 
 import com.nashtech.ecommercialwebsite.dto.request.BrandRequest;
 import com.nashtech.ecommercialwebsite.dto.response.BrandDto;
@@ -13,11 +13,11 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/admin/api/brands")
-public class BrandController {
+public class BrandManagementController {
 
     private final BrandService brandService;
 
-    public BrandController(BrandService brandService) {
+    public BrandManagementController(BrandService brandService) {
         this.brandService = brandService;
     }
 
@@ -26,6 +26,16 @@ public class BrandController {
         return new ResponseEntity<>(brandService.getBrandById(id), HttpStatus.OK);
     }
 
+ /*   @Operation(description = "Xem danh sách User", responses = {
+            @ApiResponse(
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = User.class))),
+                    responseCode = "200") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode  = "200", description = "Thành công"),
+            @ApiResponse(responseCode  = "401", description = "Chưa xác thực"),
+            @ApiResponse(responseCode  = "403", description = "Truy cập bị cấm"),
+            @ApiResponse(responseCode  = "404", description = "Không tìm thấy")
+    })*/
     @GetMapping()
     public ResponseEntity<BrandResponse> getAllBrands(
             @RequestParam(

@@ -49,26 +49,22 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public BrandDto save(BrandRequest brandRequest) {
-        //check brand's already exist or not cz brand is unique.Ex: DELL, ASUS,...
+
         Optional<Brand> optionalBrand = brandRepository.findBrandByName(brandRequest.getName());
 
-        //if exist -> throw exception
         if(optionalBrand.isPresent()) throw new ResourceConfictException(
                 String.format("Brand with name: %s is already exist!",
                         brandRequest.getName()));
 
-        //if not -> save
-        Brand brand = brandRepository.save(mapper.map(brandRequest, Brand.class));
-        Brand savedBrand = brandRepository.save(brand);
+        Brand savedBrand= brandRepository.save(mapper.map(brandRequest, Brand.class));
         return mapper.map(savedBrand, BrandDto.class);
     }
 
     @Override
     public BrandDto update(int id, BrandRequest brandRequest) {
-        //check brand's already exist or not
+
         Optional<Brand> optionalBrand = brandRepository.findById(id);
 
-        //if not exist -> throw exception
         if(optionalBrand.isEmpty()) throw new ResourceNotFoundException(
                 String.format("Brand with ID: %s not found!",id ));
 
