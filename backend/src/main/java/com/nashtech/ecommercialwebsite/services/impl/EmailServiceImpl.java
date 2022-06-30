@@ -1,5 +1,6 @@
 package com.nashtech.ecommercialwebsite.services.impl;
 
+import com.nashtech.ecommercialwebsite.exceptions.InternalServerException;
 import com.nashtech.ecommercialwebsite.services.EmailSender;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -27,7 +28,7 @@ public class EmailServiceImpl implements EmailSender {
             helper.setFrom("quocminhh47@gmail.com");
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            throw new IllegalStateException("failed to send email");
+            throw new InternalServerException("failed to send email", e);
         }
     }
 }

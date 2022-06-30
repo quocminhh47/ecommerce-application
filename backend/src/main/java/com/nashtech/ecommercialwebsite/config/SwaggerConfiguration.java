@@ -15,28 +15,24 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class SwaggerConfiguration implements WebMvcConfigurer {
 
-    @Value("${prop.swagger.enabled:true}")
-    private boolean enableSwagger;
-
-
-
-
     @Bean
     public Docket SwaggerConfig() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .enable(enableSwagger)
+                .enable(true)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.nashtech.ecommercialwebsite.controller"))
-                .paths(PathSelectors.any())
+                .paths(PathSelectors.regex("/.*"))
                 .build();
     }
 
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        if (enableSwagger) {
-            registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-            registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-        }
+            registry.addResourceHandler("swagger-ui.html")
+                    .addResourceLocations("classpath:/META-INF/resources/");
+
+            registry.addResourceHandler("/webjars/**")
+                    .addResourceLocations("classpath:/META-INF/resources/webjars/");
+
     }
 }
