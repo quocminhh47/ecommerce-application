@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.controller.user;
+package com.nashtech.ecommercialwebsite.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

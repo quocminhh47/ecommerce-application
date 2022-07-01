@@ -5,12 +5,19 @@ import com.nashtech.ecommercialwebsite.dto.response.BrandDto;
 import com.nashtech.ecommercialwebsite.dto.response.BrandResponse;
 import com.nashtech.ecommercialwebsite.services.BrandService;
 import com.nashtech.ecommercialwebsite.utils.AppConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
+@Tag(name = "Brands Resources Management",
+        description = "Permit to access / change all the available brands")
 @RestController
 @RequestMapping("/admin/api/brands")
 public class BrandManagementController {
@@ -21,21 +28,35 @@ public class BrandManagementController {
         this.brandService = brandService;
     }
 
+    @Operation(summary = "Get brand information by ID",
+            description = "Provide all information about the specified brand")
+    @ApiResponses(value = {
+            @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
+            @ApiResponse( responseCode = "401",
+                    description = "Unauthorized -  Authorization information is missing or invalid"),
+            @ApiResponse( responseCode = "403",
+                    description = "FORBIDDEN - You have no permission to access this resource"),
+            @ApiResponse( responseCode = "404",
+                    description = "Not found - The brand resources was not found",
+                    content = {@Content(examples = {@ExampleObject(value = "")})})
+    })
     @GetMapping("/{id}")
     public ResponseEntity<BrandDto> getBrandById(@PathVariable("id") int id) {
         return new ResponseEntity<>(brandService.getBrandById(id), HttpStatus.OK);
     }
 
- /*   @Operation(description = "Xem danh sách User", responses = {
-            @ApiResponse(
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = User.class))),
-                    responseCode = "200") })
-    @ApiResponses(value = {
-            @ApiResponse(responseCode  = "200", description = "Thành công"),
-            @ApiResponse(responseCode  = "401", description = "Chưa xác thực"),
-            @ApiResponse(responseCode  = "403", description = "Truy cập bị cấm"),
-            @ApiResponse(responseCode  = "404", description = "Không tìm thấy")
-    })*/
+
+ @Operation(summary = "Get all brands", description = "This return all the available brands in pagination")
+ @ApiResponses(value = {
+         @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
+         @ApiResponse( responseCode = "401",
+                 description = "Unauthorized -  Authorization information is missing or invalid"),
+         @ApiResponse( responseCode = "403",
+                 description = "FORBIDDEN - You have no permission to access this resource"),
+         @ApiResponse( responseCode = "404",
+                 description = "Not found - The brand resources was not found",
+                 content = {@Content(examples = {@ExampleObject(value = "")})})
+ })
     @GetMapping()
     public ResponseEntity<BrandResponse> getAllBrands(
             @RequestParam(
@@ -57,11 +78,35 @@ public class BrandManagementController {
     }
 
     @PostMapping()
+    @Operation(summary = "Create new brand", description = "Fill the information to create new brand ")
+    @ApiResponses(value = {
+            @ApiResponse( responseCode = "201", description = "CREATED - Successfully created a new brand"),
+            @ApiResponse( responseCode = "401",
+                    description = "Unauthorized -  Authorization information is missing or invalid"),
+            @ApiResponse( responseCode = "403",
+                    description = "FORBIDDEN - You have no permission to access this resource"),
+            @ApiResponse( responseCode = "404",
+                    description = "Not found - The request resources was not found",
+                    content = {@Content(examples = {@ExampleObject(value = "")})})
+    })
     public ResponseEntity<BrandDto> createNewBrand(@Valid @RequestBody BrandRequest brandRequest) {
         return new ResponseEntity<>(brandService.save(brandRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Change brand information"
+            , description = "Changing the properties of a specified brand")
+    @ApiResponses(value = {
+            @ApiResponse( responseCode = "200",
+                    description = "OK - Successfully changed the information of a brand"),
+            @ApiResponse( responseCode = "401",
+                    description = "Unauthorized -  Authorization information is missing or invalid"),
+            @ApiResponse( responseCode = "403",
+                    description = "FORBIDDEN - You have no permission to access this resource"),
+            @ApiResponse( responseCode = "404",
+                    description = "Not found - The request resources was not found",
+                    content = {@Content(examples = {@ExampleObject(value = "")})})
+    })
     public ResponseEntity<BrandDto> updateBrand(@PathVariable("id") int id,
                                                 @Valid @RequestBody BrandRequest brandRequest) {
         return new ResponseEntity<>(brandService.update(id, brandRequest), HttpStatus.OK);

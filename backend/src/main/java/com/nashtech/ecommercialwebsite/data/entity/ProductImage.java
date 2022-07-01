@@ -1,5 +1,6 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,24 +21,12 @@ public class ProductImage {
     private String description;
 
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_id")
     @Getter(AccessLevel.NONE)
     private Product product;
 
-    @Override
-    public String toString() {
-        return "ProductImage{" +
-                "id=" + id +
-                ", image='" + image + '\'' +
-                ", description='" + description + '\'' +
-                ", product=" + product +
-                '}';
-    }
 
-    public ProductImage(String image, String description, Product product) {
-        this.image = image;
-        this.description = description;
-        this.product = product;
-    }
+
 }

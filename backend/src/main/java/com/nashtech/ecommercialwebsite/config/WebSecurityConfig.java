@@ -36,9 +36,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-       /* CustomAuthenticationFilter customAuthenticationFilter =
+        CustomAuthenticationFilter customAuthenticationFilter =
                 new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/login");*/
+        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -46,6 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/login/**",
                 "/token/refresh/**",
                 "/v1/api/registration/**").permitAll();
+
+        http.authorizeRequests().antMatchers("/admin/api/**").permitAll();
 /*
         http.authorizeRequests().antMatchers("/admin/api/**").permitAll();
 
@@ -53,10 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/products/gallery/**").permitAll();*/
 
         http.authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll();
-        http.authorizeRequests().anyRequest().permitAll();
-
-       /* http.authorizeRequests().anyRequest().authenticated();
-        http.addFilter(customAuthenticationFilter);
+        //http.authorizeRequests().anyRequest().authenticated();
+       /* http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);*/
     }
 

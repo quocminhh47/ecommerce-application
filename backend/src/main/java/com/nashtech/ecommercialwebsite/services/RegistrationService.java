@@ -1,6 +1,6 @@
 package com.nashtech.ecommercialwebsite.services;
 
-import com.nashtech.ecommercialwebsite.controller.user.RegistrationResponse;
+import com.nashtech.ecommercialwebsite.dto.response.RegistrationResponse;
 import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
 import com.nashtech.ecommercialwebsite.dto.response.TokenResponse;
 
