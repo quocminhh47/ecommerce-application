@@ -78,7 +78,7 @@ public class CartItemServiceImpl implements CartItemService {
             CartDetail cartItem = item.get();
             cartItem.setQuantity(cartItem.getQuantity() + 1);
             CartDetail savedItem = cartItemsRepo.save(cartItem);
-            return mapToCartDto(savedItem);
+            return mapToCartItemDto(savedItem);
         }
         //if new -> create new
         CartDetail cartItem = new CartDetail();
@@ -87,8 +87,29 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setCart(cart);
         cartItem.setQuantity(1);
         CartDetail savedItem = cartItemsRepo.save(cartItem);
-        return mapToCartDto(savedItem);
+        return mapToCartItemDto(savedItem);
 
+    }
+
+    @Override
+    public CartItemDto removeProductFromCart(int productId, HttpServletRequest request) {
+        String token = jwtService.parseJwt(request);
+        String username = jwtService.getUsernameFromToken(token);
+
+        Cart cart = cartService.findCartByUsername(username);
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Product not found"));
+
+        CartDetail cartItem = cartItemsRepo.findCartDetailsByProductAndCart(product, cart)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Product %s does not exists in cart anymore", product.getName())
+                ));
+        System.out.println(cartItem.getId().toString());
+        cartItemsRepo.deleteById(cartItem.getId());
+        //map
+        return mapToCartItemDto(cartItem);
     }
 
     @Override
@@ -127,7 +148,7 @@ public class CartItemServiceImpl implements CartItemService {
         return cartResponse;
     }
 
-    private CartItemDto mapToCartDto(CartDetail cartDetail) {
+    private CartItemDto mapToCartItemDto(CartDetail cartDetail) {
         return mapper.map(cartDetail, CartItemDto.class);
     }
 

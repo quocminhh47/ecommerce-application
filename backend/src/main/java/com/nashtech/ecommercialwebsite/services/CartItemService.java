@@ -12,6 +12,8 @@ public interface CartItemService {
 
     CartItemDto addProductToCart(int productId, HttpServletRequest request);
 
+    CartItemDto removeProductFromCart(int productId, HttpServletRequest request);
+
     CartResponse updateCartItems(CartUpdateRequest cartUpdateRequest, HttpServletRequest request);
 
 }

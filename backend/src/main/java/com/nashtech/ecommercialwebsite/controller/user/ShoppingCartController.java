@@ -37,4 +37,11 @@ public class ShoppingCartController {
         return cartItemService.updateCartItems(cartUpdateRequest, request);
     }
 
+    @DeleteMapping("/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CartItemDto removeProductFromShoppingCart(@PathVariable("productId") int productId,
+                                                     HttpServletRequest request) {
+        return cartItemService.removeProductFromCart(productId, request);
+    }
+
 }

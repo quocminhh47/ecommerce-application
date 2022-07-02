@@ -23,4 +23,11 @@ public class CartDetailId implements Serializable {
     @Column(name = "cart_id")
     Integer cartID;
 
+    @Override
+    public String toString() {
+        return "CartDetailId{" +
+                "productID=" + productID +
+                ", cartID=" + cartID +
+                '}';
+    }
 }
