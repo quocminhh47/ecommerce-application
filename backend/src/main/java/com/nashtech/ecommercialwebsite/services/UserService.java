@@ -15,4 +15,6 @@ public interface UserService {
 
      UserAccountDto changeUserAccountStatus(UserAccountDto accountDto);
 
+     void createShoppingCart(String username);
+
 }

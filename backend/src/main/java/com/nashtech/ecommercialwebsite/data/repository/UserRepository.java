@@ -19,8 +19,8 @@ public interface UserRepository extends JpaRepository<Account, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Account a " +
-            "SET a.enabled = TRUE WHERE a.username = ?1") //username = email
+    @Query(value = "UPDATE accounts  " +
+            "SET enabled='TRUE' WHERE email = ?1", nativeQuery = true)
     int enableUser(String email);
 
     Page<Account> findAllByRole(Pageable pageable, Role role);
@@ -28,7 +28,7 @@ public interface UserRepository extends JpaRepository<Account, Long> {
     //@Transactional
     @Modifying
     @Query( "UPDATE Account a " +
-            "SET a.enabled = :enabled , a.locked = :locked WHERE a.id = :id")
+            "SET a.enabled = :enabled , a.isNonLocked = :locked WHERE a.id = :id")
     void changeUserAccountStatus(@Param("id") long id,
                                  @Param("enabled") boolean isLocked,
                                  @Param("locked") boolean isEnabled);

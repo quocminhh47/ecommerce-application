@@ -1,7 +1,6 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,7 +32,7 @@ public class Account {
     private String password;
 
     @Column(name = "locked")
-    private Boolean locked = false;
+    private Boolean isNonLocked = true;
 
     @Column(name = "enabled")
     private Boolean enabled = false;
@@ -43,8 +42,8 @@ public class Account {
     private Role role;
 
     @JsonIgnore
-    @OneToOne()
-    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id", referencedColumnName = "id" )
     private Cart cart;
 
     @JsonIgnore
@@ -91,7 +90,7 @@ public class Account {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +
-                ", locked=" + locked +
+                ", locked=" + isNonLocked +
                 ", enabled=" + enabled +
                 ", role=" + role +
                 '}';

@@ -1,4 +1,4 @@
-package com.nashtech.ecommercialwebsite.controller.admin;
+package com.nashtech.ecommercialwebsite.controller.auth;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -35,7 +35,7 @@ public class RefreshTokenController {
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
             try {
             String refreshToken = authorizationHeader.substring("Bearer ".length());
-            Algorithm algorithm = Algorithm.HMAC256("secrect".getBytes());
+            Algorithm algorithm = Algorithm.HMAC256("somethingverysecrectkeygoeshere".getBytes());
             JWTVerifier verifier = JWT.require(algorithm).build();
             DecodedJWT decodedJWT = verifier.verify(refreshToken);
             String username = decodedJWT.getSubject();

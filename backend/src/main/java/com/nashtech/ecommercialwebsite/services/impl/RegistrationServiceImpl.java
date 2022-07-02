@@ -11,9 +11,7 @@ import com.nashtech.ecommercialwebsite.dto.response.TokenResponse;
 import com.nashtech.ecommercialwebsite.exceptions.BadRequestException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceConfictException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
-import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
-import com.nashtech.ecommercialwebsite.services.EmailSender;
-import com.nashtech.ecommercialwebsite.services.RegistrationService;
+import com.nashtech.ecommercialwebsite.services.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +22,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
 
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
 
     private final UserRepository userRepository;
 
@@ -33,6 +31,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
 
     private final EmailSender emailSender;
+
+    private final CartService cartService;
 
     private final static String EMAIL_ALREADY_TAKEN = "Email %s already exist!";
 
@@ -61,7 +61,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                     request.getPassword(),
                     userRole
             );
-            String token = userServiceImpl.signUpUser(newAccount);
+            String token = userService.signUpUser(newAccount);
             String confirmLink = "http://localhost:8080/v1/api/registration/confirm?token=" + token;
             emailSender.send(request.getEmail(), buildEmail(request.getLastName(), confirmLink));
             return new TokenResponse("SUCCESS", token);
@@ -75,7 +75,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 request.getPassword(),
                 userRole
         );
-        String token = userServiceImpl.signUpUser(userAccount);
+        String token = userService.signUpUser(userAccount);
         String confirmLink = "http://localhost:8080/v1/api/registration/confirm?token=" + token;
         emailSender.send(request.getEmail(), buildEmail(request.getLastName(), confirmLink));
         return new TokenResponse("SUCCESS", token);
@@ -99,8 +99,12 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         confirmationTokenService.setConfirmedAt(token);
-        userServiceImpl.enableUser(
+        //enable user
+        userService.enableUser(
                 confirmationToken.getAccount().getUsername());
+
+        //create shopping cart
+        userService.createShoppingCart(confirmationToken.getAccount().getUsername());
         return new RegistrationResponse("Your account has been actived!!");
     }
 

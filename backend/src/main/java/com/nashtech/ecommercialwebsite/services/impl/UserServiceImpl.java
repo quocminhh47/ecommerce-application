@@ -1,6 +1,7 @@
 package com.nashtech.ecommercialwebsite.services.impl;
 
 import com.nashtech.ecommercialwebsite.data.entity.Account;
+import com.nashtech.ecommercialwebsite.data.entity.Cart;
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.entity.Role;
 import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
@@ -8,7 +9,9 @@ import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
+import com.nashtech.ecommercialwebsite.exceptions.UnauthorizedException;
 import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
+import com.nashtech.ecommercialwebsite.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -33,13 +36,20 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services.UserService, UserDetailsService{
+public class UserServiceImpl implements UserService {
+       // , UserDetailsService{
 
     private static final String USER_NOT_FOUND_MSG = "User with email %s not found";
 
     private static final String USER_ROLE_NOT_FOUND_MSG = "Role %s not found in the database";
 
     private static final String USER_ROLE_NAME = "USER";
+
+    private static final String USER_NOT_ACTIVED =
+            "User account %s is not actived, please register again or confirm mail to actived account ";
+
+    private static final String USER_NOT_AUTHORIZED =
+            "User account %s is locked due to negative reason ";
 
     private final ConfirmationTokenService confirmationTokenService;
 
@@ -51,17 +61,23 @@ public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services
 
     private final ModelMapper mapper;
 
-    @Override
+/*    @Override
     public UserDetails loadUserByUsername(String username)  throws UsernameNotFoundException {
         Account user  = userRepository.findAccountByUsername(username)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
+                        () -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
+       *//* if(!user.getEnabled()) throw
+                new UnauthorizedException(String.format(USER_NOT_ACTIVED, username));
+
+        if(user.getLocked()) throw
+                new UnauthorizedException(String.format(USER_NOT_AUTHORIZED, username));*//*
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
                 getGrantedAuthorities(user)
         );
-    }
+    }*/
 
     public int enableUser(String email) {
         return userRepository.enableUser(email);
@@ -102,6 +118,7 @@ public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services
 
         return authorities;
     }
+
     @Override
     public UserAccountResponse getAllUserAccounts(int pageNo, int pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
@@ -148,6 +165,16 @@ public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services
         return mapper.map(updatedAccount, UserAccountDto.class);
     }
 
+    @Override
+    public void createShoppingCart(String username) {
+        Account account = userRepository.findAccountByUsername(username)
+                .orElseThrow( () -> new ResourceNotFoundException(
+                        String.format(String.format(USER_NOT_FOUND_MSG, username))));
+        if(account.getCart() == null) {
+            account.setCart(new Cart());
+        }
+    }
+
 
     private UserAccountResponse getContent(Page<Account> accounts) {
         List<Account> listOfAccounts = accounts.getContent();
@@ -165,4 +192,6 @@ public class UserServiceImpl implements com.nashtech.ecommercialwebsite.services
                 .build();
 
     }
+
+
 }

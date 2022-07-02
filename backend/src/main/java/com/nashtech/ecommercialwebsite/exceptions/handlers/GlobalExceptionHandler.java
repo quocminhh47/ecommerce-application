@@ -30,6 +30,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler({UnauthorizedException.class})
+    protected ResponseEntity<ErrorResponse> handleUnauthorizedException(RuntimeException exception) {
+        ErrorResponse error = new ErrorResponse("401", exception.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+
     @ExceptionHandler({BadRequestException.class})
     protected ResponseEntity<ErrorResponse> handleBadRequestException(RuntimeException exception) {
         ErrorResponse error = new ErrorResponse("400", exception.getMessage());
