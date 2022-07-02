@@ -88,16 +88,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public SingleProductResponse saveProduct(ProductRequest productRequest) {
-        Product product = mapToEntity(productRequest);
+        Product product = mapToEntity(productRequest);//product now include produc info + brand + list image
         product.setCreatedAt(LocalDateTime.now());
 
         product.getProductImages().forEach(image -> image.setProduct(product));
-        product.getProductImages().forEach(System.out::println);
 
         Product savedProduct = productRepository.save(product);
-        SingleProductResponse response = mapper.map(savedProduct, SingleProductResponse.class);
-
-        return response;
+        return mapper.map(savedProduct, SingleProductResponse.class);
     }
 
     @Override
@@ -111,7 +108,7 @@ public class ProductServiceImpl implements ProductService {
         product.setUpdatedAt(LocalDateTime.now());
         product.setId(id);
 
-        product.getProductImages().forEach(System.out::println);
+        product.getProductImages().forEach(image -> image.setProduct(product));
 
         Product updatedProduct = productRepository.save(product);
 
@@ -141,6 +138,7 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setBrand(brand);
         return productEntity;
     }
+
 
     private ProductResponse getContent(Page<Product> products) {
         List<Product> listOfProducts = products.getContent();

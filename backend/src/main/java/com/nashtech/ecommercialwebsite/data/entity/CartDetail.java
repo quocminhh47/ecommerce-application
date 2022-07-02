@@ -1,13 +1,14 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "cart_detail")
 @Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CartDetail {
 
     @EmbeddedId
@@ -16,11 +17,8 @@ public class CartDetail {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "price")
-    private Integer price;
-
     @Column(name = "actived")
-    private Boolean actived;
+    private Boolean actived = true;
 
     @ManyToOne
     @MapsId("cartID")
@@ -32,4 +30,14 @@ public class CartDetail {
     @JoinColumn(name = "product_id")
     Product product;
 
+    @Override
+    public String toString() {
+        return "CartDetail{" +
+                "id=" + id +
+                ", quantity=" + quantity +
+                ", actived=" + actived +
+                ", cart=" + cart +
+                ", product=" + product +
+                '}';
+    }
 }

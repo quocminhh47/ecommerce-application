@@ -105,8 +105,7 @@ public class Product {
                 ", isWaterProof=" + isWaterProof +
                 ", size=" + size +
                 ", brand=" + brand +
+                ", productImages=" + productImages.toString() +
                 '}';
     }
-
-
 }

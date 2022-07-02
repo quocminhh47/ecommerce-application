@@ -68,7 +68,7 @@ public class ProductController {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Get product detail by ID", description = "Provides product information by single")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
@@ -84,8 +84,8 @@ public class ProductController {
         return new ResponseEntity<>(productService.findProductById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/{brandName}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/brand/{brandName}")
+    //@PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Filter products by brand name", description = "Provides all products by brand in pagination")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),

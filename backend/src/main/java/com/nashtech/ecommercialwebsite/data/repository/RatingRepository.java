@@ -3,10 +3,8 @@ package com.nashtech.ecommercialwebsite.data.repository;
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.Product;
 import com.nashtech.ecommercialwebsite.data.entity.Rating;
-import com.nashtech.ecommercialwebsite.dto.response.RatingResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 
 public interface RatingRepository extends JpaRepository<Rating, Long > {

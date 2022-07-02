@@ -52,7 +52,7 @@ public class ProductManagementController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Change the product information", description = "Provides changing product properties feature")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "OK - Successfully changing"),

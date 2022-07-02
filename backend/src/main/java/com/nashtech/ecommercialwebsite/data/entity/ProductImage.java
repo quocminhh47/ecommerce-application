@@ -20,7 +20,6 @@ public class ProductImage {
     @Column(name = "description")
     private String description;
 
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_id")
