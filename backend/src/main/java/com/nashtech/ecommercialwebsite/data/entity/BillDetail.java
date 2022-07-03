@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "bill_detail")
@@ -19,7 +18,7 @@ public class BillDetail {
     private Integer quantity;
 
     @Column(name = "price")
-    private BigDecimal price;
+    private Integer price;
 
     @ManyToOne
     @MapsId("billId")

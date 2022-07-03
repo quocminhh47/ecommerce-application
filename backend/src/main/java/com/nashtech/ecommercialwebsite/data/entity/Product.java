@@ -25,7 +25,7 @@ public class Product {
     private String name;
 
     @Column(name = "price")
-    private Long price;
+    private Integer price;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -44,9 +44,6 @@ public class Product {
 
     @Column(name = "thumbnail")
     private String thumbnail;
-
-    @Column(name = "discount")
-    private Float discount;
 
     @Column(name = "hidden")
     private Boolean hidden = false;
@@ -98,7 +95,6 @@ public class Product {
                 ", updatedAt=" + updatedAt +
                 ", description='" + description + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +
-                ", discount=" + discount +
                 ", hidden=" + hidden +
                 ", guaranteeTime=" + guaranteeTime +
                 ", gender=" + gender +

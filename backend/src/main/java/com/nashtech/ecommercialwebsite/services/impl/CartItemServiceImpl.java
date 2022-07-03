@@ -18,7 +18,6 @@ import com.nashtech.ecommercialwebsite.services.JwtService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
@@ -154,7 +153,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     private CartItemsResponse mapToCartResponse(CartDetail cartDetail) {
         return CartItemsResponse.builder()
-                .cartId(cartDetail.getId().getCartID())
+                //.cartId(cartDetail.getId().getCartID())
                 .productId(cartDetail.getProduct().getId())
                 .productName(cartDetail.getProduct().getName())
                 .productPrice(cartDetail.getProduct().getPrice())

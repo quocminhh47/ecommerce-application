@@ -31,6 +31,12 @@ public class Account {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address")
+    private String address;
+
     @Column(name = "locked")
     private Boolean isNonLocked = true;
 
@@ -56,19 +62,33 @@ public class Account {
     Set<Rating> ratings;
 
 
-    public Account(String username,
-                   String first_name,
-                   String last_name,
-                   String password,
-                   Role role) {
+    public Account(Long id,
+                   String username, String firstName,
+                   String lastName, String password,
+                   String phone, String address, Role role) {
+        this.id = id;
         this.username = username;
-        this.firstName = first_name;
-        this.lastName = last_name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
+        this.phone = phone;
+        this.address = address;
         this.role = role;
     }
 
-    public Account(Long id,
+    public Account( String username, String firstName,
+                   String lastName, String password,
+                   String phone, String address, Role role) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.phone = phone;
+        this.address = address;
+        this.role = role;
+    }
+
+ /*   public Account(Long id,
                    String username,
                    String firstName,
                    String lastName,
@@ -80,7 +100,7 @@ public class Account {
         this.lastName = lastName;
         this.password = password;
         this.role = role;
-    }
+    }*/
 
     @Override
     public String toString() {

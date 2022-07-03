@@ -5,12 +5,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartUpdateRequest {
+public class OrderRequest {
 
-    List<CartItemUpdateDto> cartDetails;
+    List<CartItemUpdateDto> cartDetails = new ArrayList<>();
+
+    private int priceTotal;
+
+    private String phone;
+
+    private String address;
+
 }

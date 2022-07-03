@@ -3,8 +3,6 @@ package com.nashtech.ecommercialwebsite.controller.user;
 import com.nashtech.ecommercialwebsite.dto.request.CartUpdateRequest;
 import com.nashtech.ecommercialwebsite.dto.response.CartItemDto;
 import com.nashtech.ecommercialwebsite.dto.response.CartResponse;
-import com.nashtech.ecommercialwebsite.security.jwt.JwtAuthoizationTokenFilter;
-import com.nashtech.ecommercialwebsite.security.jwt.JwtUtils;
 import com.nashtech.ecommercialwebsite.services.CartItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

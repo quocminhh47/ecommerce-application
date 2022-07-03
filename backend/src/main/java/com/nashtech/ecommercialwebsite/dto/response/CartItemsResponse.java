@@ -5,13 +5,13 @@ import lombok.*;
 @Getter @Setter @Builder @ToString
 @NoArgsConstructor @AllArgsConstructor
 public class CartItemsResponse {
-    private int cartId;
+    //private int cartId;
 
     private int productId;
 
     private String productName;
 
-    private Long productPrice;
+    private int productPrice;
 
     private int cartDetailQuantity;
 
