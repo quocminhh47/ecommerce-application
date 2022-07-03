@@ -1,20 +1,24 @@
 package com.nashtech.ecommercialwebsite.services.impl;
 
-import com.nashtech.ecommercialwebsite.dto.response.RegistrationResponse;
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.entity.Role;
+import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
 import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
 import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
-import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
+import com.nashtech.ecommercialwebsite.dto.response.RegistrationResponse;
 import com.nashtech.ecommercialwebsite.dto.response.TokenResponse;
 import com.nashtech.ecommercialwebsite.exceptions.BadRequestException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceConfictException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
-import com.nashtech.ecommercialwebsite.services.*;
+import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
+import com.nashtech.ecommercialwebsite.services.EmailSender;
+import com.nashtech.ecommercialwebsite.services.RegistrationService;
+import com.nashtech.ecommercialwebsite.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -32,8 +36,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     private final EmailSender emailSender;
 
-    private final CartService cartService;
-
     private final static String EMAIL_ALREADY_TAKEN = "Email %s already exist!";
 
     @Override
@@ -41,17 +43,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         Role userRole = roleRepository.findRolesByRoleName(roleName)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException(roleName +" ROLE IS NOT EXIST"));
+                        () -> new ResourceNotFoundException(roleName + " ROLE IS NOT EXIST"));
 
         Optional<Account> optionalAccount = userRepository.findAccountByUsername(request.getEmail());
 
         //check if account already register and confirmed -> throw exception
-        if(optionalAccount.isPresent() && optionalAccount.get().getEnabled())
+        if (optionalAccount.isPresent() && optionalAccount.get().getEnabled())
             throw new ResourceConfictException(String.format(EMAIL_ALREADY_TAKEN, request.getEmail()));
 
         // check if account already register but not confirmed
         // then permit to register again with latest information
-        if(optionalAccount.isPresent() && !optionalAccount.get().getEnabled()) {
+        if (optionalAccount.isPresent() && !optionalAccount.get().getEnabled()) {
             long userId = optionalAccount.get().getId();
             Account newAccount = new Account(
                     userId,
@@ -59,6 +61,8 @@ public class RegistrationServiceImpl implements RegistrationService {
                     request.getFirstName(),
                     request.getLastName(),
                     request.getPassword(),
+                    request.getPhone(),
+                    request.getAddress(),
                     userRole
             );
             String token = userService.signUpUser(newAccount);
@@ -68,11 +72,13 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         //if new -> create new account
-            Account userAccount = new Account(
+        Account userAccount = new Account(
                 request.getEmail(),
                 request.getFirstName(),
                 request.getLastName(),
                 request.getPassword(),
+                request.getPhone(),
+                request.getAddress(),
                 userRole
         );
         String token = userService.signUpUser(userAccount);
@@ -88,7 +94,9 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Token is incorrect"));
 
-        if (confirmationToken.getConfirmedAt() != null) {
+        Account account = confirmationToken.getAccount();
+
+        if (account.getEnabled()) {
             throw new ResourceConfictException("Your email already confirmed");
         }
 
@@ -100,9 +108,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         confirmationTokenService.setConfirmedAt(token);
         //enable user
-        userService.enableUser(
-                confirmationToken.getAccount().getUsername());
-
+        account.setEnabled(true);
+        userRepository.save(account);
         //create shopping cart
         userService.createShoppingCart(confirmationToken.getAccount().getUsername());
         return new RegistrationResponse("Your account has been actived!!");
