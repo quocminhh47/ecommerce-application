@@ -29,4 +29,8 @@ public class Role {
     @OneToMany(mappedBy = "role",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Account> accounts;
 
+    public Role(String roleName, String description) {
+        this.roleName = roleName;
+        this.description = description;
+    }
 }

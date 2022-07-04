@@ -5,9 +5,8 @@ import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
 
 public interface UserService {
-     String signUpUser(Account userAccount);
 
-     int enableUser(String email);
+     String signUpUser(Account userAccount);
 
      UserAccountResponse getAllUserAccounts(int pageNo, int pageSize, String sortBy, String sortDir);
 

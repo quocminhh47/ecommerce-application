@@ -14,12 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Tag(name = "Rating Resources",
         description = "Rating resources that provide create / access to the rating information of product")
 @RestController
-@RequestMapping("/user/api")
+@RequestMapping("/customer/api/ratings")
 public class RatingController {
 
     private final RatingService ratingService;
@@ -28,8 +30,8 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-    @GetMapping("/ratings")
-    @PreAuthorize("hasRole('USER')")
+/*    @GetMapping("/ratings")
+    //@PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get rating information", description = "Provides the rating information of user about product")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
@@ -41,14 +43,12 @@ public class RatingController {
                     content = {@Content(examples = {@ExampleObject(value = "")})}),
 
     })
-    public ResponseEntity<RatingResponse> getRatingInfo(
-            @RequestParam("user-id") int userId,
-            @RequestParam("product-id") int productId) {
-        return new ResponseEntity<>(ratingService.getUserRatingByProduct(userId, productId), HttpStatus.OK);
-    }
+    public ResponseEntity<RatingResponse> getRatingInfo(HttpServletRequest request,
+                                                        @RequestParam("product-id") int productId) {
+        return new ResponseEntity<>(ratingService.getUserRatingByProduct( productId, request), HttpStatus.OK);
+    }*/
 
-    @PostMapping("/ratings")
-    @PreAuthorize("hasRole('USER')")
+    @PostMapping()
     @Operation(summary = "Rate the products", description = "Customers can rate the product by scores from 1-5 by here")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "201", description = "OK - Successfully rating"),
@@ -61,7 +61,9 @@ public class RatingController {
                     description = "Not found - The request resources was not found",
                     content = {@Content(examples = {@ExampleObject(value = "")})})
     })
-    public ResponseEntity<UserRatingResponse> rateProduct(@Valid @RequestBody UserRatingRequest userRatingRequest){
-        return new ResponseEntity<>(ratingService.rateProduct(userRatingRequest), HttpStatus.CREATED);
+    public ResponseEntity<UserRatingResponse> rateProduct(
+            @Valid @RequestBody UserRatingRequest userRatingRequest,
+            HttpServletRequest request){
+        return new ResponseEntity<>(ratingService.rateProduct(userRatingRequest, request), HttpStatus.CREATED);
     }
 }

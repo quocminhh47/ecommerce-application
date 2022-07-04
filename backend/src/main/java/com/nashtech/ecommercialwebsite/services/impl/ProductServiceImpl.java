@@ -1,19 +1,22 @@
 package com.nashtech.ecommercialwebsite.services.impl;
 
 
+import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.Brand;
 import com.nashtech.ecommercialwebsite.data.entity.Product;
 import com.nashtech.ecommercialwebsite.data.entity.ProductImage;
-import com.nashtech.ecommercialwebsite.data.repository.BrandRepository;
-import com.nashtech.ecommercialwebsite.data.repository.ProductImagesRepository;
-import com.nashtech.ecommercialwebsite.data.repository.ProductRepository;
+import com.nashtech.ecommercialwebsite.data.repository.*;
 import com.nashtech.ecommercialwebsite.dto.request.ProductRequest;
 import com.nashtech.ecommercialwebsite.dto.request.ProductUpdateRequest;
 import com.nashtech.ecommercialwebsite.dto.response.ProductDto;
 import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
+import com.nashtech.ecommercialwebsite.dto.response.RatingResponse;
 import com.nashtech.ecommercialwebsite.dto.response.SingleProductResponse;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
+import com.nashtech.ecommercialwebsite.security.jwt.JwtUtils;
+import com.nashtech.ecommercialwebsite.services.JwtService;
 import com.nashtech.ecommercialwebsite.services.ProductService;
+import com.nashtech.ecommercialwebsite.services.RatingService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,21 +33,54 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-
+    private final UserRepository userRepository;
+    private final RatingRepository ratingRepository;
+    private final JwtService jwtService;
+    private final JwtUtils jwtUtils;
     private final ProductRepository productRepository;
     private final ModelMapper mapper;
     private final ProductImagesRepository imagesRepository;
     private final BrandRepository brandRepository;
 
     @Override
-    public SingleProductResponse findProductById(int id) {
+    public SingleProductResponse findProductById(int id, HttpServletRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Product not found with id: %s", id)));
+
         SingleProductResponse singleProductResponse = mapper.map(product, SingleProductResponse.class);
         List<ProductImage> images = imagesRepository.findProductImagesByProduct(product);
         singleProductResponse.setProductImages(images);
+
+        Double ratingPointsFromProduct = ratingRepository.getRatingPointsFromProduct(id);
+
+        String token = jwtService.parseJwt(request);
+        //token is valid
+        if( token != null && jwtUtils.validateJwtToken(token) ) {
+            String username = jwtService.getUsernameFromToken(token);
+
+            Account account = userRepository.findAccountByUsername(username)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            String.format("Username %s not found ", username)));
+
+            singleProductResponse.setIsUserLogged(true);
+
+            RatingResponse ratingResponse = new RatingResponse(
+                    ratingPointsFromProduct,
+                    ratingRepository.getUserRatingPointsByProduct(account.getId(), id));
+
+            singleProductResponse.setRatingResponse(ratingResponse);
+
+            return singleProductResponse;
+
+        }
+        //anonymous access
+        singleProductResponse.setIsUserLogged(false);
+        RatingResponse ratingResponse =
+                new RatingResponse(ratingPointsFromProduct,null);
+        singleProductResponse.setRatingResponse(ratingResponse);
         return singleProductResponse;
+
     }
 
     @Override

@@ -29,7 +29,6 @@ public class UserManagementController {
     }
 
     @GetMapping()
-    //@PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get all customers' accounts", description = "This return all the customers' account in pagination")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
@@ -60,7 +59,6 @@ public class UserManagementController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Detail account information",
             description = "This return all detail information of the specified customer account")
     @ApiResponses(value = {
@@ -78,7 +76,6 @@ public class UserManagementController {
     }
 
     @PutMapping()
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Change account information", description = "Change the status of customer's account")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "OK - Successfully changed"),

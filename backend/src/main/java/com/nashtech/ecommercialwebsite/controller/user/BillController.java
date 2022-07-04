@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/user/api/order")
+@RequestMapping("/customer/api/order")
 public class BillController {
 
     private final BillService billService;

@@ -2,7 +2,9 @@ package com.nashtech.ecommercialwebsite.controller.admin;
 
 import com.nashtech.ecommercialwebsite.dto.request.ProductRequest;
 import com.nashtech.ecommercialwebsite.dto.request.ProductUpdateRequest;
+import com.nashtech.ecommercialwebsite.dto.response.FileUploadResponse;
 import com.nashtech.ecommercialwebsite.dto.response.SingleProductResponse;
+import com.nashtech.ecommercialwebsite.services.CloudinaryService;
 import com.nashtech.ecommercialwebsite.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.Valid;
 
 @Tag(name = "Product Resources Management",
@@ -23,11 +27,12 @@ import javax.validation.Valid;
 public class ProductManagementController {
 
     private final ProductService productService;
+    private final CloudinaryService cloudinaryService;
 
-    public ProductManagementController(ProductService productService) {
+    public ProductManagementController(ProductService productService, CloudinaryService cloudinaryService) {
         this.productService = productService;
+        this.cloudinaryService = cloudinaryService;
     }
-
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
@@ -36,14 +41,14 @@ public class ProductManagementController {
             @ApiResponse( responseCode = "201", description = "CREATED - Successfully created"),
             @ApiResponse( responseCode = "400",
                     description = "Bad Request - The request is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
             @ApiResponse( responseCode = "401",
                     description = "Unauthorized -  Authorization information is missing or invalid"),
             @ApiResponse( responseCode = "403",
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
                     description = "Not found - This product was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
 
     })
     public SingleProductResponse saveProduct(@Valid @RequestBody ProductRequest productRequest){
@@ -58,14 +63,14 @@ public class ProductManagementController {
             @ApiResponse( responseCode = "200", description = "OK - Successfully changing"),
             @ApiResponse( responseCode = "400",
                     description = "Bad Request - The request is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
             @ApiResponse( responseCode = "401",
                     description = "Unauthorized -  Authorization information is missing or invalid"),
             @ApiResponse( responseCode = "403",
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
                     description = "Not found - This product was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
 
     })
     public SingleProductResponse updateProduct(@PathVariable("id") int id,
@@ -80,18 +85,35 @@ public class ProductManagementController {
             @ApiResponse( responseCode = "200", description = "OK - Successfully delete"),
             @ApiResponse( responseCode = "400",
                     description = "Bad Request - The request is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
             @ApiResponse( responseCode = "401",
                     description = "Unauthorized -  Authorization information is missing or invalid"),
             @ApiResponse( responseCode = "403",
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
                     description = "Not found - This product was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
 
     })
     public ResponseEntity<String> deleteProduct(@PathVariable("id") int id) {
         productService.deleteProduct(id);
         return new ResponseEntity<>("DELETED", HttpStatus.OK);
+    }
+
+    @PostMapping("/gallery")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Upload image to cloudinary", description = "This provide the ability of upload image to Cloudinary and return the URL")
+    @ApiResponses(value = {
+            @ApiResponse( responseCode = "201", description = "OK - Successfully uploading image"),
+            @ApiResponse( responseCode = "400",
+                    description = "Bad Request - The file media is invalid",
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse( responseCode = "404",
+                    description = "Not found - The request resources was not found",
+                    content = {@Content(examples = {@ExampleObject()})})
+    })
+    public FileUploadResponse upLoad(
+            @RequestParam(value = "file", required = true) MultipartFile multipartFile) {
+        return cloudinaryService.upload(multipartFile);
     }
 }

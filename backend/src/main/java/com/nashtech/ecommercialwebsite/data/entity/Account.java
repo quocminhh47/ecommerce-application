@@ -1,6 +1,7 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +18,7 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "email", unique = true)
     private String username; //username = email
@@ -62,7 +63,7 @@ public class Account {
     Set<Rating> ratings;
 
 
-    public Account(Long id,
+    public Account(Integer id,
                    String username, String firstName,
                    String lastName, String password,
                    String phone, String address, Role role) {

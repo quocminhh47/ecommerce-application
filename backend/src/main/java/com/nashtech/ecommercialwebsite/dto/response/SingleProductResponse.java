@@ -32,6 +32,10 @@ public class SingleProductResponse {
 
     private String brandName;
 
+    private Boolean isUserLogged;
+
+    private RatingResponse ratingResponse;
+
     List<ProductImage> productImages = new ArrayList<>();
 
 }

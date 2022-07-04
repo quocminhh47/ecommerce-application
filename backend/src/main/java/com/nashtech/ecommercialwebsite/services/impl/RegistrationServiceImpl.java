@@ -54,7 +54,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         // check if account already register but not confirmed
         // then permit to register again with latest information
         if (optionalAccount.isPresent() && !optionalAccount.get().getEnabled()) {
-            long userId = optionalAccount.get().getId();
+            Integer userId = optionalAccount.get().getId();
             Account newAccount = new Account(
                     userId,
                     request.getEmail(),

@@ -11,7 +11,7 @@ import java.util.Collection;
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private int id;
 
     private String username; //email
 
@@ -24,7 +24,7 @@ public class UserDetailsImpl implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String password,
+    public UserDetailsImpl(int id, String username, String password,
                            boolean isEnabled, boolean isNonLocked,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -91,11 +91,11 @@ public class UserDetailsImpl implements UserDetails {
 
 
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 }

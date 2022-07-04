@@ -4,14 +4,11 @@ import lombok.*;
 
 @Getter @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class RatingResponse {
 
     private Double productRatingPoints;
 
     private Integer userRatingPoints;
 
-    public RatingResponse(Double productRatingPoints, Integer userRatingPoints) {
-        this.productRatingPoints = productRatingPoints;
-        this.userRatingPoints = userRatingPoints;
-    }
 }

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/user/api/cart")
+@RequestMapping("/customer/api/cart")
 public class ShoppingCartController {
 
     private final CartItemService cartItemService;

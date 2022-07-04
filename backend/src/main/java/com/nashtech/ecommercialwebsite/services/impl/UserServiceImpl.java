@@ -9,7 +9,6 @@ import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
-import com.nashtech.ecommercialwebsite.exceptions.UnauthorizedException;
 import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
 import com.nashtech.ecommercialwebsite.services.UserService;
 import lombok.AllArgsConstructor;
@@ -18,18 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,19 +28,12 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-       // , UserDetailsService{
 
     private static final String USER_NOT_FOUND_MSG = "User with email %s not found";
 
     private static final String USER_ROLE_NOT_FOUND_MSG = "Role %s not found in the database";
 
     private static final String USER_ROLE_NAME = "USER";
-
-    private static final String USER_NOT_ACTIVED =
-            "User account %s is not actived, please register again or confirm mail to actived account ";
-
-    private static final String USER_NOT_AUTHORIZED =
-            "User account %s is locked due to negative reason ";
 
     private final ConfirmationTokenService confirmationTokenService;
 
@@ -79,9 +63,6 @@ public class UserServiceImpl implements UserService {
         );
     }*/
 
-    public int enableUser(String email) {
-        return userRepository.enableUser(email);
-    }
 
 
 
@@ -106,19 +87,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-    private Collection<GrantedAuthority> getGrantedAuthorities (Account account){
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-
-        if(account.getRole().getRoleName().equalsIgnoreCase("admin"))
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-        if(account.getRole().getRoleName().equalsIgnoreCase("user"))
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-
-        return authorities;
-    }
-
     @Override
     public UserAccountResponse getAllUserAccounts(int pageNo, int pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
@@ -136,12 +104,9 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private UserAccountDto mapToDto(Account account) {
-        return mapper.map(account, UserAccountDto.class);
-    }
-
     @Override
     public UserAccountDto getAccountById(long id) {
+
         Account account = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("User with ID: %s not found", id)
@@ -174,7 +139,9 @@ public class UserServiceImpl implements UserService {
             account.setCart(new Cart());
         }
     }
-
+    private UserAccountDto mapToDto(Account account) {
+        return mapper.map(account, UserAccountDto.class);
+    }
 
     private UserAccountResponse getContent(Page<Account> accounts) {
         List<Account> listOfAccounts = accounts.getContent();
@@ -192,6 +159,8 @@ public class UserServiceImpl implements UserService {
                 .build();
 
     }
+
+
 
 
 }

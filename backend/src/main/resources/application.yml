@@ -3,3 +3,6 @@ security:
     jwtExpirationMs: 86400000
     jwtSecret: rookiesSecretKey
 
+app :
+  server: http://localhost:8080
+
