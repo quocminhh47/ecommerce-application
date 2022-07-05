@@ -18,6 +18,8 @@ public class SingleProductResponse {
 
     private Integer quantity;
 
+    private Float discount;
+
     private String status;
 
     private String description;

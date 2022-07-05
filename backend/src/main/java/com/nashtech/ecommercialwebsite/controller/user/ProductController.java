@@ -1,11 +1,9 @@
 package com.nashtech.ecommercialwebsite.controller.user;
 
-import com.nashtech.ecommercialwebsite.dto.response.FileUploadResponse;
+
 import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
 import com.nashtech.ecommercialwebsite.dto.response.SingleProductResponse;
-import com.nashtech.ecommercialwebsite.services.CloudinaryService;
 import com.nashtech.ecommercialwebsite.services.ProductService;
-import com.nashtech.ecommercialwebsite.services.impl.CloudinaryServiceimpl;
 import com.nashtech.ecommercialwebsite.utils.AppConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,11 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
+
 
 @Tag(name = "Product Resources",
     description = "Product resources that provide access to all available products")
@@ -42,7 +38,7 @@ public class ProductController {
                     content = {@Content(examples = {@ExampleObject(value = "")})}),
             @ApiResponse( responseCode = "404",
                     description = "Not found - The product list was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
 
     })
     public ResponseEntity<ProductResponse> getAllProducts(
