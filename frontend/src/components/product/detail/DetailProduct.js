@@ -31,7 +31,7 @@ class DetailProduct extends Component {
                         <div className="col-lg-6">
                             <div className="product__details__pic">
                                 <div className="product__details__pic__left product__thumb nice-scroll"
-                                    tabIndex="1" style={{ overflow_y: "hidden", outline: "none" }}>
+                                    tabIndex="1" style={{ overflowY: 'hidden', outline: 'none' }}>
                                     {
                                         this.state.images.map(image =>
                                             <>
@@ -105,7 +105,7 @@ class DetailProduct extends Component {
                                         </li>
                                         <li>
                                             <span>Giới tính:</span>
-                                            <p>Phái {this.state.product.gender} </p>
+                                            <p>Phái {this.state.product.gender ? 'nam' : 'nữ'} </p>
                                         </li>
                                         <li>
                                             <span>Bảo hành:</span>
@@ -113,7 +113,7 @@ class DetailProduct extends Component {
                                         </li>
                                         <li>
                                             <span>Chống nước:</span>
-                                            <p>Là {this.state.product.isWaterProof} </p>
+                                            <p>{ this.state.product.isWaterProof ? 'Có kháng nước' : 'Không kháng nước'}</p>
                                         </li>
                                         <li>
                                             <span>Size:</span>

@@ -1,5 +1,4 @@
 import React from "react";
-import ListProduct from "./components/employee/ListProduct";
 import Footer from './components/footer/Footer';
 import Header from './components/header/Header';
 import DetailProduct from './components/product/detail/DetailProduct';
@@ -15,7 +14,7 @@ function App() {
           <Header />
           <div className="container">
             <Routes>
-              <Route path="/" element={<ListProduct/>}/>
+              <Route path="/" element={<DetailProduct/>}/>
               <Route path="/detail/:id" element={<DetailProduct/>}/>
               <Route path="/404" element={<NotFound/>}/>              
             </Routes>
