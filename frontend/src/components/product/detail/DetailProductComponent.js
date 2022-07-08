@@ -186,7 +186,7 @@ function DetailProductComponent() {
                                     <i className="fa fa-star"></i>
                                     <i className="fa fa-star"></i>
                                     <i className="fa fa-star"></i>
-                                    <p>(Đánh giá :  {productRating}/5 )</p>
+                                    <p>(Đánh giá :  {parseFloat(productRating).toFixed(2)}/5 )</p>
                                 </div>
                                 <div className="product__details__price">Giá: {formatter(product.price)} <span> {formatter(product.price)} </span></div>
                                 <p>{product.description}</p>

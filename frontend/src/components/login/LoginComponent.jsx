@@ -40,11 +40,14 @@ function LoginComponent() {
                     else setNoti(res.message);
                 })
                 .catch((error) => {
+                    console.log(error)
+                    console.log(error.response.status)
                     //Error
                     if(error.response) {
-                        setNoti(error.message);
+                        if(error.response.status == 403) {setNoti('Account is invalid')}   
+                        setNoti(error.response.data.message);
                     } else if(error.request) {
-                        
+
                     }
                 });
 

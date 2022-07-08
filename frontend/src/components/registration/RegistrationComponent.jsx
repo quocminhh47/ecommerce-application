@@ -42,7 +42,8 @@ export default function RegistrationComponent() {
                 }
             })
             .catch(error => {
-                setMess(error.mess)
+                console.log(error)
+                setMess(error.response.data.message)
             })
 
         } else setMess("Phone tối thiểu 10 và tối đa 12 ký tự. Email phải nhập đúng định dạng!!")
