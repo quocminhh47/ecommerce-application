@@ -30,7 +30,7 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-/*    @GetMapping("/ratings")
+   @GetMapping("/ratings")
     //@PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get rating information", description = "Provides the rating information of user about product")
     @ApiResponses(value = {
@@ -46,7 +46,7 @@ public class RatingController {
     public ResponseEntity<RatingResponse> getRatingInfo(HttpServletRequest request,
                                                         @RequestParam("product-id") int productId) {
         return new ResponseEntity<>(ratingService.getUserRatingByProduct( productId, request), HttpStatus.OK);
-    }*/
+    }
 
     @PostMapping()
     @Operation(summary = "Rate the products", description = "Customers can rate the product by scores from 1-5 by here")

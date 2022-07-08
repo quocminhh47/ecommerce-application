@@ -17,7 +17,5 @@ public class UserRatingRequest {
 
     @Min(value = 1, message = "Product ID must be positive")
     private int productId;
-//
-//    @Min(value = 1, message = "User ID must be positive")
-//    private int userId;
+
 }

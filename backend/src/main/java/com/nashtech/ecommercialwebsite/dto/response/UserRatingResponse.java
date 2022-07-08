@@ -10,9 +10,12 @@ import lombok.Setter;
 @Getter @Setter
 public class UserRatingResponse {
 
+    private String mess ;
+
     private int ratingPoints;
 
     private int productId;
 
     private int accountId;
+
 }

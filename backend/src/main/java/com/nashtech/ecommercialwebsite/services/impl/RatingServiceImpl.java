@@ -85,7 +85,9 @@ public class RatingServiceImpl implements RatingService {
                         .account(account)
                         .build();
                 ratingRepository.save(rating);
-                return mapper.map(rating, UserRatingResponse.class);
+                UserRatingResponse res = mapper.map(rating, UserRatingResponse.class);
+                res.setMess("Rating success!!");
+                return res;
             }
             //user's rated this product -> update rating
             else {
@@ -95,7 +97,9 @@ public class RatingServiceImpl implements RatingService {
                 //save new rating points
                 ratingRepository.save(oldRating);
                 log.info("UPDATE RATING POINTS");
-                return mapper.map(oldRating, UserRatingResponse.class);
+                UserRatingResponse res = mapper.map(oldRating, UserRatingResponse.class);
+                res.setMess("Update rating success!");
+                return res;
             }
         }
 
