@@ -1,28 +1,31 @@
 import React from "react";
-import Footer from './components/footer/Footer';
-import Header from './components/header/Header';
-import DetailProduct from './components/product/detail/DetailProduct';
+import './App.css';
+import DetailProduct from './pages/product/detail/DetailProduct'
 import NotFound from './components/404/NotFound';
-import { BrowserRouter as Router, Routes , Route} from 'react-router-dom';
+import LoginPage from "./pages/login";
+import RegistrationPage from "./pages/registration/RegistrationPage";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 
 
 function App() {
   return (
-    <div>
+    <>
       <Router>
-        <div className="container">
-          <Header />
-          <div className="container">
-            <Routes>
-              <Route path="/" element={<DetailProduct/>}/>
-              <Route path="/detail/:id" element={<DetailProduct/>}/>
-              <Route path="/404" element={<NotFound/>}/>              
+        <div>
+          <div>
+            <Routes>              
+              <Route path="/" element={<DetailProduct />} />              
+              <Route path="/login" element={<LoginPage />} />              
+              <Route path="/logout" element={<LoginPage />} />              
+              <Route path="/sigin" element={<RegistrationPage />} />              
+              <Route path="/detail/:id" element={<DetailProduct/>} />
+              <Route path="/404" element={<NotFound />} />
             </Routes>
           </div>
-          <Footer />
         </div>
       </Router>
-    </div>
+    </>
   );
 
 }

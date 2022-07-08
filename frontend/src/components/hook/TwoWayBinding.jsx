@@ -172,56 +172,52 @@ function App7() {
 //----------
 //1. call back luon duoc goi sau khi component mounted
 
-const tabs = ['posts', 'album', 'users']
+const tabs = ['posts', 'albums', 'todos']
 function App8() {
 
-    const [title, setTitle] = useState('');
     const [posts, setPosts] = useState([]);
     const [type, setType] = useState('posts');
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/' + type)
-            .then(res => res.json())
+        const url = `https://jsonplaceholder.typicode.com/${type}`;
+        console.log(url)
+        fetch(url)
+            .then(res => res.json(url))
             .then(posts => setPosts(posts))
 
-    }, [title]);
+    }, [type]);
 
     const clickHandle = (tab) => {
-        console.log(tab)
         setType(tab);
     }
 
     return (
         <div>
-
             {
                 tabs.map(tab =>
                     <button key={tab}
                         style={type === tab ? {
                             color: '#fff',
                             background: '#333'
-                            } : {}
-                            }
-                onClick = {() => clickHandle(tab)}
-            >
-            {tab}
-        </button>
-    )
-}
-        <br/>
-            <input 
-                value={title}
-                onChange = {e => setTitle(e.target.value)}
-            />
+                        } : {}
+                        }
+                        onClick={() => clickHandle(tab)}
+                    >
+                        {tab}
+                    </button>
+                )
+            }
+            <br />
+
 
             <ul>
-               {
-                posts.map((post) =>
-                    <li key={post.id}>{post.title}</li>
-                )
-               }
+                {
+                    posts.map((post) =>
+                        <li key={post.id}>{post.title}</li>
+                    )
+                }
             </ul>
-        </div >
+        </div>
     )
 }
 
