@@ -19,6 +19,7 @@ import javax.validation.Valid;
 @Tag(name = "Brands Resources Management",
         description = "Permit to access / change all the available brands")
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/admin/api/brands")
 public class BrandManagementController {
 
@@ -63,7 +64,7 @@ public class BrandManagementController {
                     value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false)
                     int pageNo,
             @RequestParam(
-                    value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false)
+                    value = "pageSize", defaultValue = "7" , required = false)
                     int pageSize,
             @RequestParam(
                     value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false)

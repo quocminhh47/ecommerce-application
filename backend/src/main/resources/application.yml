@@ -6,3 +6,7 @@ security:
 app :
   server: http://localhost:8080
 
+default:
+  url:
+    image: https://res.cloudinary.com/duoih0eqa/image/upload/v1657297251/Untitled_xq9j9u.png
+

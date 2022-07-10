@@ -31,7 +31,7 @@ public class CloudinaryServiceimpl implements CloudinaryService {
             Map<?, ?> resultMap = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
             file.delete();
             return FileUploadResponse.builder()
-                    .message("Success")
+                    .message("Upload to Cloudinary success")
                     .url(resultMap.get("url").toString())
                     .build();
         } catch (IOException ioException) {

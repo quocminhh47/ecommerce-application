@@ -15,12 +15,15 @@ import java.util.List;
 public class ProductUpdateRequest {
 
     @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be blank")
     private String name;
 
     @Min(value = 0, message = "Price should be positive")
+    @NotNull(message = "price cannot be null")
     private Long price;
 
     @Min(value = 0, message = "Price should be positive")
+    @NotNull(message = "quantity cannot be null")
     private Integer quantity;
 
     @NotBlank(message = "status is required")

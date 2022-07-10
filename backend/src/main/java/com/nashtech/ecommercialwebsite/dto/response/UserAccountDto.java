@@ -28,6 +28,6 @@ public class UserAccountDto {
     Boolean enabled;
 
     @NotNull(message ="Locked status is required")
-    Boolean locked;
+    Boolean nonLocked;
 
 }

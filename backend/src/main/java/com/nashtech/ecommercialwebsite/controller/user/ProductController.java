@@ -14,11 +14,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 
 
 @Tag(name = "Product Resources",
-    description = "Product resources that provide access to all available products")
+        description = "Product resources that provide access to all available products")
 @RestController
 @RequestMapping("/user/api/products")
 public class ProductController {
@@ -32,18 +33,17 @@ public class ProductController {
     @GetMapping()
     @Operation(summary = "Get products list", description = "Provides all products in pagination")
     @ApiResponses(value = {
-            @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
-            @ApiResponse( responseCode = "400",
+            @ApiResponse(responseCode = "200", description = "OK - Successfully retrieved"),
+            @ApiResponse(responseCode = "400",
                     description = "Bad Request - The request is invalid",
                     content = {@Content(examples = {@ExampleObject(value = "")})}),
-            @ApiResponse( responseCode = "404",
+            @ApiResponse(responseCode = "404",
                     description = "Not found - The product list was not found",
-                    content = {@Content(examples = {@ExampleObject()})}),
-
+                    content = {@Content(examples = {@ExampleObject()})})
     })
     public ResponseEntity<ProductResponse> getAllProducts(
             @RequestParam(
-                    value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false  )
+                    value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false)
                     int pageNo,
             @RequestParam(
                     value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false)
@@ -53,23 +53,25 @@ public class ProductController {
                     String sortBy,
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir ) {
+                    String sortDir,
+            HttpServletRequest request
+    ) {
 
         return new
-                    ResponseEntity<>(
-                    productService.getAllAvailableProducts( false,pageNo, pageSize, sortBy, sortDir),
-                    HttpStatus.OK);
+                ResponseEntity<>(
+                productService.getAllAvailableProducts(false, pageNo, pageSize, sortBy, sortDir, request),
+                HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}")
     @Operation(summary = "Get product detail by ID", description = "Provides product information by single")
     @ApiResponses(value = {
-            @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
-            @ApiResponse( responseCode = "400",
+            @ApiResponse(responseCode = "200", description = "OK - Successfully retrieved"),
+            @ApiResponse(responseCode = "400",
                     description = "Bad Request - The request is invalid",
                     content = {@Content(examples = {@ExampleObject(value = "")})}),
-            @ApiResponse( responseCode = "404",
+            @ApiResponse(responseCode = "404",
                     description = "Not found - This product was not found",
                     content = {@Content(examples = {@ExampleObject(value = "")})}),
 
@@ -82,11 +84,11 @@ public class ProductController {
     @GetMapping("/brand/{brandName}")
     @Operation(summary = "Filter products by brand name", description = "Provides all products by brand in pagination")
     @ApiResponses(value = {
-            @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
-            @ApiResponse( responseCode = "400",
+            @ApiResponse(responseCode = "200", description = "OK - Successfully retrieved"),
+            @ApiResponse(responseCode = "400",
                     description = "Bad Request - The request is invalid",
                     content = {@Content(examples = {@ExampleObject(value = "")})}),
-            @ApiResponse( responseCode = "404",
+            @ApiResponse(responseCode = "404",
                     description = "Not found - The product list was not found",
                     content = {@Content(examples = {@ExampleObject(value = "")})}),
 
@@ -104,12 +106,18 @@ public class ProductController {
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
                     String sortDir,
-            @PathVariable("brandName") String brandName ) {
+            @PathVariable("brandName") String brandName,
+            HttpServletRequest request) {
 
-        return new ResponseEntity<>( productService.getProductsByBrandName(brandName.toUpperCase(), pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
+        return new ResponseEntity<>(
+                productService.getProductsByBrandName(
+                        brandName.toUpperCase(),
+                        pageNo,
+                        pageSize,
+                        sortBy,
+                        sortDir,
+                        request), HttpStatus.OK);
     }
-
-
 
 
 }

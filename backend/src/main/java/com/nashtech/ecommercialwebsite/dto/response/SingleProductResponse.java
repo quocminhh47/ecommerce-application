@@ -38,6 +38,10 @@ public class SingleProductResponse {
 
     private RatingResponse ratingResponse;
 
+    private String thumbnail;
+
+    private  Boolean hidden;
+
     List<ProductImage> productImages = new ArrayList<>();
 
 }

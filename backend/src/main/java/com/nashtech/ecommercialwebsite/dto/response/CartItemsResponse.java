@@ -5,7 +5,6 @@ import lombok.*;
 @Getter @Setter @Builder @ToString
 @NoArgsConstructor @AllArgsConstructor
 public class CartItemsResponse {
-    //private int cartId;
 
     private int productId;
 

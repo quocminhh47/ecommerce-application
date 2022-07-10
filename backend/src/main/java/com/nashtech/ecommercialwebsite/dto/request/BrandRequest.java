@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class BrandRequest {
 
-    @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be blank")
     private String name;
 
     private String thumbnail;

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<Account, Long> {
+public interface UserRepository extends JpaRepository<Account, Integer> {
 
     Optional<Account> findAccountByUsername(String email);
 
@@ -26,12 +26,12 @@ public interface UserRepository extends JpaRepository<Account, Long> {
     Page<Account> findAllByRole(Pageable pageable, Role role);
 
     //@Transactional
-    @Modifying
-    @Query( "UPDATE Account a " +
-            "SET a.enabled = :enabled , a.isNonLocked = :locked WHERE a.id = :id")
-    void changeUserAccountStatus(@Param("id") long id,
-                                 @Param("enabled") boolean isLocked,
-                                 @Param("locked") boolean isEnabled);
+//    @Modifying
+//    @Query( "UPDATE Account a " +
+//            "SET a.enabled = :enabled , a.isNonLocked = :locked WHERE a.id = :id")
+//    int changeUserAccountStatus(@Param("id") int id,
+//                                 @Param("enabled") boolean isLocked,
+//                                 @Param("locked") boolean isEnabled);
 
 
 }

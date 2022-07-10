@@ -57,8 +57,8 @@ public class WebSecurityConfig2 extends WebSecurityConfigurerAdapter {
                 "/v1/api/registration/**",
                 "/api/auth/login").permitAll();
         http.authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll();
-        http.authorizeRequests().antMatchers("/admin/api/**").hasRole("ADMIN");
-        http.authorizeRequests().antMatchers("/customer/api/**").hasRole("USER");
+        http.authorizeRequests().antMatchers("/admin/api/**").permitAll();//hasRole("ADMIN");
+        http.authorizeRequests().antMatchers("/customer/api/**").hasAnyRole("USER", "ADMIN");
         http.authorizeRequests().antMatchers("/user/api/**").permitAll();
 
         http.authorizeRequests().anyRequest().permitAll();

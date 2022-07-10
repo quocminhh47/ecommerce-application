@@ -16,7 +16,8 @@ import java.util.List;
 @ToString
 public class ProductRequest {
 
-    @NotNull(message = "Name cannot be null")
+    @NotNull(message = "Name cannot be blank or null")
+    @NotBlank(message = "Name cannot be blank or null")
     private String name;
 
     @Min(value = 0, message = "Price should be positive")

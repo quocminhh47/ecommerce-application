@@ -17,9 +17,6 @@ public class ProductImage {
     @Column(name = "image")
     private String image;
 
-    @Column(name = "description")
-    private String description;
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_id")

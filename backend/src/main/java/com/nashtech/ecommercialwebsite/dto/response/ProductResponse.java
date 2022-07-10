@@ -12,6 +12,8 @@ public class ProductResponse {
 
     private List<ProductDto> productContent;
 
+    private LoginStatusResponse loginStatusResponse = new LoginStatusResponse();
+
     private int pageNo;
 
     private int pageSize;

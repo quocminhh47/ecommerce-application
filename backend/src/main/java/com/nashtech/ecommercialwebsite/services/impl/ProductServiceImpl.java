@@ -8,15 +8,13 @@ import com.nashtech.ecommercialwebsite.data.entity.ProductImage;
 import com.nashtech.ecommercialwebsite.data.repository.*;
 import com.nashtech.ecommercialwebsite.dto.request.ProductRequest;
 import com.nashtech.ecommercialwebsite.dto.request.ProductUpdateRequest;
-import com.nashtech.ecommercialwebsite.dto.response.ProductDto;
-import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
-import com.nashtech.ecommercialwebsite.dto.response.RatingResponse;
-import com.nashtech.ecommercialwebsite.dto.response.SingleProductResponse;
+import com.nashtech.ecommercialwebsite.dto.response.*;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.security.jwt.JwtUtils;
 import com.nashtech.ecommercialwebsite.services.JwtService;
+import com.nashtech.ecommercialwebsite.services.LoginStatusService;
 import com.nashtech.ecommercialwebsite.services.ProductService;
-import com.nashtech.ecommercialwebsite.services.RatingService;
+import com.nashtech.ecommercialwebsite.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -41,6 +39,9 @@ public class ProductServiceImpl implements ProductService {
     private final ModelMapper mapper;
     private final ProductImagesRepository imagesRepository;
     private final BrandRepository brandRepository;
+    private final LoginStatusService loginStatusService;
+
+    private static final String DEFAULT_IMAGE_URL = AppConstants.DEFAULT_URL;
 
     @Override
     public SingleProductResponse findProductById(int id, HttpServletRequest request) {
@@ -56,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
 
         String token = jwtService.parseJwt(request);
         //token is valid
-        if( token != null && jwtUtils.validateJwtToken(token) ) {
+        if (token != null && jwtUtils.validateJwtToken(token)) {
             String username = jwtService.getUsernameFromToken(token);
 
             Account account = userRepository.findAccountByUsername(username)
@@ -77,21 +78,26 @@ public class ProductServiceImpl implements ProductService {
         //anonymous access
         singleProductResponse.setIsUserLogged(false);
         RatingResponse ratingResponse =
-                new RatingResponse(ratingPointsFromProduct,null);
+                new RatingResponse(ratingPointsFromProduct, null);
         singleProductResponse.setRatingResponse(ratingResponse);
         return singleProductResponse;
 
     }
 
     @Override
-    public ProductResponse getAllProducts(int pageNo, int pageSize, String sortBy, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+    public ProductResponse getAllProducts(int pageNo, int pageSize, String sortBy, String sortDirection,
+                                          HttpServletRequest request) {
+        Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         //create pageable instance
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Product> products = productRepository.findAll(pageable);
-        return getContent(products);
+        ProductResponse productResponse = getContent(products);
+
+        productResponse.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
+
+        return productResponse;
     }
 
     @Override
@@ -99,14 +105,20 @@ public class ProductServiceImpl implements ProductService {
                                                    int pageNo,
                                                    int pageSize,
                                                    String sortBy,
-                                                   String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                                                   String sortDirection,
+                                                   HttpServletRequest request) {
+        Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         //create pageable instance
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Product> products = productRepository.findProductByHidden(false, pageable);
-        return getContent(products);
+
+        ProductResponse productResponse = getContent(products);
+        productResponse.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
+
+        return productResponse;
+
     }
 
     @Override
@@ -114,21 +126,27 @@ public class ProductServiceImpl implements ProductService {
                                                   int pageNo,
                                                   int pageSize,
                                                   String sortBy,
-                                                  String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                                                  String sortDirection,
+                                                  HttpServletRequest request) {
+        Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         //create pageable instance
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Product> products = productRepository.findProductByBrand_Name(brandName, pageable);
-        return getContent(products);
+
+        ProductResponse productResponse = getContent(products);
+        productResponse.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
+
+        return productResponse;
     }
 
     @Override
     public SingleProductResponse saveProduct(ProductRequest productRequest) {
+        if(productRequest.getThumbnail() == null) productRequest.setThumbnail(DEFAULT_IMAGE_URL);
         Product product = mapToEntity(productRequest);//product now include produc info + brand + list image
         product.setCreatedAt(LocalDateTime.now());
 
-        product.getProductImages().forEach(image -> image.setProduct(product));
+        product.getProductImages().forEach(image ->  image.setProduct(product)) ;
 
         Product savedProduct = productRepository.save(product);
         return mapper.map(savedProduct, SingleProductResponse.class);

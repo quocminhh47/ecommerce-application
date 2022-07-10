@@ -1,5 +1,6 @@
 package com.nashtech.ecommercialwebsite.controller.admin;
 
+import com.nashtech.ecommercialwebsite.dto.request.UserRequest;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
 import com.nashtech.ecommercialwebsite.services.UserService;
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 @Tag(name = "Customers Resources Management",
         description = "Permit to access / change customer's account status")
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/admin/api/users")
 public class UserManagementController {
 
@@ -37,8 +39,7 @@ public class UserManagementController {
             @ApiResponse( responseCode = "403",
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
-                    description = "Not found - The customers' accounts resources was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    description = "Not found - The customers' accounts resources was not found")
     })
     public ResponseEntity<UserAccountResponse> getAllUsers(
             @RequestParam(
@@ -68,14 +69,13 @@ public class UserManagementController {
             @ApiResponse( responseCode = "403",
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
-                    description = "Not found - The customer's account resources was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    description = "Not found - The customer's account resources was not found")
     })
-    public ResponseEntity<UserAccountDto> getUserById(@PathVariable("id") long id) {
+    public ResponseEntity<UserAccountDto> getUserById(@PathVariable("id") int id) {
         return new ResponseEntity<>(userService.getAccountById(id), HttpStatus.OK);
     }
 
-    @PutMapping()
+    @PutMapping("/{userId}")
     @Operation(summary = "Change account information", description = "Change the status of customer's account")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "OK - Successfully changed"),
@@ -84,11 +84,12 @@ public class UserManagementController {
             @ApiResponse( responseCode = "403",
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
-                    description = "Not found - The customer's account resources was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    description = "Not found - The customer's account resources was not found")
     })
-    public ResponseEntity<UserAccountDto> changeAccountStatus(@Valid @RequestBody UserAccountDto accountDto) {
-        return new ResponseEntity<>(userService.changeUserAccountStatus(accountDto), HttpStatus.OK);
+    public ResponseEntity<UserAccountDto> changeAccountStatus(@Valid @RequestBody UserRequest userRequest,
+                                                              @PathVariable("userId") int userId) {
+
+        return new ResponseEntity<>(userService.changeUserAccountStatus(userRequest, userId), HttpStatus.OK);
     }
 
 }

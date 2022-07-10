@@ -14,11 +14,25 @@ public interface ProductService {
     SingleProductResponse findProductById(int id, HttpServletRequest request);
 //    SingleProductResponse findProductById(int id);
 
-    ProductResponse getAllProducts(int pageNo, int pageSize, String sortBy, String sortDir);
+    ProductResponse getAllProducts(int pageNo,
+                                   int pageSize,
+                                   String sortBy,
+                                   String sortDirection,
+                                   HttpServletRequest request);
 
-    ProductResponse getAllAvailableProducts( boolean hiddnen ,int pageNo, int pageSize, String sortBy, String sortDir);
+    ProductResponse getAllAvailableProducts( boolean hidden ,
+                                             int pageNo,
+                                             int pageSize,
+                                             String sortBy,
+                                             String sortDirection,
+                                             HttpServletRequest request);
 
-    ProductResponse getProductsByBrandName(String brandName, int pageNo, int pageSize, String sortBy, String sortDir);
+    ProductResponse getProductsByBrandName(String brandName,
+                                           int pageNo,
+                                           int pageSize,
+                                           String sortBy,
+                                           String sortDirection,
+                                           HttpServletRequest request);
 
     SingleProductResponse saveProduct(ProductRequest productRequest);
 

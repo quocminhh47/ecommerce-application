@@ -43,7 +43,7 @@ public class AuthController {
         if(!account.getEnabled() || !account.getIsNonLocked())
             throw new BadRequestException(("Account is not valid"));
 
-        Authentication authentication = authenticationManager.authenticate(
+            Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                         loginRequest.getPassword()));
 

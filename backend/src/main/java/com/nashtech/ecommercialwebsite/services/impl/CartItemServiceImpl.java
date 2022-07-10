@@ -50,8 +50,13 @@ public class CartItemServiceImpl implements CartItemService {
                 .map(this::mapToCartResponse)
                 .collect(Collectors.toList());
 
+        int totalPrice = cartItemsResponses.stream()
+                .mapToInt(s -> (s.getCartDetailQuantity() * s.getProductPrice()))
+                .sum();
+
         CartResponse cartResponse = new CartResponse();
         cartResponse.setCartId(cart.getId());
+        cartResponse.setTotalPrice(totalPrice);
         cartItemsResponses.stream()
                 .map(item -> cartResponse.getCartDetails().add(item))
                 .collect(Collectors.toList());

@@ -20,5 +20,4 @@ public class ImageUpdateRequest {
     @NotBlank(message = "image is required")
     private String image;
 
-    private String description;
 }

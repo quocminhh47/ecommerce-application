@@ -6,8 +6,10 @@ import com.nashtech.ecommercialwebsite.data.entity.ConfirmationToken;
 import com.nashtech.ecommercialwebsite.data.entity.Role;
 import com.nashtech.ecommercialwebsite.data.repository.RoleRepository;
 import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
+import com.nashtech.ecommercialwebsite.dto.request.UserRequest;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
+import com.nashtech.ecommercialwebsite.exceptions.InternalServerException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
 import com.nashtech.ecommercialwebsite.services.UserService;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -64,10 +67,8 @@ public class UserServiceImpl implements UserService {
     }*/
 
 
-
-
     //Handle when user register - and this give token
-    public String signUpUser(Account userAccount){
+    public String signUpUser(Account userAccount) {
         //encoded password
         String encodedPassword = bCryptPasswordEncoder.encode(userAccount.getPassword());
         userAccount.setPassword(encodedPassword);
@@ -105,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserAccountDto getAccountById(long id) {
+    public UserAccountDto getAccountById(int id) {
 
         Account account = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -114,31 +115,35 @@ public class UserServiceImpl implements UserService {
         return mapper.map(account, UserAccountDto.class);
     }
 
+
     @Transactional
     @Override
-    public UserAccountDto changeUserAccountStatus(UserAccountDto accountDto) {
-        //TODO: Check others property ( name, password, id,..) has changed or not
-        userRepository.changeUserAccountStatus(
-                accountDto.getId(),
-                accountDto.getEnabled(),
-                accountDto.getLocked()
-        );
-        Account updatedAccount = userRepository.findById(accountDto.getId())
-                .orElseThrow( () -> new ResourceNotFoundException(
-                        String.format("User account with ID: %s not found", accountDto.getId())
+    public UserAccountDto changeUserAccountStatus(UserRequest userRequest, int userId) {
+
+        Account account = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("User account with ID: %s not found", userId)
                 ));
+
+        account.setEnabled(userRequest.getIsEnabled());
+        account.setIsNonLocked(userRequest.getIsNonLocked());
+
+        Account updatedAccount = userRepository.save(account);
+        System.out.println(updatedAccount.toString());
         return mapper.map(updatedAccount, UserAccountDto.class);
+
     }
 
     @Override
     public void createShoppingCart(String username) {
         Account account = userRepository.findAccountByUsername(username)
-                .orElseThrow( () -> new ResourceNotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         String.format(String.format(USER_NOT_FOUND_MSG, username))));
-        if(account.getCart() == null) {
+        if (account.getCart() == null) {
             account.setCart(new Cart());
         }
     }
+
     private UserAccountDto mapToDto(Account account) {
         return mapper.map(account, UserAccountDto.class);
     }
@@ -159,8 +164,6 @@ public class UserServiceImpl implements UserService {
                 .build();
 
     }
-
-
 
 
 }

@@ -14,5 +14,7 @@ public class CartResponse {
 
     private int cartId;
 
+    private int totalPrice;
+
     List<CartItemsResponse> cartDetails = new ArrayList<>();
 }
