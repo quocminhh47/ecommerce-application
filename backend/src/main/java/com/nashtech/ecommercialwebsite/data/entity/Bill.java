@@ -33,7 +33,7 @@ public class Bill {
     private Integer priceTotal;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<BillDetail> billDetails = new ArrayList<>();
 
     @ManyToOne

@@ -8,7 +8,10 @@ import com.nashtech.ecommercialwebsite.data.entity.ProductImage;
 import com.nashtech.ecommercialwebsite.data.repository.*;
 import com.nashtech.ecommercialwebsite.dto.request.ProductRequest;
 import com.nashtech.ecommercialwebsite.dto.request.ProductUpdateRequest;
-import com.nashtech.ecommercialwebsite.dto.response.*;
+import com.nashtech.ecommercialwebsite.dto.response.ProductDto;
+import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
+import com.nashtech.ecommercialwebsite.dto.response.RatingResponse;
+import com.nashtech.ecommercialwebsite.dto.response.SingleProductResponse;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.security.jwt.JwtUtils;
 import com.nashtech.ecommercialwebsite.services.JwtService;
@@ -65,6 +68,8 @@ public class ProductServiceImpl implements ProductService {
                             String.format("Username %s not found ", username)));
 
             singleProductResponse.setIsUserLogged(true);
+
+            singleProductResponse.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
 
             RatingResponse ratingResponse = new RatingResponse(
                     ratingPointsFromProduct,
@@ -141,19 +146,23 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public SingleProductResponse saveProduct(ProductRequest productRequest) {
-        if(productRequest.getThumbnail() == null) productRequest.setThumbnail(DEFAULT_IMAGE_URL);
+    public SingleProductResponse saveProduct(ProductRequest productRequest, HttpServletRequest request) {
+        if (productRequest.getThumbnail() == null) productRequest.setThumbnail(DEFAULT_IMAGE_URL);
         Product product = mapToEntity(productRequest);//product now include produc info + brand + list image
         product.setCreatedAt(LocalDateTime.now());
 
-        product.getProductImages().forEach(image ->  image.setProduct(product)) ;
+        product.getProductImages().forEach(image -> image.setProduct(product));
 
         Product savedProduct = productRepository.save(product);
-        return mapper.map(savedProduct, SingleProductResponse.class);
+        SingleProductResponse response = mapper.map(savedProduct, SingleProductResponse.class);
+        response.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
+
+        return response;
     }
 
     @Override
-    public SingleProductResponse updateProduct(int id, ProductUpdateRequest productRequest) {
+    public SingleProductResponse updateProduct(int id, ProductUpdateRequest productRequest,
+                                               HttpServletRequest request) {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -163,11 +172,20 @@ public class ProductServiceImpl implements ProductService {
         product.setUpdatedAt(LocalDateTime.now());
         product.setId(id);
 
+        Brand brand = brandRepository.findById(productRequest.getBrandId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Brand.id.%s.not.found", productRequest.getBrandId())));
+        product.setBrand(brand);
+
         product.getProductImages().forEach(image -> image.setProduct(product));
 
         Product updatedProduct = productRepository.save(product);
 
-        return mapper.map(updatedProduct, SingleProductResponse.class);
+        SingleProductResponse singleProductResponse = mapper.map(updatedProduct, SingleProductResponse.class);
+        singleProductResponse.setBrandId(brand.getId());
+        singleProductResponse.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
+
+        return singleProductResponse;
     }
 
     @Override
@@ -177,6 +195,25 @@ public class ProductServiceImpl implements ProductService {
                         String.format("Product not found with id: %s", id)));
         product.setHidden(true);
         productRepository.save(product);
+    }
+
+    @Override
+    public ProductResponse getProductsByGender(boolean gender,
+                                               int pageNo,
+                                               int pageSize,
+                                               String sortBy,
+                                               String sortDirection,
+                                               HttpServletRequest request) {
+        Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        //create pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Product> products = productRepository.findProductByGender(gender, pageable);
+
+        ProductResponse productResponse = getContent(products);
+        productResponse.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
+
+        return productResponse;
     }
 
 

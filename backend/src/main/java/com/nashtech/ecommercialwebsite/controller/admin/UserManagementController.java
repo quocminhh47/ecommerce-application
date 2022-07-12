@@ -1,8 +1,12 @@
 package com.nashtech.ecommercialwebsite.controller.admin;
 
+import com.nashtech.ecommercialwebsite.dto.request.RegistrationRequest;
 import com.nashtech.ecommercialwebsite.dto.request.UserRequest;
+import com.nashtech.ecommercialwebsite.dto.response.RegistrationResponse;
+import com.nashtech.ecommercialwebsite.dto.response.TokenResponse;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
+import com.nashtech.ecommercialwebsite.services.RegistrationService;
 import com.nashtech.ecommercialwebsite.services.UserService;
 import com.nashtech.ecommercialwebsite.utils.AppConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Tag(name = "Customers Resources Management",
@@ -25,9 +31,12 @@ import javax.validation.Valid;
 public class UserManagementController {
 
     private final UserService userService;
+    private static final String ADMIN_ROLE = "ADMIN";
+    private final RegistrationService registrationService;
 
-    public UserManagementController(UserService userService) {
+    public UserManagementController(UserService userService, RegistrationService registrationService) {
         this.userService = userService;
+        this.registrationService = registrationService;
     }
 
     @GetMapping()
@@ -53,10 +62,12 @@ public class UserManagementController {
                     String sortBy,
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir )
+                    String sortDir,
+            HttpServletRequest request)
     {
 
-        return new ResponseEntity<>(userService.getAllUserAccounts(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getAllUserAccounts(
+                pageNo, pageSize, sortBy, sortDir, request), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -71,8 +82,9 @@ public class UserManagementController {
             @ApiResponse( responseCode = "404",
                     description = "Not found - The customer's account resources was not found")
     })
-    public ResponseEntity<UserAccountDto> getUserById(@PathVariable("id") int id) {
-        return new ResponseEntity<>(userService.getAccountById(id), HttpStatus.OK);
+    public ResponseEntity<UserAccountDto> getUserById(@PathVariable("id") int id,
+                                                      HttpServletRequest request) {
+        return new ResponseEntity<>(userService.getAccountById(id, request), HttpStatus.OK);
     }
 
     @PutMapping("/{userId}")
@@ -87,9 +99,25 @@ public class UserManagementController {
                     description = "Not found - The customer's account resources was not found")
     })
     public ResponseEntity<UserAccountDto> changeAccountStatus(@Valid @RequestBody UserRequest userRequest,
-                                                              @PathVariable("userId") int userId) {
+                                                              @PathVariable("userId") int userId,
+                                                              HttpServletRequest request) {
 
-        return new ResponseEntity<>(userService.changeUserAccountStatus(userRequest, userId), HttpStatus.OK);
+        return new ResponseEntity<>(
+                userService.changeUserAccountStatus(userRequest, userId, request), HttpStatus.OK);
+    }
+
+    @PostMapping("/registration")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Register feature",
+            description = "This create accounts for customers and send token to customer's email for verification")
+    @ApiResponses(value = {
+            @ApiResponse( responseCode = "201", description = "OK - Successfully created account"),
+            @ApiResponse( responseCode = "400",
+                    description = "Bad Request - The request is invalid",
+                    content = {@Content(examples = {@ExampleObject(value = "")})})
+    })
+    public TokenResponse register(@Valid @RequestBody RegistrationRequest registrationRequest){
+        return registrationService.register(registrationRequest, ADMIN_ROLE);
     }
 
 }

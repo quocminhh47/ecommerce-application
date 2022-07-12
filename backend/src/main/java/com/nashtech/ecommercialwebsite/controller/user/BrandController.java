@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user/api/brands")
@@ -31,10 +33,11 @@ public class BrandController {
                     String sortBy,
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir
+                    String sortDir,
+            HttpServletRequest request
     ) {
         return new ResponseEntity<>(
-                brandService.getAllBrands(pageNo, pageSize, sortBy, sortDir),
+                brandService.getAllBrands(pageNo, pageSize, sortBy, sortDir, request),
                 HttpStatus.OK);
     }
 }

@@ -51,6 +51,7 @@ public class ProductUpdateRequest {
     private Float size;
 
     @Min(value = 1)
+    @NotNull
     private Integer brandId;
 
     private String description;

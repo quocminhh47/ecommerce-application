@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @AllArgsConstructor
 @Getter @Setter
@@ -24,8 +26,8 @@ public class RegistrationRequest {
     private final String password;
 
     @NotBlank(message = "phone is required")
-    @Min(value = 10, message = "Phone at least 10 numbers")
-    @Min(value = 12, message = "Phone max 12 numbers")
+    @Size(min = 10, message = "Phone at least 10 numbers")
+    @Size(max = 12, message = "Phone max 12 numbers")
     private final String phone;
 
     @NotBlank(message = "address is required")

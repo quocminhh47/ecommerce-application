@@ -9,7 +9,6 @@ import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
 import com.nashtech.ecommercialwebsite.dto.request.UserRequest;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
-import com.nashtech.ecommercialwebsite.exceptions.InternalServerException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
 import com.nashtech.ecommercialwebsite.services.UserService;
@@ -23,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +39,8 @@ public class UserServiceImpl implements UserService {
     private static final String USER_ROLE_NAME = "USER";
 
     private final ConfirmationTokenService confirmationTokenService;
+
+    private final LoginStatusServiceImpl loginStatusService;
 
     private final UserRepository userRepository;
 
@@ -89,7 +91,11 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserAccountResponse getAllUserAccounts(int pageNo, int pageSize, String sortBy, String sortDir) {
+    public UserAccountResponse getAllUserAccounts(int pageNo,
+                                                  int pageSize,
+                                                  String sortBy,
+                                                  String sortDir,
+                                                  HttpServletRequest request) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         //create pageable instance
@@ -101,12 +107,15 @@ public class UserServiceImpl implements UserService {
                                 String.format(USER_ROLE_NOT_FOUND_MSG,
                                         USER_ROLE_NAME)));
         Page<Account> accounts = userRepository.findAllByRole(pageable, role);
-        return getContent(accounts);
+        UserAccountResponse accountResponse = getContent(accounts);
+        accountResponse.setLoginStatus(loginStatusService.getLoginStatus(request));
+
+        return accountResponse;
     }
 
 
     @Override
-    public UserAccountDto getAccountById(int id) {
+    public UserAccountDto getAccountById(int id, HttpServletRequest request) {
 
         Account account = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -118,7 +127,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserAccountDto changeUserAccountStatus(UserRequest userRequest, int userId) {
+    public UserAccountDto changeUserAccountStatus(UserRequest userRequest, int userId, HttpServletRequest request) {
 
         Account account = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -130,7 +139,11 @@ public class UserServiceImpl implements UserService {
 
         Account updatedAccount = userRepository.save(account);
         System.out.println(updatedAccount.toString());
-        return mapper.map(updatedAccount, UserAccountDto.class);
+
+        UserAccountDto accountDto = mapper.map(updatedAccount, UserAccountDto.class);
+        accountDto.setLoginStatus(loginStatusService.getLoginStatus(request));
+
+        return  accountDto;
 
     }
 

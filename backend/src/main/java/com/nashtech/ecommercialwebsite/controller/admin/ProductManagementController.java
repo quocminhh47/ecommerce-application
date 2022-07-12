@@ -55,13 +55,13 @@ public class ProductManagementController {
                     content = {@Content(examples = {@ExampleObject()})}),
 
     })
-    public SingleProductResponse saveProduct(@Valid @RequestBody ProductRequest productRequest) {
-        return productService.saveProduct(productRequest);
+    public SingleProductResponse saveProduct(@Valid @RequestBody ProductRequest productRequest,
+                                             HttpServletRequest request) {
+        return productService.saveProduct(productRequest, request);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    //@PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Change the product information", description = "Provides changing product properties feature")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK - Successfully changing"),
@@ -78,12 +78,12 @@ public class ProductManagementController {
 
     })
     public SingleProductResponse updateProduct(@PathVariable("id") int id,
-                                               @Valid @RequestBody ProductUpdateRequest productRequest) {
-        return productService.updateProduct(id, productRequest);
+                                               @Valid @RequestBody ProductUpdateRequest productRequest,
+                                               HttpServletRequest request) {
+        return productService.updateProduct(id, productRequest, request);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete product", description = "This provide the ability of hide product from the website")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK - Successfully delete"),

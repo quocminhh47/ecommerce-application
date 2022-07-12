@@ -34,6 +34,8 @@ public class SingleProductResponse {
 
     private String brandName;
 
+    private int brandId;
+
     private Boolean isUserLogged;
 
     private RatingResponse ratingResponse;
@@ -41,6 +43,8 @@ public class SingleProductResponse {
     private String thumbnail;
 
     private  Boolean hidden;
+
+    private LoginStatusResponse loginStatusResponse = new LoginStatusResponse();
 
     List<ProductImage> productImages = new ArrayList<>();
 

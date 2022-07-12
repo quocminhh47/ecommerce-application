@@ -30,4 +30,7 @@ public class UserAccountDto {
     @NotNull(message ="Locked status is required")
     Boolean nonLocked;
 
+    LoginStatusResponse loginStatus = new LoginStatusResponse();
+
+
 }

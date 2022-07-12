@@ -3,6 +3,7 @@ package com.nashtech.ecommercialwebsite.controller.admin;
 import com.nashtech.ecommercialwebsite.dto.request.BrandRequest;
 import com.nashtech.ecommercialwebsite.dto.response.BrandDto;
 import com.nashtech.ecommercialwebsite.dto.response.BrandResponse;
+import com.nashtech.ecommercialwebsite.dto.response.SingleBrandResponse;
 import com.nashtech.ecommercialwebsite.services.BrandService;
 import com.nashtech.ecommercialwebsite.utils.AppConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Tag(name = "Brands Resources Management",
@@ -42,8 +45,9 @@ public class BrandManagementController {
                     content = {@Content(examples = {@ExampleObject(value = "")})})
     })
     @GetMapping("/{id}")
-    public ResponseEntity<BrandDto> getBrandById(@PathVariable("id") int id) {
-        return new ResponseEntity<>(brandService.getBrandById(id), HttpStatus.OK);
+    public ResponseEntity<SingleBrandResponse> getBrandById(@PathVariable("id") int id,
+                                                            HttpServletRequest request) {
+        return new ResponseEntity<>(brandService.getBrandById(id, request), HttpStatus.OK);
     }
 
 
@@ -71,10 +75,11 @@ public class BrandManagementController {
                     String sortBy,
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir
+                    String sortDir,
+            HttpServletRequest request
     ) {
         return new ResponseEntity<>(
-                brandService.getAllBrands(pageNo, pageSize, sortBy, sortDir),
+                brandService.getAllBrands(pageNo, pageSize, sortBy, sortDir, request),
                 HttpStatus.OK);
     }
 
@@ -90,8 +95,9 @@ public class BrandManagementController {
                     description = "Not found - The request resources was not found",
                     content = {@Content(examples = {@ExampleObject(value = "")})})
     })
-    public ResponseEntity<BrandDto> createNewBrand(@Valid @RequestBody BrandRequest brandRequest) {
-        return new ResponseEntity<>(brandService.save(brandRequest), HttpStatus.CREATED);
+    public ResponseEntity<SingleBrandResponse> createNewBrand(@Valid @RequestBody BrandRequest brandRequest,
+                                                   HttpServletRequest request) {
+        return new ResponseEntity<>(brandService.save(brandRequest, request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -108,9 +114,10 @@ public class BrandManagementController {
                     description = "Not found - The request resources was not found",
                     content = {@Content(examples = {@ExampleObject(value = "")})})
     })
-    public ResponseEntity<BrandDto> updateBrand(@PathVariable("id") int id,
-                                                @Valid @RequestBody BrandRequest brandRequest) {
-        return new ResponseEntity<>(brandService.update(id, brandRequest), HttpStatus.OK);
+    public ResponseEntity<SingleBrandResponse> updateBrand(@PathVariable("id") int id,
+                                                @Valid @RequestBody BrandRequest brandRequest,
+                                                HttpServletRequest request) {
+        return new ResponseEntity<>(brandService.update(id, brandRequest, request), HttpStatus.OK);
 
     }
 }

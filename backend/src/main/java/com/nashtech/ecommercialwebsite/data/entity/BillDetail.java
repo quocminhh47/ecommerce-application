@@ -20,13 +20,13 @@ public class BillDetail {
     @Column(name = "price")
     private Integer price;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @MapsId("billId")
     @JoinColumn(name = "bill_id")
     private Bill bill;
 
-    @ManyToOne
     @MapsId("productId")
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 

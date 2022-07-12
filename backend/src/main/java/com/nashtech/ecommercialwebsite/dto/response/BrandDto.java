@@ -18,4 +18,6 @@ public class BrandDto {
     private String thumbnail;
 
     private String description;
+
+    //LoginStatusResponse loginStatusResponse = new LoginStatusResponse();
 }

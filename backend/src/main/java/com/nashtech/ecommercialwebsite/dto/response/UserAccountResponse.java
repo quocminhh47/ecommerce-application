@@ -19,4 +19,6 @@ public class UserAccountResponse {
     private int totalPages;
 
     private boolean last;
+
+    LoginStatusResponse loginStatus = new LoginStatusResponse();
 }

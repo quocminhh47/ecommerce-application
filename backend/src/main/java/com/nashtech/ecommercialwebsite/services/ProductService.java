@@ -34,11 +34,20 @@ public interface ProductService {
                                            String sortDirection,
                                            HttpServletRequest request);
 
-    SingleProductResponse saveProduct(ProductRequest productRequest);
+    SingleProductResponse saveProduct(ProductRequest productRequest, HttpServletRequest request);
 
-    SingleProductResponse updateProduct(int id , ProductUpdateRequest productRequest);
+    SingleProductResponse updateProduct(int id ,
+                                        ProductUpdateRequest productRequest,
+                                        HttpServletRequest request);
 
     void deleteProduct(int id);
+
+    ProductResponse getProductsByGender(boolean gender,
+                                        int pageNo,
+                                        int pageSize,
+                                        String sortBy,
+                                        String sortDirection,
+                                        HttpServletRequest request);
 
 
 }

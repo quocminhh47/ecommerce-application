@@ -1,6 +1,7 @@
 package com.nashtech.ecommercialwebsite.services.impl;
 
 import com.nashtech.ecommercialwebsite.data.entity.*;
+import com.nashtech.ecommercialwebsite.data.repository.BillItemRepository;
 import com.nashtech.ecommercialwebsite.data.repository.BillRepository;
 import com.nashtech.ecommercialwebsite.data.repository.ProductRepository;
 import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
@@ -25,58 +26,63 @@ public class BillServiceImpl implements BillService {
 
     private final BillRepository billRepository;
 
+    private  final BillItemRepository billItemRepository;
+
     private final ModelMapper mapper;
 
     private final ProductRepository productRepository;
 
     private final UserRepository userRepository;
 
-    @Override
-    public BillResponse orderProducts(HttpServletRequest request, BillRequest billRequest) {
-        String token = jwtService.parseJwt(request);
-        String username = jwtService.getUsernameFromToken(token);
 
-        Account user = userRepository.findAccountByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Username %s not found", username)));
+  @Override
+  public BillResponse orderProducts(HttpServletRequest request, BillRequest billRequest) {
+      String token = jwtService.parseJwt(request);
+      String username = jwtService.getUsernameFromToken(token);
 
-        Bill bill = new Bill();
-        bill.setCreateDate(new Date());
-        bill.setAccount(user);
+      Account user = userRepository.findAccountByUsername(username)
+              .orElseThrow(() -> new ResourceNotFoundException(
+                      String.format("Username %s not found", username)));
 
-        BillResponse billResponse = new BillResponse();
-        billResponse.setPhone(user.getPhone());
-        billResponse.setAddress(user.getAddress());
+      Bill bill = new Bill();
+      bill.setCreateDate(new Date());
+      bill.setAccount(user);
 
-        billRequest.getCartDetails().forEach(item -> {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException("Product not found"));
+      BillResponse billResponse = new BillResponse();
+      billResponse.setPhone(user.getPhone());
+      billResponse.setAddress(user.getAddress());
 
-            BillDetail billDetail = new BillDetail();
-            billDetail.setId( new BillDetailId(bill.getID(), item.getProductId()));
-            billDetail.setProduct(product);
-            billDetail.setBill(bill);
-            billDetail.setQuantity(item.getProductQuantity());
-            billDetail.setPrice(product.getPrice()); //price per one product
+      billRequest.getCartDetails().forEach(item -> {
+          Product product = productRepository.findById(item.getProductId())
+                  .orElseThrow(
+                          () -> new ResourceNotFoundException("Product not found"));
 
-            billResponse.getCartDetails().add(mapToBillItemResponse(item, product));
-            billResponse.setPriceTotal(item.getProductQuantity() * product.getPrice());
+          BillDetail billDetail = new BillDetail();
+          billDetail.setId( new BillDetailId(bill.getID(), item.getProductId()));
+          billDetail.setProduct(product);
+          billDetail.setBill(bill);
+          billDetail.setQuantity(item.getProductQuantity());
+          billDetail.setPrice(product.getPrice()); //price per one product
 
-            bill.getBillDetails().add(billDetail);
-        });
+          billResponse.getCartDetails().add(mapToBillItemResponse(item, product));
+          billResponse.setPriceTotal(item.getProductQuantity() * product.getPrice());
 
-        int billTotalPrice = bill.getBillDetails().stream()
-                .mapToInt(s -> (s.getQuantity() * s.getPrice()))
-                .sum();
+          bill.getBillDetails().add(billDetail);
 
-        bill.setPriceTotal(billTotalPrice);
-        billResponse.setPriceTotal(bill.getPriceTotal());
+      });
 
-        //save bill & bill items
-        billRepository.save(bill);
-        return billResponse;
-    }
+      int billTotalPrice = bill.getBillDetails().stream()
+              .mapToInt(s -> (s.getQuantity() * s.getPrice()))
+              .sum();
+
+      bill.setPriceTotal(billTotalPrice);
+      billResponse.setPriceTotal(bill.getPriceTotal());
+
+      //save bill & bill items
+      billRepository.save(bill);
+      return billResponse;
+  }
+
 
 
     private BillItemResponse mapToBillItemResponse(CartItemUpdateDto cartItemUpdateDto, Product product) {

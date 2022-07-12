@@ -14,4 +14,11 @@ public class CartItemUpdateDto {
 
     private int productQuantity;
 
+    @Override
+    public String toString() {
+        return "CartItemUpdateDto{" +
+                "productId=" + productId +
+                ", productQuantity=" + productQuantity +
+                '}';
+    }
 }
