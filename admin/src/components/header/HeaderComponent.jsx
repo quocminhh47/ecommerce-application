@@ -1,60 +1,63 @@
-import React from "react";
-import {Link} from 'react-router-dom';
+import React from 'react'
+import './css/Header.css'
+import {Link, useNavigate} from 'react-router-dom'
 
-function HeaderComponent() {
+export default function HeaderComponent(props) {
+
+    const navigate = useNavigate();
+
+    const logoutHandler = () => {
+        const token = window.localStorage.getItem("accessToken")
+        if(token) {
+            window.localStorage.removeItem("accessToken");
+            alert("Logout success")
+        }
+        else {
+            alert('You has been logout before')
+        }       
+        navigate('/login')
+
+    }
+
     return (
-        <header className="header">
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-xl-3 col-lg-2">
-                        <div className="header__logo">
-                            <Link to="/"><img src="img/logo.png" alt=""/></Link>
-                        </div>
+        <header className="site-navbar js-sticky-header site-navbar-target" role="banner">
+
+            <div className="container">
+                <div className="row align-items-center position-relative">
+
+
+                    <div className="site-logo">
+                        <Link to="/" className="text-black"><span className="text-primary">Admin Page </span></Link>
                     </div>
-                    <div className="col-xl-6 col-lg-7">
-                        <nav className="header__menu">
-                            <ul>
-                                <li className="active"><Link to="/">Home</Link></li>
-                                <li><Link to="#">Women’s</Link></li>
-                                <li><Link to="#">Men’s</Link></li>
-                                <li><Link to="/shop.html">Shop</Link></li>
-                                <li><Link to="#">Pages</Link>
-                                    <ul className="dropdown">
-                                        <li><Link to="/product-details.html">Product Details</Link></li>
-                                        <li><Link to="/shop-cart.html">Shop Cart</Link></li>
-                                        <li><Link to="/checkout.html">Checkout</Link></li>
-                                        <li><Link to="/blog-details.html">Blog Details</Link></li>
-                                    </ul>
+
+                    <div className="col-12">
+                        <nav className="site-navigation text-right ml-auto " role="navigation">
+
+                            <ul className="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
+
+                                <li><Link to="/" className="nav-link">Products</Link></li>
+
+                                <li >
+                                    <Link to="/brands" className="nav-link">Category</Link>                                   
                                 </li>
-                                <li><Link to="/blog.html">Blog</Link></li>
-                                <li><Link to="/contact.html">Contact</Link></li>
+
+                                <li><Link to="/customers" className="nav-link">Customers</Link></li>
+
+                                <li><Link to="/signup" className="nav-link">Create Account</Link></li>
+
+                                <li><Link to="/login" className="nav-link" onClick={() => logoutHandler()}>{props.status ? 'Logout' : ''}</Link></li>
+
                             </ul>
                         </nav>
+
                     </div>
-                    <div className="col-lg-3">
-                        <div className="header__right">
-                            <div className="header__right__auth">
-                                <Link to="/login">Login </Link>
-                                <Link to="#">Register</Link>
-                            </div>
-                            <ul className="header__right__widget">
-                                <li><span className="icon_search search-switch"></span></li>
-                                <li><Link to="#"><span className="icon_heart_alt"></span>
-                                    <div className="tip">2</div>
-                                </Link></li>
-                                <li><Link to="#"><span className="icon_bag_alt"></span>
-                                    <div className="tip">2</div>
-                                </Link></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div className="canvas__open">
-                    <i className="fa fa-bars"></i>
+
+                    <div className="toggle-button d-inline-block d-lg-none"><Link to="#" className="site-menu-toggle py-5 js-menu-toggle text-black"><span className="icon-menu h3"></span></Link></div>
+
                 </div>
             </div>
+
         </header>
+
     )
 }
-
-export default HeaderComponent;

@@ -1,38 +1,34 @@
-import React, { Component, useEffect } from 'react';
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import BrandService from "../../services/BrandService";
 import ReactPaginate from 'react-paginate'
-import HeaderComponent from '../header/HeaderComponent';
+import { useNavigate, useParams, Link } from 'react-router-dom'
+import HeaderComponent from "../header/HeaderComponent";
+import LoginService from "../../services/LoginService";
 import './Pagination.css'
-import ProductService from '../../services/ProductService';
-import { useNavigate, useParams } from 'react-router-dom'
-import { useState } from 'react';
-import LoginService from '../../services/LoginService';
+import './style.css'
 
+function ListBrandsComponent() {
 
-
-function ListProductComponent() {
-
+    const [brands, setBrands] = useState([]);
     const navigate = useNavigate();
-    const [loginStatus, setLoginStatus] = useState();
 
     if (!LoginService.checkAuthorization()) {
-       window.location.href = '/login'
-    } 
-    const [products, setProducts] = useState([]);
+        navigate('/login')
+     } 
 
 
     //pagination
     const [pageNo, setPageNo] = useState(0);
     const [pageSize, setPageSize] = useState();
     const [totalPage, setTotalPage] = useState();
-    
-
+    const [loginStatus, setLoginStatus] = useState();
 
     //change page
     const changePage = ({ selected }) => {
         setPageNo(selected)
     }
 
+    //fetch
     useEffect(() => {
         const token = localStorage.getItem("accessToken")
         const params = {
@@ -43,87 +39,82 @@ function ListProductComponent() {
                 'Authorization': `Bearer ${token}`
             }
         }
-        ProductService.getAllProducts(params)
+        BrandService.getAllBrands(params)
             .then(res => {
-                console.log(res.data)
-                setProducts(res.data.productContent)
+                console.log(res)
+                setBrands(res.data.brandContent)
                 setPageNo(res.data.pageNo)
                 setPageSize(res.data.pageSize);
-                setTotalPage(res.data.totalPages);
-                //setLoginStatus(LoginService.checkLoginStatus(res.data));
-            }
-            )
-            .catch(error => {
-                console.log(error)
-                if(error.response.status === 403) {
-                    alert("Action not permissioned !")
+                setTotalPage(res.data.totalPages);                
+                setLoginStatus(LoginService.checkLoginStatus(res.data));                
+            })
+            .catch(err => {
+                console.log(err)
+                if(err.response.status == '403') {
                     navigate('/login')
                 }
-                else {
-                    alert("Something went wrong, try again!")
-                    navigate('/login')
-                }
-            });
+            })
     }, [pageNo])
 
     return (
         <>
-            <HeaderComponent status={true} />
+        <HeaderComponent status = {loginStatus} />
             <section className="ftco-section">
                 <div className="container">
 
                     <div className="row justify-content-center">
                         <div className="col-md-6 text-center mb-4">
-                            <h2 className="heading-section">ADMIN: PRODUCTS MANAGEMENT</h2>
+                            <h2 className="heading-section">ADMIN: BRANDS MANAGEMENT</h2>
                         </div>
                     </div>
+
                     <div className="row">
                         <div className="col-md-12">
                             <h3 className="h5 mb-4 text-center">List Products :</h3>
-                            <Link to="/products/add" className="btn btn-primary mb-2" style={{ textAlign: "center" }}> Add Product </Link>
+                            <Link to="/brands/add" className="btn btn-primary mb-2" > Add new brand </Link>
                             <div className="table-wrap">
                                 <table className="table">
                                     <thead className="thead-primary">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Product</th>
+                                            <th>Logo</th>
                                             <th>Name</th>
-                                            <th>Brand</th>
-                                            <th>Price</th>
-                                            <th>Quantity</th>
-                                            <th>Created </th>
-                                            <th>Updated</th>
+                                            <th>Description</th>
                                             <th>Action</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            products.map(product =>
-                                                <tr className="alert" role="alert" key={product.id}>
+                                            brands.map(brand =>
 
-                                                    <td>{product.id}</td>
+                                                <tr className="alert" role="alert" key={brand.id} style={{ maxHeight: "70%" }}>
+
+                                                    <td>{brand.id}</td>
+
                                                     <td>
-                                                        <img style={{ width: "80px", height: "100px" }} src={product.thumbnail} />
+                                                        <img style={{ width: "80px", height: "100px" }} src={brand.thumbnail} />
                                                     </td>
+
                                                     <td>
-                                                        <div className="email">
-                                                            <p>{product.name}</p>
-                                                        </div>
+                                                        {brand.name}
                                                     </td>
-                                                    <td>{product.brandName}</td>
-                                                    <td>{product.price}</td>
-                                                    <td>{product.quantity}</td>
-                                                    <td>{product.createdAt}</td>
-                                                    <td>{product.updatedAt}</td>
+
+                                                    <td>{brand.description}</td>
+
                                                     <td>
                                                         <button onClick={() => {
-                                                            navigate("/products/" + product.id)
+                                                            navigate("/brands/" + brand.id)
                                                         }}
                                                             className="btn btn-info"
                                                         > Show </button>
                                                     </td>
-                                                </tr>)
+
+                                                </tr>
+                                            )
                                         }
+
+
 
                                     </tbody>
                                 </table>
@@ -132,6 +123,7 @@ function ListProductComponent() {
                     </div>
                 </div>
             </section>
+
             <ReactPaginate
                 previousLabel={"Previous"}
                 nextLabel={"Next"}
@@ -145,8 +137,7 @@ function ListProductComponent() {
 
             />
         </>
-
     )
 }
 
-export default ListProductComponent;
+export default ListBrandsComponent;
