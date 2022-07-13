@@ -1,7 +1,6 @@
 package com.nashtech.ecommercialwebsite.controller.admin;
 
 import com.nashtech.ecommercialwebsite.dto.request.BrandRequest;
-import com.nashtech.ecommercialwebsite.dto.response.BrandDto;
 import com.nashtech.ecommercialwebsite.dto.response.BrandResponse;
 import com.nashtech.ecommercialwebsite.dto.response.SingleBrandResponse;
 import com.nashtech.ecommercialwebsite.services.BrandService;

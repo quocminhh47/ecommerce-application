@@ -15,9 +15,17 @@ public class BillResponse {
 
     private List<BillItemResponse> cartDetails = new ArrayList<>();
 
+    private  int billId;
+
     private int priceTotal;
+
+    private  String firstName;
+
+    private  String lastName;
 
     private String phone;
 
     private String address;
+
+    private String email;
 }

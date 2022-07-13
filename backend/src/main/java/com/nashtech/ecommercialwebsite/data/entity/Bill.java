@@ -16,7 +16,7 @@ public class Bill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private  Integer ID;
+    private  Integer id;
 
     //Đã duyệt hay chưa duyệt
     @Column(name = "status")
@@ -43,7 +43,7 @@ public class Bill {
     @Override
     public String toString() {
         return "Bill{" +
-                "ID=" + ID +
+                "ID=" + id +
                 ", status=" + status +
                 ", createDate=" + createDate +
                 ", priceTotal=" + priceTotal +
