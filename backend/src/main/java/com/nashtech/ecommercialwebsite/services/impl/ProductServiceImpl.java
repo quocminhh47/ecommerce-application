@@ -53,8 +53,9 @@ public class ProductServiceImpl implements ProductService {
                         String.format("Product not found with id: %s", id)));
 
         SingleProductResponse singleProductResponse = mapper.map(product, SingleProductResponse.class);
-        List<ProductImage> images = imagesRepository.findProductImagesByProduct(product);
-        singleProductResponse.setProductImages(images);
+//        List<ProductImage> images = imagesRepository.findProductImagesByProduct(product);
+//        singleProductResponse.setProductImages(images);
+        singleProductResponse.setProductImages(product.getProductImages());
 
         Double ratingPointsFromProduct = ratingRepository.getRatingPointsFromProduct(id);
 
@@ -154,6 +155,7 @@ public class ProductServiceImpl implements ProductService {
         product.getProductImages().forEach(image -> image.setProduct(product));
 
         Product savedProduct = productRepository.save(product);
+
         SingleProductResponse response = mapper.map(savedProduct, SingleProductResponse.class);
         response.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
 
