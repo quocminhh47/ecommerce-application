@@ -1,13 +1,19 @@
 import axios from "axios";
 import React, { Component, useEffect, useState } from "react";
+import { useParams, useNavigate } from 'react-router-dom'
+import CartService from '../../../services/CartService';
 import './Rating.css';
 import BreadCrumbComponent from "../../../components/product/breadcrumb/BreadCrumbComponent";
 import Header from "../../../components/header/Header";
 import AuthService from "../../../services/AuthService";
+import PriceFormatterService from "../../../services/PriceFormatterService";
 
 function DetailProductComponent() {
+    let params = useParams();
+    const navigate = useNavigate();
 
-    const PRODUCT_INFO_BASE_URL = "http://localhost:8080/user/api/products/1";
+    const PRODUCT_INFO_BASE_URL = "http://localhost:8080/user/api/products/" + params.id;
+    console.log(PRODUCT_INFO_BASE_URL)
     const RATING_PRODUCT_URL = "http://localhost:8080/customer/api/ratings";
 
 
@@ -28,24 +34,24 @@ function DetailProductComponent() {
             const ratingElement = document.getElementById(rating);
             ratingElement.setAttribute('checked', true);
         }
-
     }
-
 
     //fetch api
     const fetchProductInfo = () => {
 
         const token = localStorage.getItem("accessToken");
-
-        return axios.get(PRODUCT_INFO_BASE_URL, {
+        const params = {
+            
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        })
+        }
+
+        return axios.get(PRODUCT_INFO_BASE_URL, params)
             .then(res => {
                 if (res.status == 200) {
                     setProduct(res.data);
-
+                    console.log(res.data)
                     setImages(res.data.productImages);
 
                     setProductRating(res.data.ratingResponse.productRatingPoints)
@@ -64,7 +70,10 @@ function DetailProductComponent() {
 
     }, [userRating]);
 
-
+    //put product to cart
+    const putProductToCart = (id) => {
+        CartService.addProductToCart(id);
+    }
 
     //rating/ update rating
     const ratingProduct = () => {
@@ -96,7 +105,7 @@ function DetailProductComponent() {
 
                     else if (res.status == 403) {
                         alert("You must login first");
-                        window.location.href = "/login";
+                        navigate("/login");
                     }
                     else {
                         alert(res.data.mess);
@@ -106,19 +115,9 @@ function DetailProductComponent() {
         } else alert("Enter your rating first!");
     }
 
-    //format price
-    const formatter = (price) => {
-        const formatter = new Intl.NumberFormat('de-DE', {
-            style: 'currency',
-            currency: 'VND',
-        });
-        return formatter.format(price);
-    }
-
     return (
         <>
             <Header status={product.isUserLogged} />
-            <BreadCrumbComponent name={product.name} />
             <section className="product-details spad">
                 <div className="container">
                     <div className="row">
@@ -128,11 +127,11 @@ function DetailProductComponent() {
                                     tabIndex="1" style={{ overflowY: 'hidden', outline: 'none' }}>
                                     {
                                         images.map(image =>
-                                            <>
-                                                <a className="pt" key={image.id}>
-                                                    <img src={image.image} alt="" />
-                                                </a>
-                                            </>
+
+                                            <a className="pt" key={image.id}>
+                                                <img src={image.image} alt="" />
+                                            </a>
+
                                         )
                                     }
                                 </div>
@@ -141,6 +140,10 @@ function DetailProductComponent() {
                                         <div className="owl-stage-outer">
                                             <div className="owl-stage"
                                                 style={{ transform: "translate3d(0px, 0px, 0px)", transition: "all 0s ease 0s", width: "1652px" }}>
+
+                                                <div className="owl-item active" style={{ width: "412.9px" }} >
+                                                    <img className="product__big__img" src={product.thumbnail} alt="" />
+                                                </div>
                                                 {
                                                     images.map(image =>
                                                         <div className="owl-item active" style={{ width: "412.9px" }} key={image.id}>
@@ -188,11 +191,14 @@ function DetailProductComponent() {
                                     <i className="fa fa-star"></i>
                                     <p>(Đánh giá :  {parseFloat(productRating).toFixed(2)}/5 )</p>
                                 </div>
-                                <div className="product__details__price">Giá: {formatter(product.price)} <span> {formatter(product.price)} </span></div>
+                                <div className="product__details__price">Giá: {PriceFormatterService.formatPrice(product.price)} <span>  {PriceFormatterService.formatPrice(product.price)}  </span></div>
                                 <p>{product.description}</p>
                                 <div className="product__details__button">
 
-                                    <a href="#" className="cart-btn"><span className="icon_bag_alt"></span> Add to cart</a>
+                                    <a style={{ color: "white" }} className="cart-btn" onClick={() => putProductToCart(product.id)}>
+                                        <span className="icon_bag_alt"></span>
+                                        Add to cart
+                                    </a>
                                     <ul>
                                         <li><a href="#"><span className="icon_heart_alt"></span></a></li>
                                         <li><a href="#"><span className="icon_adjust-horiz"></span></a></li>
@@ -200,6 +206,10 @@ function DetailProductComponent() {
                                 </div>
                                 <div className="product__details__widget">
                                     <ul>
+                                        <li>
+                                            <span>Số lượng:</span>
+                                            <p>{product.quantity}</p>
+                                        </li>
                                         <li>
                                             <span>Trạng thái:</span>
                                             <p>{product.status}</p>
@@ -232,5 +242,8 @@ function DetailProductComponent() {
     );
 }
 
+
+
+// export default SingleProduct;
 export default DetailProductComponent;
 

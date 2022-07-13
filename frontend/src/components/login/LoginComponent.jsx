@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 function LoginComponent() {
 
@@ -88,9 +89,9 @@ function LoginComponent() {
                         <div className="flex-sb-m w-full p-b-48">
 
                             <div>
-                                <a href="" className="txt3">
+                                <Link to="/sigin" className="txt3">
                                     New here? Click to register!
-                                </a>
+                                </Link>
                                 <br />
                                 <span className="txt1 p-b-11" style={{ color: 'red' }}>{noti}</span>
                             </div>

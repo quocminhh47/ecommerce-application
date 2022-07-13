@@ -1,52 +1,63 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import CheckRegistrationService from "../../services/CheckRegistrationService";
+import { Link, useNavigate } from "react-router-dom";
+import RegisterService from "../../services/RegisterService";
 
 export default function RegistrationComponent() {
-
-    const REGISTRATION_LINK_URL = "http://localhost:8080/v1/api/registration";
+    const navigate = useNavigate()
     const GMAIL_INBOX_URL = "https://mail.google.com/mail/u/0/#inbox";
     //state valid input
-    const [mess, setMess] = useState('Vui lòng nhập đầy đủ thông tin');
+    const [noti, setNoti] = useState('');
 
-    const registerHandler = () => {
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const phone = document.getElementById('phone').value;
-        const address = document.getElementById('address').value;
+    //registration request data
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
 
-        if (CheckRegistrationService.checkInfo(firstName, lastName, email, password, phone, address)) {
-           // setMess('Nhập thông tin thành công');
-            const dataPayload = {
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                password: password,
-                phone: phone,
-                address: address    
-            }
-            console.log(dataPayload)
+    //server validation response
+    const [firstNameErr, setFirstNameErr] = useState('')
+    const [lastNameErr, setLastNameErr] = useState('')
+    const [emailErr, setEmailErr] = useState('')
+    const [passwordErr, setPasswordErr] = useState('')
+    const [phoneErr, setPhoneErr] = useState('')
+    const [addressErr, setAddressErr] = useState('')
 
-            axios.post(REGISTRATION_LINK_URL, dataPayload)
+
+
+    const register = () => {
+        const userPayload = { firstName, lastName, email, password, phone, address }
+        RegisterService.register(userPayload)
             .then(res => {
-                console.log(res.data);
-                if(res.status == 201) {
-                    alert(res.data.message);
-                    //open mail
+                console.log(res)
+                if (res.status === 201) {
+                    setNoti(res.data.message);
+                    alert("Register success, confirm mail to continue")
                     window.open(GMAIL_INBOX_URL)
-                    //redirect to login page
-                    window.location.href = "/login";
+                    navigate('/login')
                 }
             })
-            .catch(error => {
-                console.log(error)
-                setMess(error.response.data.message)
-            })
+            .catch(err => {
+                console.log(err);
+                if (err.response.data.validationErrors) {
+                    const validattion = err.response.data.validationErrors
+                    setFirstNameErr(validattion.firstName)
+                    setLastNameErr(validattion.lastName)
+                    setEmailErr(validattion.email)
+                    setPasswordErr(validattion.password)
+                    setPhoneErr(validattion.phone)
+                    setAddressErr(validattion.address)
+                    console.log(phone)
+                }
+                else if (err.response) {
+                    setNoti(err.response.data.message)
+                }
+                else {
+                    setNoti('Register failed')
+                }
 
-        } else setMess("Phone tối thiểu 10 và tối đa 12 ký tự. Email phải nhập đúng định dạng!!")
+            })
     }
 
     return (
@@ -59,36 +70,62 @@ export default function RegistrationComponent() {
                                 <img src="https://res.cloudinary.com/duoih0eqa/image/upload/v1657269647/Untitled_rj2t0s.png" alt="" />
                             </Link>
                             <h2 className="text-center">Create Your Account</h2>
+
                             <form className="text-left clearfix" >
-                                <span style={{ color: "red" }}>{mess}</span>
+                                <span style={{ color: "red" }}> {noti}</span>
                                 <div className="form-group">
-                                    <span htmlFor="password" >First Name</span>
-                                    <input id="firstName" type="text" className="form-control" placeholder="First Name"  />
+                                    <span htmlFor="password" >First Name :<p style={{ color: "red" }}> {firstNameErr || ''}</p></span>
+                                    <input id="firstName" type="text" className="form-control" placeholder="First Name"
+                                        onChange={(e) => {
+                                            setFirstNameErr('')
+                                            setFirstName(e.target.value)
+                                        }} />
                                 </div>
 
                                 <div className="form-group">
-                                    <span htmlFor="password" >Last name</span>
-                                    <input id="lastName" type="text" className="form-control" placeholder="Last Name"  />
+                                    <span htmlFor="password" >Last name : <p style={{ color: "red" }}> {lastNameErr || ''} </p></span>
+                                    <input id="lastName" type="text" className="form-control" placeholder="Last Name"
+                                        onChange={(e) => {
+                                            setLastNameErr('')
+                                            setLastName(e.target.value)
+                                        }} />
                                 </div>
                                 <div className="form-group">
-                                    <span htmlFor="password" >Email</span>
-                                    <input id="email" type="email" className="form-control" placeholder="Email"  />
+                                    <span htmlFor="password" >Email :<p style={{ color: "red" }}> {emailErr || ''}</p></span>
+                                    <input id="email" type="email" className="form-control" placeholder="Email"
+                                        onChange={(e) => {
+                                            setEmailErr('')
+                                            setEmail(e.target.value)
+                                        }} />
                                 </div>
                                 <div className="form-group">
-                                    <span htmlFor="password" >Password</span>
-                                    <input id="password" type="password" className="form-control" placeholder="Password"  />
+                                    <span htmlFor="password" >Password :<p style={{ color: "red" }}> {passwordErr || ''}</p></span>
+                                    <input id="password" type="password" className="form-control" placeholder="Password"
+                                        onChange={(e) => {
+                                            setPasswordErr('')
+                                            setPassword(e.target.value)
+                                        }}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <span htmlFor="password" >Phone</span>
-                                    <input id="phone" type="text" className="form-control" placeholder="Phone"  />
+                                    <span htmlFor="password" >Phone :<p style={{ color: "red" }}>{phoneErr || ''} </p></span>
+                                    <input id="phone" type="text" className="form-control" placeholder="Phone"
+                                        onChange={(e) => {
+                                            setPhoneErr('')
+                                            setPhone(e.target.value)
+                                        }}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <span htmlFor="password" >Address</span>
-                                    <input id="address" type="text" className="form-control" placeholder="Address"  />
+                                    <span htmlFor="password" >Address :<p style={{ color: "red" }}> {addressErr || ''}</p></span>
+                                    <input id="address" type="text" className="form-control" placeholder="Address" onChange={(e) => {
+                                        setAddressErr('')
+                                        setAddress(e.target.value)
+                                    }} />
                                 </div>
                                 <div className="text-center">
                                     <button type="button" className="btn btn-main text-center"
-                                        onClick={registerHandler}
+                                        onClick={register}
                                     >Sign In
                                     </button>
                                 </div>
