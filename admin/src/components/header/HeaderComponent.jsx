@@ -37,6 +37,8 @@ export default function HeaderComponent(props) {
 
                                 <li><Link to="/" className="nav-link">Products</Link></li>
 
+                                <li><Link to="/bills" className="nav-link">Bills</Link></li>
+
                                 <li >
                                     <Link to="/brands" className="nav-link">Category</Link>                                   
                                 </li>

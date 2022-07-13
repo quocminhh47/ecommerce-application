@@ -17,6 +17,7 @@ import HeaderComponent from './components/header/HeaderComponent';
 import FooterComponent from './components/footer/FooterComponent';
 import SignupComponent from './components/signup/SignupComponent';
 import ProtectedRoutes from './components/ProtectedRoute';
+import ListBillComponent from './components/bill/ListBillComponent';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path='/products/add' element={<AddProductComponent />} />
         <Route path='/customers' element={<ListCustomersComponent />} />
         <Route path='/customers/:customerId' element={<SingleCustomerComponent />} />
+        <Route path='/bills' element={<ListBillComponent />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
       <FooterComponent />
