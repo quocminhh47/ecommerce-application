@@ -11,6 +11,7 @@ import org.hamcrest.MatcherAssert;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.*;
+import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
 import java.util.Optional;
 
@@ -29,7 +30,6 @@ class BrandServiceImplTest {
     Brand savedBrand;
     Brand existingBrand; //in case brand name's already exist
     SingleBrandResponse expectedBrandResponse;
-
 
     @BeforeEach
     void setUp() {
@@ -65,6 +65,11 @@ class BrandServiceImplTest {
         given(brandRepository.findBrandByName(brandRequest.getName()))
                 .willReturn(Optional.empty());
 
+        ArgumentCaptor<Brand> brandCaptor = ArgumentCaptor.forClass(Brand.class);
+        ArgumentCaptor<BrandRequest> brandRequestCaptor = ArgumentCaptor.forClass(BrandRequest.class);
+
+        verify(mapper).map(brandRequestCaptor, brandCaptor);
+
         given(mapper.map(brandRequest, Brand.class)).willReturn(brandMappered);
 
         given(brandRepository.save(brandMappered)).willReturn(savedBrand);
@@ -90,9 +95,8 @@ class BrandServiceImplTest {
                 .willReturn(Optional.of(existingBrand));
 
         //when
-        ResourceConfictException exception = Assertions.assertThrows(ResourceConfictException.class, () -> {
-            brandServiceImpl.save(brandRequest);
-        });
+        ResourceConfictException exception = Assertions.assertThrows(ResourceConfictException.class,
+                () -> brandServiceImpl.save(brandRequest));
 
         // then
         MatcherAssert.assertThat(exception.getMessage(),
@@ -106,6 +110,11 @@ class BrandServiceImplTest {
     void givenBrandId_whenGetBrandById_thenReturnSingleBrandResponseObject() {
         //given
         given(brandRepository.findById(1)).willReturn(Optional.of(existingBrand));
+
+        ArgumentCaptor<Brand> brandCaptor = ArgumentCaptor.forClass(Brand.class);
+        ArgumentCaptor<BrandRequest> brandRequestCaptor = ArgumentCaptor.forClass(BrandRequest.class);
+
+        verify(mapper).map(brandRequestCaptor, brandCaptor);
 
         given(mapper.map(existingBrand, SingleBrandResponse.class)).willReturn(expectedBrandResponse);
 
@@ -124,9 +133,8 @@ class BrandServiceImplTest {
         given(brandRepository.findById(1)).willReturn(Optional.empty());
 
         //when
-        ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class,() -> {
-            brandServiceImpl.getBrandById(1);
-        });
+        ResourceNotFoundException exception = Assertions.assertThrows(ResourceNotFoundException.class,
+                () -> brandServiceImpl.getBrandById(1));
 
         //then
        MatcherAssert.assertThat(exception.getMessage(), is(String.format("Brand with ID: %s not found", 1)));
@@ -144,7 +152,10 @@ class BrandServiceImplTest {
 //        existingBrand.setThumbnail(brandRequest.getThumbnail());
 //        existingBrand.setDescription(brandRequest.getDescription());
 //        System.out.println(existingBrand.toString());
-        willDoNothing().given(mapper).map(brandRequest, existingBrand);
+
+        //        willDoNothing().given(mapper).map(brandRequest, existingBrand);
+
+        verify(mapper).map(brandRequest, existingBrand);
 
         given(brandRepository.save(existingBrand)).willReturn(savedBrand);
 
