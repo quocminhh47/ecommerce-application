@@ -7,6 +7,7 @@ import com.nashtech.ecommercialwebsite.dto.response.ProductResponse;
 import com.nashtech.ecommercialwebsite.dto.response.SingleProductResponse;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 
 public interface ProductService {
@@ -34,11 +35,10 @@ public interface ProductService {
                                            String sortDirection,
                                            HttpServletRequest request);
 
-    SingleProductResponse saveProduct(ProductRequest productRequest, HttpServletRequest request);
+    SingleProductResponse saveProduct(ProductRequest productRequest);
 
     SingleProductResponse updateProduct(int id ,
-                                        ProductUpdateRequest productRequest,
-                                        HttpServletRequest request);
+                                        ProductUpdateRequest productRequest);
 
     void deleteProduct(int id);
 

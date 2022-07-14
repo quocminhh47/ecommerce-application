@@ -1,20 +1,17 @@
 package com.nashtech.ecommercialwebsite.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Getter @Setter @Builder
 public class BrandRequest {
 
     @NotBlank(message = "Name cannot be blank")
+    @NotNull(message = "Name cannot be null")
     private String name;
 
     private String thumbnail;

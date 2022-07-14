@@ -3,53 +3,46 @@ package com.nashtech.ecommercialwebsite.data.repository;
 import com.nashtech.ecommercialwebsite.data.entity.Role;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
 class RoleRepositoryTest {
-
     @Autowired
-    RoleRepository underTest;
+    RoleRepository roleRepository;
+
+    private Role role;
 
     @BeforeEach
-    void setUp() {
+    void setup() {
+        role = Role.builder()
+                .roleName("PM")
+                .description("Project manager")
+                .build();
     }
 
     @AfterEach
     void tearDown() {
-        underTest.deleteAll();
+        roleRepository.deleteAll();
+        ;
     }
 
+    @DisplayName("Junit test for get role by role name")
     @Test
-    void itShouldReturnTheRightRoleByGivenRoleName() {
+    void gienRoleName_whenFindByName_thenReturnRoleObject() {
         //given
-        String roleName = "PM";
-        Role expectedRole = new Role(roleName, "This role is Project manager");
+        Role actualRole = roleRepository.save(role);
 
         //when
-        underTest.save(expectedRole);
-        Optional<Role> role = underTest.findRolesByRoleName(roleName);
+        Role expectedRole = roleRepository.findRolesByRoleName(role.getRoleName()).get();
 
         //then
-        assertThat(role.isPresent()).isTrue();
-        assertThat(role.get()).isEqualTo(expectedRole);
-    }
+        assertThat(expectedRole).isNotNull();
+        assertThat(expectedRole).isEqualTo(actualRole);
 
-    @Test
-    void itShouldCheckIfTheRoleNameDoesNotExists() {
-        //given
-        String roleName = "FakeName";
-
-        //when
-        Optional<Role> role = underTest.findRolesByRoleName(roleName);
-
-        //then
-        assertThat(role.isPresent()).isFalse();
     }
 }

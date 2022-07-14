@@ -36,9 +36,8 @@ public class BillManagementController {
                     String sortBy,
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir,
-            HttpServletRequest request) {
+                    String sortDir) {
 
-        return billService.getAllUnsolvedBills(pageNo, pageSize, sortBy, sortDir, request );
+        return billService.getAllBills(pageNo, pageSize, sortBy, sortDir );
     }
 }

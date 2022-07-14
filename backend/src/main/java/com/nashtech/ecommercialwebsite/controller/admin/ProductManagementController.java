@@ -55,9 +55,8 @@ public class ProductManagementController {
                     content = {@Content(examples = {@ExampleObject()})}),
 
     })
-    public SingleProductResponse saveProduct(@Valid @RequestBody ProductRequest productRequest,
-                                             HttpServletRequest request) {
-        return productService.saveProduct(productRequest, request);
+    public SingleProductResponse saveProduct(@Valid @RequestBody ProductRequest productRequest) {
+        return productService.saveProduct(productRequest);
     }
 
     @PutMapping("/{id}")
@@ -78,9 +77,8 @@ public class ProductManagementController {
 
     })
     public SingleProductResponse updateProduct(@PathVariable("id") int id,
-                                               @Valid @RequestBody ProductUpdateRequest productRequest,
-                                               HttpServletRequest request) {
-        return productService.updateProduct(id, productRequest, request);
+                                               @Valid @RequestBody ProductUpdateRequest productRequest) {
+        return productService.updateProduct(id, productRequest);
     }
 
     @DeleteMapping("/{id}")

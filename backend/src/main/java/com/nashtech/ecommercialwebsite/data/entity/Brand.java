@@ -8,8 +8,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "brands")
-@Getter @Setter
+@ToString
+@Getter @Setter @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Brand {
 
     @Id
@@ -33,9 +35,9 @@ public class Brand {
     @Setter(AccessLevel.NONE)
     Set<Product> products;
 
-    public Brand( String name, String thumbnail, String description) {
-        this.name = name;
-        this.thumbnail = thumbnail;
-        this.description = description;
-    }
+//    public Brand( String name, String thumbnail, String description) {
+//        this.name = name;
+//        this.thumbnail = thumbnail;
+//        this.description = description;
+//    }
 }

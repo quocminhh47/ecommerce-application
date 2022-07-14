@@ -22,7 +22,7 @@ public class BrandResponse {
 
     private boolean last;
 
-    LoginStatusResponse loginStatusResponse = new LoginStatusResponse();
+    //LoginStatusResponse loginStatusResponse = new LoginStatusResponse();
 
 
 }

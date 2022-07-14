@@ -19,5 +19,5 @@ public class SingleBrandResponse {
 
     private String description;
 
-    LoginStatusResponse loginStatusResponse = new LoginStatusResponse();
+    //LoginStatusResponse loginStatusResponse = new LoginStatusResponse();
 }

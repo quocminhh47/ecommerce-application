@@ -14,8 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Tag(name = "Brands Resources Management",
@@ -44,9 +42,8 @@ public class BrandManagementController {
                     content = {@Content(examples = {@ExampleObject(value = "")})})
     })
     @GetMapping("/{id}")
-    public ResponseEntity<SingleBrandResponse> getBrandById(@PathVariable("id") int id,
-                                                            HttpServletRequest request) {
-        return new ResponseEntity<>(brandService.getBrandById(id, request), HttpStatus.OK);
+    public ResponseEntity<SingleBrandResponse> getBrandById(@PathVariable("id") int id) {
+        return new ResponseEntity<>(brandService.getBrandById(id), HttpStatus.OK);
     }
 
 
@@ -74,11 +71,10 @@ public class BrandManagementController {
                     String sortBy,
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir,
-            HttpServletRequest request
+                    String sortDir
     ) {
         return new ResponseEntity<>(
-                brandService.getAllBrands(pageNo, pageSize, sortBy, sortDir, request),
+                brandService.getAllBrands(pageNo, pageSize, sortBy, sortDir),
                 HttpStatus.OK);
     }
 
@@ -94,9 +90,8 @@ public class BrandManagementController {
                     description = "Not found - The request resources was not found",
                     content = {@Content(examples = {@ExampleObject(value = "")})})
     })
-    public ResponseEntity<SingleBrandResponse> createNewBrand(@Valid @RequestBody BrandRequest brandRequest,
-                                                   HttpServletRequest request) {
-        return new ResponseEntity<>(brandService.save(brandRequest, request), HttpStatus.CREATED);
+    public ResponseEntity<SingleBrandResponse> createNewBrand(@Valid @RequestBody BrandRequest brandRequest) {
+        return new ResponseEntity<>(brandService.save(brandRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -114,9 +109,10 @@ public class BrandManagementController {
                     content = {@Content(examples = {@ExampleObject(value = "")})})
     })
     public ResponseEntity<SingleBrandResponse> updateBrand(@PathVariable("id") int id,
-                                                @Valid @RequestBody BrandRequest brandRequest,
-                                                HttpServletRequest request) {
-        return new ResponseEntity<>(brandService.update(id, brandRequest, request), HttpStatus.OK);
+                                                @Valid @RequestBody BrandRequest brandRequest)
+    {
+
+        return new ResponseEntity<>(brandService.update(id, brandRequest), HttpStatus.OK);
 
     }
 }

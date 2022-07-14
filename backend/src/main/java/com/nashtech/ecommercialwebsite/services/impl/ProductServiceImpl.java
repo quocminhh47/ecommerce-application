@@ -4,7 +4,6 @@ package com.nashtech.ecommercialwebsite.services.impl;
 import com.nashtech.ecommercialwebsite.data.entity.Account;
 import com.nashtech.ecommercialwebsite.data.entity.Brand;
 import com.nashtech.ecommercialwebsite.data.entity.Product;
-import com.nashtech.ecommercialwebsite.data.entity.ProductImage;
 import com.nashtech.ecommercialwebsite.data.repository.*;
 import com.nashtech.ecommercialwebsite.dto.request.ProductRequest;
 import com.nashtech.ecommercialwebsite.dto.request.ProductUpdateRequest;
@@ -53,8 +52,6 @@ public class ProductServiceImpl implements ProductService {
                         String.format("Product not found with id: %s", id)));
 
         SingleProductResponse singleProductResponse = mapper.map(product, SingleProductResponse.class);
-//        List<ProductImage> images = imagesRepository.findProductImagesByProduct(product);
-//        singleProductResponse.setProductImages(images);
         singleProductResponse.setProductImages(product.getProductImages());
 
         Double ratingPointsFromProduct = ratingRepository.getRatingPointsFromProduct(id);
@@ -147,8 +144,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public SingleProductResponse saveProduct(ProductRequest productRequest, HttpServletRequest request) {
-        if (productRequest.getThumbnail() == null) productRequest.setThumbnail(DEFAULT_IMAGE_URL);
+    public SingleProductResponse saveProduct(ProductRequest productRequest) {
+        if (productRequest.getThumbnail() == null) {
+            productRequest.setThumbnail(DEFAULT_IMAGE_URL);
+        }
         Product product = mapToEntity(productRequest);//product now include produc info + brand + list image
         product.setCreatedAt(LocalDateTime.now());
 
@@ -156,15 +155,11 @@ public class ProductServiceImpl implements ProductService {
 
         Product savedProduct = productRepository.save(product);
 
-        SingleProductResponse response = mapper.map(savedProduct, SingleProductResponse.class);
-        response.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
-
-        return response;
+        return mapper.map(savedProduct, SingleProductResponse.class);
     }
 
     @Override
-    public SingleProductResponse updateProduct(int id, ProductUpdateRequest productRequest,
-                                               HttpServletRequest request) {
+    public SingleProductResponse updateProduct(int id, ProductUpdateRequest productRequest) {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -185,7 +180,6 @@ public class ProductServiceImpl implements ProductService {
 
         SingleProductResponse singleProductResponse = mapper.map(updatedProduct, SingleProductResponse.class);
         singleProductResponse.setBrandId(brand.getId());
-        singleProductResponse.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
 
         return singleProductResponse;
     }

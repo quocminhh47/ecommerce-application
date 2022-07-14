@@ -19,9 +19,8 @@ public interface BillService {
 
     List<BillDetailReponse> getBillByAccount(HttpServletRequest request);
 
-    BillPaginationResponse getAllUnsolvedBills(int pageNo,
-                                               int pageSize,
-                                               String sortBy,
-                                               String sortDir,
-                                               HttpServletRequest request);
+    BillPaginationResponse getAllBills(int pageNo,
+                                       int pageSize,
+                                       String sortBy,
+                                       String sortDir);
 }

@@ -2,11 +2,11 @@ package com.nashtech.ecommercialwebsite.data.repository;
 
 import com.nashtech.ecommercialwebsite.data.entity.Brand;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -14,39 +14,35 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class BrandRepositoryTest {
 
     @Autowired
-    private BrandRepository underTest;
+    BrandRepository brandRepository;
+
+    private Brand brand;
+
+    @BeforeEach
+    void setup() {
+        Brand brand = Brand.builder()
+                .name("DELL")
+                .thumbnail("Thumbail")
+                .description("description")
+                .build();
+    }
 
     @AfterEach
     void tearDown() {
-        underTest.deleteAll();
+        brandRepository.deleteAll();
     }
 
+    @DisplayName("Junit test for get brand by nbrand name")
     @Test
-    void itShouldReturnTheRightBrandWithGivenName() {
+    void givenBrandName_whenFindByName_thenReturnBrandObject() {
         //given
-        String brandName = "TEST";
-        Brand expectedBrand = new Brand(brandName, "This is thumbnail","This is test description");
+        Brand actualBrand = brandRepository.save(brand);
 
         //when
-        underTest.save(expectedBrand);
-
-        Optional<Brand> brand = underTest.findBrandByName(brandName);
+        Brand expectedBrand = brandRepository.findBrandByName(brand.getName()).get();
 
         //then
-        assertThat(brand).isPresent();
-        assertThat(brand.get()).isEqualTo(expectedBrand);
-    }
-
-    @Test
-    void itShouldCheckWhenTheGivenNameDoseNotExist() {
-
-        //given
-        String brandName = "FakeName";
-
-        //when
-        Optional<Brand> brand = underTest.findBrandByName(brandName);
-
-        //then
-        assertThat(brand.isEmpty()).isTrue();
+        assertThat(expectedBrand).isNotNull();
+        assertThat(expectedBrand).isEqualTo(actualBrand);
     }
 }

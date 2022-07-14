@@ -25,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -53,21 +56,25 @@ public class BillServiceImpl implements BillService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Username %s not found", username)));
 
+        List<Product> products = productRepository.findAll();
+        Map<Integer, Product> productMap= products.stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+
         Bill bill = new Bill();
         bill.setCreateDate(new Date());
         bill.setAccount(user);
 
         BillResponse billResponse = new BillResponse();
-        billResponse.setPhone(user.getPhone());
-        billResponse.setAddress(user.getAddress());
-        billResponse.setFirstName(user.getFirstName());
-        billResponse.setLastName(user.getLastName());
-        billResponse.setEmail(user.getUsername());
 
         billRequest.getCartDetails().forEach(item -> {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException("Product not found"));
+//            Product product = productRepository.findById(item.getProductId())
+//                    .orElseThrow(
+//                            () -> new ResourceNotFoundException("Product not found"));
+            if(!productMap.containsKey(item.getProductId())) {
+                throw new ResourceNotFoundException(
+                        String.format("Product with ID: %s not found", item.getProductId()));
+            }
+            Product product = productMap.get(item.getProductId());
 
             BillDetail billDetail = new BillDetail();
             billDetail.setId(new BillDetailId(bill.getId(), item.getProductId()));
@@ -82,6 +89,12 @@ public class BillServiceImpl implements BillService {
             bill.getBillDetails().add(billDetail);
 
         });
+
+        billResponse.setPhone(user.getPhone());
+        billResponse.setAddress(user.getAddress());
+        billResponse.setFirstName(user.getFirstName());
+        billResponse.setLastName(user.getLastName());
+        billResponse.setEmail(user.getUsername());
 
         int billTotalPrice = bill.getBillDetails().stream()
                 .mapToInt(s -> (s.getQuantity() * s.getPrice()))
@@ -159,11 +172,10 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public BillPaginationResponse getAllUnsolvedBills(int pageNo,
-                                                      int pageSize,
-                                                      String sortBy,
-                                                      String sortDir,
-                                                      HttpServletRequest request) {
+    public BillPaginationResponse getAllBills(int pageNo,
+                                              int pageSize,
+                                              String sortBy,
+                                              String sortDir) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -173,8 +185,6 @@ public class BillServiceImpl implements BillService {
         Page<Bill> bills = billRepository.findAll(pageable); //0 : unsolved
 
         BillPaginationResponse billPaginationResponse = getContent(bills);
-        billPaginationResponse.setLoginStatusResponse(
-                loginStatusService.getLoginStatus(request));
 
         return  billPaginationResponse;
 

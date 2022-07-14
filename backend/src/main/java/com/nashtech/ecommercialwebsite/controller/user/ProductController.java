@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 
 @Tag(name = "Product Resources",
@@ -145,6 +146,7 @@ public class ProductController {
                         sortDir,
                         request), HttpStatus.OK);
     }
+
 
 
 }

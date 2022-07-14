@@ -1,9 +1,7 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -11,8 +9,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@Getter @Setter
+@Getter @Setter @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +28,4 @@ public class Role {
     @OneToMany(mappedBy = "role",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Account> accounts;
 
-    public Role(String roleName, String description) {
-        this.roleName = roleName;
-        this.description = description;
-    }
 }
