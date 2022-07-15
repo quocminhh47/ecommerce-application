@@ -28,6 +28,8 @@ export default new class CartService {
         }
     }
 
+    
+
     // removeCartItem(id) {
     //     const token = localStorage.getItem("accessToken");
     //     //valid token exist or not

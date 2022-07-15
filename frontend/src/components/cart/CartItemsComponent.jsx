@@ -17,15 +17,14 @@ export default function CartItemsComponent() {
     const [removedItem, setRemovedItem] = useState();
 
     const [totalPrice, setTotalPrice] = useState(0);
+    const [cartStatus, setCartStatus] = useState()
 
-    //const [billItems, setBillItems] = useState([]);
+    var billUpdate = []
 
     var billItems = []
 
     const removeCartItem = (id) => {
         const token = localStorage.getItem("accessToken");
-        //valid token exist or not
-        AuthService.checkUserAuth(token);
 
         const url = CART_ITEMS_API_URL + id;
 
@@ -40,8 +39,17 @@ export default function CartItemsComponent() {
                     setRemovedItem(id);
                 }
             })
-            .catch(error => {
-                console.log(error)
+            .catch(err => {
+                console.log(err)
+                if (err.response) {
+                    if (err.response.status === 403) {
+                        navigate('/login')
+                    } else alert(err.response.data.message)
+                }
+                else {
+                    alert("Failed, try again")
+                    navigate('/login')
+                }
             })
     }
 
@@ -62,91 +70,87 @@ export default function CartItemsComponent() {
                     setTotalPrice(res.data.totalPrice);
                 }
             })
-            .catch(error => {
-                console.log(error);
-                alert(error.data.message);
+            .catch(err => {
+                console.log(err)
+                if (err.response) {
+                    if (err.response.status === 403) {
+                        navigate('/login')
+                    }
+                    else alert(err.response.data.message)
+                }
+                else {
+                    alert("Failed, try again")
+                    navigate('/login')
+                }
             })
     }, [removedItem]);
 
     //useEffect()
 
-    const calculateItemTotalPrice = () => {
-
+    const calculateItemTotalPrice = (e) => {
+        console.log(e.target.value)
     }
 
 
-    const updateCart = (data) => {
-        let total = 0;
-        data.map(item => {
-            total += (item.productPrice * item.cartDetailQuantity);
-            //setTotalPrice(total);
-        })
+    const updateCart = () => {
+        //setCartStatus(true)
+        // alert("alert")
+       // billUpdate = [];
+       billItems = [];
+
+        const cartItemsId = document.querySelectorAll("td[id='itemId']")
+        const cartItemsQuantity = document.querySelectorAll("input[id='itemQuantity']")
+
+        const length = cartItemsId.length;
+        for (let i = 0; i < length; i++) {
+            const item = {
+                productId: cartItemsId[i].innerHTML,
+                productQuantity: cartItemsQuantity[i].value
+            }
+
+            billItems.push(item)
+        }
+
+        const dataPayload = {
+            cartDetails: billItems
+        }
+        console.log('dataload:');
+        console.log(dataPayload)
+
+        BillService.updateCart(dataPayload)
+            .then(res => {
+                console.log(res)
+                if (res.status == 200) {
+                    alert('Update success')
+                    //navigate(`/bill/${res.data.billId}`)
+                    console.log(res.data);
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                if (err.response) {
+
+                    if (err.response.status == 403) {
+                        alert('You must login first')
+                        navigate('/login')
+                    }
+
+                    if (err.response.status == 500) {
+                        alert('server error, try again later')
+                        //navigate('/')
+                    }
+                }
+                else {
+                    alert('Order failed, try again later')
+                    //navigate('/')
+                }
+
+            })
     }
 
 
 
     const purchaseHanlde = () => {
-
-        //     billItems = [];
-
-        //     const cartItemsId = document.querySelectorAll("td[id='itemId']")
-        //     const cartItemsQuantity = document.querySelectorAll("input[id='itemQuantity']")
-        //     console.log(cartItemsId)
-        //     console.log(cartItemsQuantity)
-
-        //     const length = cartItemsId.length;
-        //     for (let i = 0; i < length; i++) {
-        //         const item = {
-        //             productId: cartItemsId[0].innerHTML,
-        //             productQuantity: cartItemsQuantity[0].value
-        //         }
-
-        //         billItems.push(item)
-        //     }
-
-        //     const token = window.localStorage.getItem("accessToken")
-        //     console.log(token)
-        //     var myHeaders = new Headers();
-        //     myHeaders.append("Authorization", `Bearer ${token}`);
-        //     myHeaders.append("Content-Type", "application/json");
-
-        //     var raw =
-
-
-
-        //     JSON.stringify(
-        //         {
-        //             "cartDetails": [
-
-        //                 billItems.map(item => 
-        //                     {
-        //                        {
-        //                         "productId" : item.productId,
-        //                         "productQuantity" :  item.productQuantity
-        //                        }
-        //                     }
-        //                     )
-
-
-        //             ]
-        //         }
-        //    { "cartDetails": billItems }
-        //     );
-
-        //     var requestOptions = {
-        //         method: 'POST',
-        //         headers: myHeaders,
-        //         body: raw,
-        //         redirect: 'follow'
-        //     };
-
-        //     fetch("http://localhost:8080/customer/api/order", requestOptions)
-        //         .then(response => response.text())
-        //         .then(result => console.log(result))
-        //         .catch(error => console.log('error', error));
-
-
-
 
         billItems = [];
 
@@ -168,26 +172,7 @@ export default function CartItemsComponent() {
             cartDetails: billItems
         }
 
-        // var data = JSON.stringify(dataPayload);
-        // const token = window.localStorage.getItem("accessToken")
-        // var config = {
-        //     method: 'post',
-        //     url: 'http://localhost:8080/customer/api/order',
-        //     headers: {
-        //         Authorization: `Bearer ${token}`,
-        //         'Content-Type': 'application/json'
-        //     },
-        //     data: data
-        // };
-
-
         console.log(dataPayload)
-
-        // axios(config)
-        //     .then(function (response) {
-        //         console.log(JSON.stringify(response.data));
-        //         alert("success")
-        //     })
 
         BillService.purchaseProducts(dataPayload)
             .then(res => {
@@ -256,8 +241,8 @@ export default function CartItemsComponent() {
                                                     <td className="cart__price">{PriceFormatterService.formatPrice(item.productPrice)}</td>
                                                     <td className="cart__quantity">
                                                         <div className="pro-qty">
-                                                            <input type="number" value={item.cartDetailQuantity} id="itemQuantity"
-                                                                onChange={() => calculateItemTotalPrice()} />
+                                                            <input type="number" defaultValue={item.cartDetailQuantity} id="itemQuantity"
+                                                            />
                                                         </div>
                                                     </td>
                                                     <td className="cart__total">
@@ -284,22 +269,22 @@ export default function CartItemsComponent() {
                     <div className="row">
                         <div className="col-lg-6 col-md-6 col-sm-6">
                             <div className="cart__btn">
-                                <Link to="#">Continue Shopping</Link>
+                                <Link to="#" >Continue Shopping</Link>
                             </div>
                         </div>
                         <div className="col-lg-6 col-md-6 col-sm-6">
                             <div className="cart__btn update__btn">
-                                <span className="icon_loading" onClick={() => updateCart(cartItems)} ></span> Update cart
+                                <span className="icon_loading" onClick={updateCart} ></span> Update cart
                             </div>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-lg-6">
-                            <div className="discount__content">
-                                <h6>Discount codes</h6>
+                            <div className="cart__btn">
+                                {/* <h6>Discount codes</h6> */}
                                 <form action="#">
-                                    <input type="text" placeholder="Enter your coupon code" />
-                                    <button type="submit" className="site-btn">Apply</button>
+                                    {/* <input type="text" placeholder="Enter your coupon code" /> */}
+                                    <button type="button" className="site-btn" onClick={updateCart}>Update cart</button>
                                 </form>
                             </div>
                         </div>
@@ -309,7 +294,7 @@ export default function CartItemsComponent() {
                                 <ul>
                                     <li>Total <span>{PriceFormatterService.formatPrice(totalPrice)}</span></li>
                                 </ul>
-                                <a className="primary-btn" onClick={purchaseHanlde}>Proceed to checkout</a>
+                                <a className="primary-btn" onClick={purchaseHanlde} style={{color:'white'}}>Proceed to checkout</a>
                             </div>
                         </div>
                     </div>

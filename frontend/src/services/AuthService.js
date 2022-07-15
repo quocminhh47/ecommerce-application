@@ -8,4 +8,12 @@ export default new class AuthService {
            return  window.location.href = "/login";
         }        
     }
+
+    checkTokenExist(navigate) {
+        const token = window.localStorage.getItem("accessToken");
+        if(!token) {        
+            navigate('/login')   
+           return  false;
+        }  else return false;
+    }
 }

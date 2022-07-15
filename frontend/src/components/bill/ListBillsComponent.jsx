@@ -1,28 +1,42 @@
 import React, { useState, useEffect } from "react"
 import Header from "../header/Header"
 import BillService from "../../services/BillService"
-import { Link } from 'react-router-dom'
+import { Link , useNavigate} from 'react-router-dom'
 import PriceFormatterService from './../../services/PriceFormatterService'
 
 export default function ListBillsComponent() {
 
     const [bills, setBills] = useState([])
+    const [loginStatus, setLoginStatus] = useState();
+    const navigate = useNavigate();
 
     useEffect(() => {
         BillService.getAllBills()
             .then(res => {
                 console.log(res.data)
                 setBills(res.data)
+                setLoginStatus(true)
             })
             .catch(err => {
                 console.log(err)
+                if(err.response) {
+                    if(err.response.status === 403) {
+                        setLoginStatus(false);
+                        navigate('/login')
+                    }  
+                    else alert(err.response.data.message)
+                }
+                else {
+                    alert("Failed, try again")
+                    navigate('/login')
+                }
             })
     }, [])
 
 
     return (
         <>
-            <Header status={true} />
+            <Header status={loginStatus} />
             <section className="shop-cart spad">
                 <div className="container">
                     <div className="row">

@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import BillService from "../../services/BillService";
 import PriceFormatterService from "../../services/PriceFormatterService";
 
+
 function BillComponent() {
 
     const { billId } = useParams();
@@ -16,10 +17,23 @@ function BillComponent() {
     useEffect(() => {
         BillService.getBillDetail(billId)
             .then(res => {
+                console.log(res.data);
                 if (res.status === 200) {
                     setBill(res.data)
                     setBillItems(res.data.cartDetails)
-                    console.log(res.data);
+                    
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                if (err.response) {
+                    if (err.response.status === 403) {
+                        navigate('/login')
+                    } else alert(err.response.data.message)
+                }
+                else {
+                    alert("Failed, try again")
+                    navigate('/login')
                 }
             })
     }, [])
