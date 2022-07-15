@@ -14,7 +14,7 @@ function ListBrandsComponent() {
 
     if (!LoginService.checkAuthorization()) {
         navigate('/login')
-     } 
+    }
 
 
     //pagination
@@ -42,23 +42,27 @@ function ListBrandsComponent() {
         BrandService.getAllBrands(params)
             .then(res => {
                 console.log(res)
-                setBrands(res.data.brandContent)
-                setPageNo(res.data.pageNo)
-                setPageSize(res.data.pageSize);
-                setTotalPage(res.data.totalPages);                
-                setLoginStatus(LoginService.checkLoginStatus(res.data));                
+                if (res.status === 200) {
+                    setBrands(res.data.brandContent)
+                    setPageNo(res.data.pageNo)
+                    setPageSize(res.data.pageSize);
+                    setTotalPage(res.data.totalPages);
+                    setLoginStatus(true);
+                }
             })
             .catch(err => {
                 console.log(err)
-                if(err.response.status == '403') {
+                if (err.response.status == '403') {
                     navigate('/login')
                 }
+                setLoginStatus(false)
+            
             })
     }, [pageNo])
 
     return (
         <>
-        <HeaderComponent status = {loginStatus} />
+            <HeaderComponent status={loginStatus} />
             <section className="ftco-section">
                 <div className="container">
 

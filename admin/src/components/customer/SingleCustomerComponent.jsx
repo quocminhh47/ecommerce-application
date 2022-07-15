@@ -34,6 +34,7 @@ export default function SingleCustomerComponent() {
             .catch(err => {
                 console.log(err)
                 if(err.response.status == '403') {
+                    setLoginStatus(false)
                     navigate('/login')
                 }
             })

@@ -23,7 +23,7 @@ function LoginComponent() {
             axios.post('http://localhost:8080/api/auth/login', loginPayload)
                 .then(res => {
                     const roles = res.data.roles;
-                    if (roles[0] === "ROLE_ADMIN") {
+                    if (roles[0] === "ROLE_ADMIN" && res.data.status === 200) {
 
                         alert("Login success!")
 
@@ -41,7 +41,7 @@ function LoginComponent() {
                     }
                     else setNoti("Login failed !!");
                 })
-                .catch(() => {
+                .catch((err) => {
                     setNoti("Login failed !!");
                 });
 

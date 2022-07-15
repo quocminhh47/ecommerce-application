@@ -24,6 +24,7 @@ class BrandService {
         const BRAND_API_URL = "http://localhost:8080/admin/api/brands";
         return axios.get(BRAND_API_URL, params);
     }
+    
 
     fetchBrandById(id) {
         const URL_BRAND_BY_ID = "http://localhost:8080/admin/api/brands/" + id;

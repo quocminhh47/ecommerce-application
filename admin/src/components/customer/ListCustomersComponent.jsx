@@ -22,7 +22,6 @@ export default function ListCustomersComponent() {
         CustomerService.fetchAllCustomers()
             .then(res => {
                 console.log(res.data)
-                console.log(res.data.loginStatus.roleName)
                 setCustomers(res.data.userAccountContent)
                 //setLoginStatus(LoginService.checkLoginStatus(res.data));   
                 if(res.data.loginStatus.roleName == 'ADMIN') {
@@ -34,6 +33,7 @@ export default function ListCustomersComponent() {
                 if(err.response.status == '403') {
                     navigate('/login')
                 }
+                else alert("Failed, try again")
             })
     }, [])
 

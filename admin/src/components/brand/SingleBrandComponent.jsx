@@ -18,11 +18,15 @@ function SingleBrandComponent() {
     const [description, setDescription] = useState('')
     const [loginStatus, setLoginStatus] = useState()
 
+    const[nameErr, setNameErr] = useState('');
+    const [noti, setNoti] = useState('');
+
+
     if (!LoginService.checkAuthorization()) {
         navigate('/login')
     }
 
-  
+
 
     //fetch brand by id
     useEffect(() => {
@@ -30,17 +34,23 @@ function SingleBrandComponent() {
             BrandService.fetchBrandById(brandId)
                 .then(res => {
                     console.log(res.data)
-                    setBrand(res.data)
-                    setName(res.data.name)
-                    setThumbnail(res.data.thumbnail)
-                    setDescription(res.data.description)
-                    setLoginStatus(LoginService.checkLoginStatus(res.data));
+                    if (res.status === 200) {
+                        setBrand(res.data)
+                        setName(res.data.name)
+                        setThumbnail(res.data.thumbnail)
+                        setDescription(res.data.description)
+                        setLoginStatus(true);
+                        
+                    }
                 })
                 .catch(err => {
                     console.log(err)
-                    if (err.response.status == '403') {
+                    if (err.response.status === 403 || err.response.status === 401) {
                         navigate('/login')
+                        setLoginStatus(false)
                     }
+                    else alert("Failed, try again")
+                    
                 })
         }
 
@@ -63,11 +73,23 @@ function SingleBrandComponent() {
             BrandService.upDateBrand(brandPayload, brandId)
                 .then(res => {
                     console.log(res)
-                    alert("Update success")
-                    navigate('/brands')
+                    if(res.status === 200) {
+                        setNoti('Update success')
+                        alert("Update success")
+                        navigate('/brands')
+                    }
+                   
                 })
                 .catch(err => {
                     console.log(err)
+                    if(err.response.data.validationErrors) {
+                    const validattion = err.response.data.validationErrors
+                    setNameErr(validattion.name)
+                    }
+              
+                    if(err.response.data) {
+                        setNoti(err.response.data.message)
+                    }
                     alert("Failed")
                 })
         } else {
@@ -75,15 +97,21 @@ function SingleBrandComponent() {
                 .then(res => {
                     if (res.status == 201) {
                         console.log(res.data)
+                        setNoti('Create new brand succes!')
                         alert("Create new brand succes!")
                         navigate('/brands')
                     }
                 })
                 .catch(err => {
                     console.log(err)
-                    if (err.response) {
-                        alert(err.response.data.validationErrors.name)
+                    if(err.response.data) {
+                        setNoti(err.response.data.message)
                     }
+                    if (err.response.data.validationErrors.name) {
+                        // const validattion = err.response.data.validationErrors
+                        // setNameErr(validattion.name)
+                    }
+                    
                     else {
                         alert("Create brand failed")
                     }
@@ -101,12 +129,13 @@ function SingleBrandComponent() {
                             <div class="contact__content">
                                 <div class="contact__form">
                                     <h5>BRAND DETAIL</h5>
+                                    <span style={{color:"red"}}>{noti}</span>
                                     <form action="#">
                                         <label hidden={brandId ? false : true} >ID</label>
                                         <input type="text" name="id" value={brandId}
                                             hidden={brandId ? false : true} />
 
-                                        <label>Name</label>
+                                        <label>Name: <span style={{color:"red"}}>{nameErr}</span></label>
                                         <input type="text" value={name}
                                             onChange={(e) => setName(e.target.value)}
 

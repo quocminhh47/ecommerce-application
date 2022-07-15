@@ -6,7 +6,7 @@ class LoginService {
 
     checkLoginStatus(data) {
         if (data.loginStatusResponse) {
-            if (data.loginStatusResponse.roleName == 'ADMIN') {
+            if (data.loginStatusResponse.roleName == 'ADMIN' ) {
                 return true;
             }
         }

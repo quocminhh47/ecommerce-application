@@ -30,6 +30,21 @@ class BillService {
 
     }
 
+    updateCart(dataPayload) {
+
+        const URL = "http://localhost:8080/customer/api/cart"
+
+        const token = window.localStorage.getItem("accessToken")
+        const params = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }
+
+        return axios.put(URL, dataPayload, params)
+
+    }
+
     getBillDetail(id) {
         const BILL_URL = `http://localhost:8080/customer/api/order/bill/${id}`
         //    const BILL_URL =  `http://localhost:8080/customer/api/order/bill/85`
