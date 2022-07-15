@@ -86,25 +86,4 @@ public class Product {
     @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Rating> ratings;
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", quantity=" + quantity +
-                ", status='" + status + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", description='" + description + '\'' +
-                ", thumbnail='" + thumbnail + '\'' +
-                ", hidden=" + hidden +
-                ", guaranteeTime=" + guaranteeTime +
-                ", gender=" + gender +
-                ", isWaterProof=" + isWaterProof +
-                ", size=" + size +
-                ", brand=" + brand +
-                ", productImages=" + productImages.toString() +
-                '}';
-    }
 }

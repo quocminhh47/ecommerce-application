@@ -18,9 +18,12 @@ import com.nashtech.ecommercialwebsite.services.JwtService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -123,22 +126,34 @@ public class CartItemServiceImpl implements CartItemService {
         String username = jwtService.getUsernameFromToken(token);
 
         Cart cart = cartService.findCartByUsername(username);
-        cart.getCartDetails().clear(); //clear list then add the latest cart items
+        List<CartDetail> cartDetails =  cart.getCartDetails();
+        cartDetails.clear();
         //update every item in cart after changing quantity...
+        List<Product> products = productRepository.findAll();
+        Map<Integer, Product> productMap = products.stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
 
-        cartUpdateRequest.getCartDetails().forEach( item -> {
-            CartDetailId cartItemId = new CartDetailId( item.getProductId(), cart.getId() );
+        cartUpdateRequest.getCartDetails().forEach(item -> {
+            CartDetailId cartItemId = new CartDetailId(item.getProductId(), cart.getId());
 
             CartDetail cartItem = new CartDetail();
             cartItem.setId(cartItemId);
             cartItem.setActived(true);
             cartItem.setQuantity(item.getProductQuantity()); //update new quantity from request
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException("Product not found"));
+
+            if (!productMap.containsKey(item.getProductId())) {
+                throw new ResourceNotFoundException(
+                        String.format("Product with ID: %s not found", item.getProductId()));
+            }
+//            Product product = productRepository.findById(item.getProductId())
+//                    .orElseThrow(
+//                            () -> new ResourceNotFoundException("Product not found"));
+            Product product = productMap.get(item.getProductId());
             cartItem.setProduct(product);
+            cartItem.setCart(cart);
             //add item with updated to cart again
             cart.getCartDetails().add(cartItem);
+            System.out.println(cartItem);
         });
 
         Cart savedCart = cartRepository.save(cart);

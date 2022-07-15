@@ -40,14 +40,4 @@ public class Bill {
     @JoinColumn(name = "user_id")
     private Account account;
 
-    @Override
-    public String toString() {
-        return "Bill{" +
-                "ID=" + id +
-                ", status=" + status +
-                ", createDate=" + createDate +
-                ", priceTotal=" + priceTotal +
-                ", account=" + account +
-                '}';
-    }
 }

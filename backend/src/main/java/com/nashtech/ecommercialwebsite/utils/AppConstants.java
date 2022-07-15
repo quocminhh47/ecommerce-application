@@ -16,5 +16,9 @@ public class AppConstants {
     };
     public static final String DEFAULT_URL = " https://res.cloudinary.com/duoih0eqa/image/upload/v1657297251/Untitled_xq9j9u.png";
 
+    public static final int BILL_STATUS_UNSOLVED = 0;
+    public static final int BILL_STATUS_ACCEPTED = 1;
+    public static final int BILL_STATUS_PURCHASED = 2;
+    public static final int BILL_STATUS_CANCELED = -1;
 
 }

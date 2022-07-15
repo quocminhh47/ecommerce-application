@@ -40,13 +40,5 @@ public class Rating {
     @JoinColumn(name = "user_id")
     private Account account;
 
-    @Override
-    public String toString() {
-        return "Rating{" +
-                "id=" + id +
-                ", ratingPoints=" + ratingPoints +
-                ", product=" + product +
-                ", account=" + account +
-                '}';
-    }
+
 }

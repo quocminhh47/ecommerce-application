@@ -86,13 +86,15 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public SingleBrandResponse update(int id, BrandRequest brandRequest) {
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Brand with ID%s not found", id)));
+//        Optional<Brand> optionalBrand = brandRepository.findBrandByName(brandRequest.getName());
+//
+//        if(optionalBrand.isPresent())
+//            throw  new ResourceConfictException(
+//                    String.format("Brand name: %s already exist", brandRequest.getName()));
 
-        Optional<Brand> optionalBrand = brandRepository.findById(id);
-
-        if (optionalBrand.isEmpty()) throw new ResourceNotFoundException(
-                String.format("Brand with ID: %s not found!", id));
-
-        Brand brand = optionalBrand.get();
         mapper.map(brandRequest, brand);
         Brand updatedBrand = brandRepository.save(brand);
         return mapper.map(updatedBrand, SingleBrandResponse.class);

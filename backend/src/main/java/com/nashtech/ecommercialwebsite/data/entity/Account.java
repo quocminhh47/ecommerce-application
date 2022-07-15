@@ -101,17 +101,4 @@ public class Account {
         this.role = role;
     }*/
 
-    @Override
-    public String toString() {
-        return "Account{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", password='" + password + '\'' +
-                ", locked=" + isNonLocked +
-                ", enabled=" + enabled +
-                ", role=" + role +
-                '}';
-    }
 }

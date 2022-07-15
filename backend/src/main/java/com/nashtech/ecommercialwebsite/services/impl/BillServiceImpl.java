@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.nashtech.ecommercialwebsite.utils.AppConstants.*;
+
 @Service
 @AllArgsConstructor
 public class BillServiceImpl implements BillService {
@@ -46,7 +48,6 @@ public class BillServiceImpl implements BillService {
     private final LoginStatusServiceImpl loginStatusService;
 
 
-
     @Override
     public BillResponse orderProducts(HttpServletRequest request, BillRequest billRequest) {
         String token = jwtService.parseJwt(request);
@@ -57,7 +58,7 @@ public class BillServiceImpl implements BillService {
                         String.format("Username %s not found", username)));
 
         List<Product> products = productRepository.findAll();
-        Map<Integer, Product> productMap= products.stream()
+        Map<Integer, Product> productMap = products.stream()
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
 
         Bill bill = new Bill();
@@ -67,10 +68,7 @@ public class BillServiceImpl implements BillService {
         BillResponse billResponse = new BillResponse();
 
         billRequest.getCartDetails().forEach(item -> {
-//            Product product = productRepository.findById(item.getProductId())
-//                    .orElseThrow(
-//                            () -> new ResourceNotFoundException("Product not found"));
-            if(!productMap.containsKey(item.getProductId())) {
+            if (!productMap.containsKey(item.getProductId())) {
                 throw new ResourceNotFoundException(
                         String.format("Product with ID: %s not found", item.getProductId()));
             }
@@ -149,6 +147,75 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public BillResponse getSingleBillDetail(int billId) {
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Bill %s not found", billId)));
+
+        Account user = bill.getAccount();
+
+        BillResponse billResponse = new BillResponse();
+        bill.getBillDetails().forEach(item -> {
+
+            BillItemResponse itemResponse = BillItemResponse.builder()
+                    .productId(item.getProduct().getId())
+                    .productName(item.getProduct().getName())
+                    .productQuantity(item.getQuantity())
+                    .productPrice(item.getPrice())
+                    .build();
+
+            billResponse.getCartDetails().add(itemResponse);
+        });
+        billResponse.setBillId(bill.getId());
+        billResponse.setPriceTotal(bill.getPriceTotal());
+
+        billResponse.setFirstName(user.getFirstName());
+        billResponse.setLastName(user.getLastName());
+        billResponse.setPhone(user.getPhone());
+        billResponse.setAddress(user.getAddress());
+        billResponse.setEmail(user.getUsername());
+
+        return billResponse;
+    }
+
+    @Override
+    public BillResponse changeBilStatus(int billId, String status) {
+        int statusValueConverted = getBillStatus(status);
+
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Bill Id: %s not found", billId)
+                ));
+        bill.setStatus(statusValueConverted);
+        billRepository.save(bill);
+
+        Account user = bill.getAccount();
+
+        BillResponse billResponse = new BillResponse();
+        bill.getBillDetails().forEach(item -> {
+
+            BillItemResponse itemResponse = BillItemResponse.builder()
+                    .productId(item.getProduct().getId())
+                    .productName(item.getProduct().getName())
+                    .productQuantity(item.getQuantity())
+                    .productPrice(item.getPrice())
+                    .build();
+
+            billResponse.getCartDetails().add(itemResponse);
+        });
+        billResponse.setBillId(bill.getId());
+        billResponse.setPriceTotal(bill.getPriceTotal());
+
+        billResponse.setFirstName(user.getFirstName());
+        billResponse.setLastName(user.getLastName());
+        billResponse.setPhone(user.getPhone());
+        billResponse.setAddress(user.getAddress());
+        billResponse.setEmail(user.getUsername());
+
+        return billResponse;
+    }
+
+    @Override
     public List<BillDetailReponse> getBillByAccount(HttpServletRequest request) {
         List<BillDetailReponse> billResponseList = new ArrayList<>();
 
@@ -165,7 +232,7 @@ public class BillServiceImpl implements BillService {
             BillDetailReponse billDetailReponse = mapper.map(bill, BillDetailReponse.class);
             billDetailReponse.setUsername(user.getUsername());
             billResponseList.add(billDetailReponse);
-            System.out.println(billDetailReponse.toString());
+            //System.out.println(billDetailReponse.toString());
 
         });
         return billResponseList;
@@ -182,12 +249,27 @@ public class BillServiceImpl implements BillService {
         //create pageable instance
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Bill> bills = billRepository.findAll(pageable); //0 : unsolved
+        Page<Bill> bills = billRepository.findAll(pageable);
 
-        BillPaginationResponse billPaginationResponse = getContent(bills);
+        return getContent(bills);
 
-        return  billPaginationResponse;
+    }
 
+    @Override
+    public BillPaginationResponse getAllBillsByStatus(int pageNo,
+                                                      int pageSize,
+                                                      String sortBy,
+                                                      String sortDir,
+                                                      String status) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        int statusValueConverted = getBillStatus(status);
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Bill> bills = billRepository.findBillByStatus(pageable, statusValueConverted);
+
+        return getContent(bills);
     }
 
 
@@ -198,7 +280,7 @@ public class BillServiceImpl implements BillService {
         return billItemResponse;
     }
 
-    private BillPaginationResponse getContent (Page<Bill> bills) {
+    private BillPaginationResponse getContent(Page<Bill> bills) {
         List<Bill> billList = bills.getContent();
         List<BillDetailReponse> billContent = new ArrayList<>();
 
@@ -218,6 +300,24 @@ public class BillServiceImpl implements BillService {
                 .build();
 
 
+    }
+
+    private int getBillStatus(String status) {
+        int statusValueConverted = 0;
+        switch (status.toLowerCase()) {
+            case "accepted":
+                statusValueConverted = BILL_STATUS_ACCEPTED;
+                break;
+            case "purchased":
+                statusValueConverted = BILL_STATUS_PURCHASED;
+                break;
+            case "canceled":
+                statusValueConverted = BILL_STATUS_CANCELED;
+                break;
+            default:
+                statusValueConverted = BILL_STATUS_UNSOLVED;
+        }
+        return statusValueConverted;
     }
 //
 //    private BillResponse convertBillToBillResponse(Bill bill, Account user) {

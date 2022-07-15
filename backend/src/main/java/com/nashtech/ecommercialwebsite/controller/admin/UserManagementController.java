@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-@Tag(name = "Customers Resources Management",
+@Tag(name = "User Resources Management",
         description = "Permit to access / change customer's account status")
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -108,7 +108,7 @@ public class UserManagementController {
 
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Register feature",
+    @Operation(summary = "Register feature for admin staff",
             description = "This create accounts for customers and send token to customer's email for verification")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "201", description = "OK - Successfully created account"),

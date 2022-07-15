@@ -6,6 +6,8 @@ import lombok.*;
 @NoArgsConstructor @AllArgsConstructor
 public class CartItemsResponse {
 
+    //private CartDetailId cartItemId;
+
     private int productId;
 
     private String productName;

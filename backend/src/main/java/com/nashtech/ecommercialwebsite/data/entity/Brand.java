@@ -8,7 +8,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "brands")
-@ToString
 @Getter @Setter @Builder
 @NoArgsConstructor
 @AllArgsConstructor
