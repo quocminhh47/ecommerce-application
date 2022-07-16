@@ -1,17 +1,14 @@
 package com.nashtech.ecommercialwebsite.data.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-@Getter @Setter
+@Getter @Setter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class Comment {
     @Id
@@ -20,10 +17,10 @@ public class Comment {
     private  Integer id;
 
     @Column(name = "noidung")
-    private String noiDung;
+    private String message;
 
     @Column(name = "cmt_time")
-    private LocalDateTime cmt_time;
+    private LocalDateTime cmtTime;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
