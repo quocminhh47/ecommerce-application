@@ -135,6 +135,7 @@ public class BillServiceImpl implements BillService {
         });
 
         billResponse.setBillId(bill.getId());
+        billResponse.setStatus(bill.getStatus());
         billResponse.setPriceTotal(bill.getPriceTotal());
         billResponse.setFirstName(user.getFirstName());
         billResponse.setLastName(user.getLastName());

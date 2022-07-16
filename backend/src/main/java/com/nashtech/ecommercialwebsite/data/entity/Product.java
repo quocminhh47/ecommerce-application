@@ -72,7 +72,7 @@ public class Product {
     Set<Comment> comments;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product",  cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     Set<CartDetail> cartDetails;
 
 

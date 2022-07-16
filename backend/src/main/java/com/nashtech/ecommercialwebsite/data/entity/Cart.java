@@ -23,7 +23,7 @@ public class Cart {
     private Account account;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "cart" , fetch = FetchType.EAGER,  cascade = { CascadeType.REMOVE})
+    @OneToMany(mappedBy = "cart" , fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
 //    private Set<CartDetail> cartDetails;
     private List<CartDetail> cartDetails;
 

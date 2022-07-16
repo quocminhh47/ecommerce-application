@@ -34,18 +34,10 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public SingleBrandResponse getBrandById(int id) {
-//        Brand brand = brandRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException(
-//                        String.format("Brand with ID: %s not found", id)
-//                ));
-        Optional<Brand>  optionalBrand= brandRepository.findById(id);
-
-        if(optionalBrand.isEmpty()) {
-            throw  new ResourceNotFoundException(
-                    String.format("Brand with ID: %s not found", id));
-        }
-
-        Brand brand = optionalBrand.get();
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Brand with ID: %s not found", id)
+                ));
 
         return mapper.map(brand, SingleBrandResponse.class);
     }
@@ -66,12 +58,6 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public SingleBrandResponse save(BrandRequest brandRequest) {
-
-//        brandRepository.findBrandByName(brandRequest.getName())
-//                .orElseThrow(() -> new ResourceConfictException(
-//                        String.format("Brand with name: %s is already exist!",
-//                                brandRequest.getName())));
-
         Optional<Brand> optionalBrand = brandRepository.findBrandByName(brandRequest.getName());
 
         if(optionalBrand.isPresent()) {
@@ -88,12 +74,7 @@ public class BrandServiceImpl implements BrandService {
     public SingleBrandResponse update(int id, BrandRequest brandRequest) {
         Brand brand = brandRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Brand with ID%s not found", id)));
-//        Optional<Brand> optionalBrand = brandRepository.findBrandByName(brandRequest.getName());
-//
-//        if(optionalBrand.isPresent())
-//            throw  new ResourceConfictException(
-//                    String.format("Brand name: %s already exist", brandRequest.getName()));
+                        String.format("Brand with ID %s not found", id)));
 
         mapper.map(brandRequest, brand);
         Brand updatedBrand = brandRepository.save(brand);

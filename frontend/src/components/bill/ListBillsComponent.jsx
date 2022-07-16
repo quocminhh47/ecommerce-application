@@ -58,7 +58,7 @@ export default function ListBillsComponent() {
                                                     <tr key={bill.billId}  style={{fontWeight :"500",  fontSize: "large"}}>
                                                         <td>{bill.billId} </td>
                                                         <td>{bill.createDate} </td>
-                                                        <td>{bill.status == 0 ? 'Processing ' : 'Accepted'} </td>
+                                                        <td>{BillService.getBillStatus(bill.status)} </td>
                                                         <td>{PriceFormatterService.formatPrice(bill.priceTotal)} </td>
                                                         <td>
                                                             <Link className="btn btn-info" to={`/bill/${bill.billId}`} >Detail</Link>

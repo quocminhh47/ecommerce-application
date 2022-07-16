@@ -11,6 +11,7 @@ import com.nashtech.ecommercialwebsite.dto.request.CartUpdateRequest;
 import com.nashtech.ecommercialwebsite.dto.response.CartItemDto;
 import com.nashtech.ecommercialwebsite.dto.response.CartItemsResponse;
 import com.nashtech.ecommercialwebsite.dto.response.CartResponse;
+import com.nashtech.ecommercialwebsite.exceptions.InternalServerException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.services.CartItemService;
 import com.nashtech.ecommercialwebsite.services.CartService;
@@ -95,28 +96,29 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setQuantity(1);
         CartDetail savedItem = cartItemsRepo.save(cartItem);
         return mapToCartItemDto(savedItem);
-
     }
 
     @Override
     public CartItemDto removeProductFromCart(int productId, HttpServletRequest request) {
+        productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
         String token = jwtService.parseJwt(request);
         String username = jwtService.getUsernameFromToken(token);
 
         Cart cart = cartService.findCartByUsername(username);
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Product not found"));
-
-        CartDetail cartItem = cartItemsRepo.findCartDetailsByProductAndCart(product, cart)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Product %s does not exists in cart anymore", product.getName())
-                ));
-        System.out.println(cartItem.getId().toString());
-        cartItemsRepo.deleteById(cartItem.getId());
-        //map
-        return mapToCartItemDto(cartItem);
+        int cartId = cart.getId();
+        int rowEffected = cartItemsRepo.deleteFromCartDetailByID(productId, cartId);
+        if(rowEffected < 1) throw new InternalServerException("Server error, try again!");
+        else {
+            System.out.println("rs: " +rowEffected);
+            return CartItemDto.builder()
+                    .cartId(cartId)
+                    .productId(productId)
+                    .actived(false)
+                    .quantity(0)
+                    .build();
+        }
     }
 
     @Override
@@ -134,6 +136,11 @@ public class CartItemServiceImpl implements CartItemService {
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
 
         cartUpdateRequest.getCartDetails().forEach(item -> {
+            if (!productMap.containsKey(item.getProductId())) {
+                throw new ResourceNotFoundException(
+                        String.format("Product with ID: %s not found", item.getProductId()));
+            }
+
             CartDetailId cartItemId = new CartDetailId(item.getProductId(), cart.getId());
 
             CartDetail cartItem = new CartDetail();
@@ -141,19 +148,12 @@ public class CartItemServiceImpl implements CartItemService {
             cartItem.setActived(true);
             cartItem.setQuantity(item.getProductQuantity()); //update new quantity from request
 
-            if (!productMap.containsKey(item.getProductId())) {
-                throw new ResourceNotFoundException(
-                        String.format("Product with ID: %s not found", item.getProductId()));
-            }
-//            Product product = productRepository.findById(item.getProductId())
-//                    .orElseThrow(
-//                            () -> new ResourceNotFoundException("Product not found"));
             Product product = productMap.get(item.getProductId());
             cartItem.setProduct(product);
             cartItem.setCart(cart);
             //add item with updated to cart again
             cart.getCartDetails().add(cartItem);
-            System.out.println(cartItem);
+            System.out.println(cartItem.getQuantity());
         });
 
         Cart savedCart = cartRepository.save(cart);

@@ -7,25 +7,32 @@ import BreadCrumbComponent from "../../../components/product/breadcrumb/BreadCru
 import Header from "../../../components/header/Header";
 import AuthService from "../../../services/AuthService";
 import PriceFormatterService from "../../../services/PriceFormatterService";
+import ListCommentComponent from "../../comment/ListCommentComponent";
+import CommentService from "../../../services/CommentService";
+
 
 function DetailProductComponent() {
     let params = useParams();
     const navigate = useNavigate();
 
     const PRODUCT_INFO_BASE_URL = "http://localhost:8080/user/api/products/" + params.id;
-    console.log(PRODUCT_INFO_BASE_URL)
     const RATING_PRODUCT_URL = "http://localhost:8080/customer/api/ratings";
 
 
     const [product, setProduct] = useState({});
-
+    const [comments, setComments] = useState({})
+    const [commentList, setCommentList] = useState([])
+    const [userAccess, setUserAccess] = useState('')
     const [images, setImages] = useState([]);
     //product rating avg info
     const [productRating, setProductRating] = useState();
     //rating of user
     const [userRating, setUserRating] = useState();
-
     const [buttonRating, setButtonRating] = useState('Submit');
+    //comment
+    const [cmtContent, setCmtContent] = useState('');
+    //flag
+    const [updatePage, setUpdatePage] = useState();
 
     //show rating
     const showUserRating = (rating) => {
@@ -41,7 +48,7 @@ function DetailProductComponent() {
 
         const token = localStorage.getItem("accessToken");
         const params = {
-            
+
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -51,7 +58,6 @@ function DetailProductComponent() {
             .then(res => {
                 if (res.status == 200) {
                     setProduct(res.data);
-                    console.log(res.data)
                     setImages(res.data.productImages);
 
                     setProductRating(res.data.ratingResponse.productRatingPoints)
@@ -65,10 +71,26 @@ function DetailProductComponent() {
 
     }
 
+    //fetch comments
+    const fetchCommentsList = () => {
+        CommentService.fetchListComments(params.id)
+            .then(res => {
+                setComments(res.data)
+                setCommentList(res.data.commentContent)
+                setUserAccess(res.data.usernameAccess);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
     useEffect(() => {
         fetchProductInfo();
+        fetchCommentsList()
 
-    }, [userRating]);
+    }, [updatePage]
+        // [userRating]
+    );
 
     //put product to cart
     const putProductToCart = (id) => {
@@ -78,7 +100,6 @@ function DetailProductComponent() {
     //rating/ update rating
     const ratingProduct = () => {
         let rating = document.querySelector('input[name="rating"]:checked');
-        console.log('rating' + rating);
 
         if (rating) {
             const ratingPoint = rating.value;
@@ -88,7 +109,6 @@ function DetailProductComponent() {
             }
 
             const token = localStorage.getItem("accessToken");
-
             AuthService.checkUserAuth(token);
 
 
@@ -101,6 +121,7 @@ function DetailProductComponent() {
                     if (res.status == 201) {
                         alert(res.data.mess);
                         setUserRating(res.ratingPoints)
+                        setUpdatePage(res.data)
                     }
 
                     else if (res.status == 403) {
@@ -113,6 +134,42 @@ function DetailProductComponent() {
 
                 })
         } else alert("Enter your rating first!");
+    }
+
+    //comment handle
+    const delCommentHandler = (id) => {
+        console.log(id);
+        CommentService.deleteComment(id)
+        .then(res => {
+            console.log(res.data);
+            if(res.status === 200) {
+                alert("Delete comment success!")
+                setUpdatePage(res.data)
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    }
+
+    const commentProduct = () => {
+        const dataPayload = {
+            message: cmtContent
+        }
+        console.log(dataPayload);
+        CommentService.comment(params.id, dataPayload )
+        .then(res => {
+            console.log(res.data);
+            if(res.status === 201) {
+                alert("Comment success")
+                setUpdatePage(res.data)
+                document.getElementById('cmtBox').value = ''
+            }
+
+        })
+        .catch(err => {
+            console.log(err);
+        })
     }
 
     return (
@@ -238,6 +295,63 @@ function DetailProductComponent() {
                     </div>
                 </div>
             </section>
+            <hr />
+            <h4 style={{ textAlign: "center", marginTop: "20px" }}>Comments</h4>
+            {/* <ListCommentComponent commentContent={comments.commentContent}  userAccess={comments.userAccess}  /> */}
+            <div className="container bootdey">
+                <div className="col-md-12 bootstrap snippets">
+                    <div className="panel">
+                        <div className="panel-body">
+                            <textarea className="form-control" rows="2" placeholder="What are you thinking?" id="cmtBox"
+                                onChange={(e) => setCmtContent(e.target.value)}
+                                style={{ fontSize: "large" }}></textarea>
+                            <div className="mar-top clearfix">
+                                <button className="btn btn-sm btn-primary pull-right" type="button"
+                                onClick={() => commentProduct()}
+                                >
+                                    <i className="fa fa-pencil fa-fw"></i>
+                                    Share
+                                </button>
+                                <a className="btn btn-trans btn-icon fa fa-video-camera add-tooltip" href="#"></a>
+                                <a className="btn btn-trans btn-icon fa fa-camera add-tooltip" href="#"></a>
+                                <a className="btn btn-trans btn-icon fa fa-file add-tooltip" href="#"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="panel">
+                        <div className="panel-body">
+                            {
+                                commentList.map(cmt =>
+                                    <div className="media-block">
+                                        <a className="media-left" href="#"><img className="img-circle img-sm" alt="Profile Picture"
+                                            src="https://image2.tin247.news/pictures/2021/11/30/hvb1638286486.jpg"
+                                            style={{ marginRight: "15px" }} /></a>
+                                        <div className="media-body">
+                                            <div className="mar-btm">
+                                                <a href="#" className="btn-link text-semibold media-heading box-inline">{cmt.userName}</a>
+                                                <p className="text-muted text-sm"><i className="fa fa-mobile fa-lg"></i> {cmt.cmtTime}</p>
+                                            </div>
+                                            <p>{cmt.message}</p>
+                                            <div className="pad-ver">
+                                                <div className="btn-group">
+                                                    <a className="btn btn-sm btn-default btn-hover-success" href="#"><i className="fa fa-thumbs-up"></i></a>
+                                                    <a className="btn btn-sm btn-default btn-hover-danger" href="#"><i className="fa fa-thumbs-down"></i></a>
+                                                </div>
+                                                <a className="btn btn-sm btn-default btn-hover-primary" onClick={() => delCommentHandler(cmt.id)}>
+                                                    {cmt.userName == userAccess ? 'Delete' : ''}
+                                                </a>
+                                            </div>
+                                            <hr />
+                                        </div>
+                                    </div>
+                                )
+                            }
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }

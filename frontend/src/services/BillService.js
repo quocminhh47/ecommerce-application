@@ -58,6 +58,28 @@ class BillService {
         }
         return axios.get(BILL_URL, params)
     }
+
+    getBillStatus(value) {
+        switch (value) {
+           case 0:
+               value = "Processing"
+               break;
+
+           case -1:
+               value = "Canceled"
+               break;
+           case 1:
+               value = "Accepted"
+               break;
+           case 2:
+               value = "Purchased"
+               break;
+
+           default: value = "N/A"
+               break;
+       }
+       return value;
+   }
 }
 
 export default new BillService();

@@ -39,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
     private final JwtUtils jwtUtils;
     private final ProductRepository productRepository;
     private final ModelMapper mapper;
-    private final ProductImagesRepository imagesRepository;
+//    private final ProductImagesRepository imagesRepository;
     private final BrandRepository brandRepository;
     private final LoginStatusService loginStatusService;
 

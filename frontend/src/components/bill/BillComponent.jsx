@@ -13,6 +13,7 @@ function BillComponent() {
 
     const [bill, setBill] = useState({})
     const [billItems, setBillItems] = useState([])
+    const [status, setStatus] = useState('');
 
     useEffect(() => {
         BillService.getBillDetail(billId)
@@ -131,7 +132,7 @@ function BillComponent() {
                                             <span className="checkmark"></span>
                                         </label>
                                         <label htmlFor="paypal">
-                                            PayPal
+                                            Order status: {BillService.getBillStatus(bill.status)}
                                             <input type="checkbox" id="paypal" />
                                             <span className="checkmark"></span>
                                         </label>

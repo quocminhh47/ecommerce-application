@@ -17,6 +17,8 @@ public class BillResponse {
 
     private  int billId;
 
+    private int status;
+
     private int priceTotal;
 
     private  String firstName;

@@ -14,7 +14,7 @@ export default function CartItemsComponent() {
 
     const [cartItems, setCartItems] = useState([]);
 
-    const [removedItem, setRemovedItem] = useState();
+    const [itemChange, setItemChange] = useState();
 
     const [totalPrice, setTotalPrice] = useState(0);
     const [cartStatus, setCartStatus] = useState()
@@ -36,7 +36,7 @@ export default function CartItemsComponent() {
             .then(res => {
                 if (res.status === 200) {
                     alert('Remove item success! ');
-                    setRemovedItem(id);
+                    setItemChange(res.data);
                 }
             })
             .catch(err => {
@@ -83,7 +83,7 @@ export default function CartItemsComponent() {
                     navigate('/login')
                 }
             })
-    }, [removedItem]);
+    }, [itemChange]);
 
     //useEffect()
 
@@ -122,7 +122,7 @@ export default function CartItemsComponent() {
                 console.log(res)
                 if (res.status == 200) {
                     alert('Update success')
-                    //navigate(`/bill/${res.data.billId}`)
+                    setItemChange(res.data)
                     console.log(res.data);
                 }
             })
@@ -209,7 +209,7 @@ export default function CartItemsComponent() {
 
     return (
         <>
-            <Header status={true} />
+            <Header status={itemChange} />
             <section className="shop-cart spad">
                 <div className="container">
                     <div className="row">
