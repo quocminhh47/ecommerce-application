@@ -27,6 +27,7 @@ export default function RegistrationComponent() {
 
 
     const register = () => {
+        setNoti('npm')
         const userPayload = { firstName, lastName, email, password, phone, address }
         RegisterService.register(userPayload)
             .then(res => {

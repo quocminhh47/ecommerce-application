@@ -21,4 +21,6 @@ public class AppConstants {
     public static final int BILL_STATUS_PURCHASED = 2;
     public static final int BILL_STATUS_CANCELED = -1;
 
+    public static final String EMAIL = "quocminhh47@gmail.com";
+
 }

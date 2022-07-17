@@ -40,7 +40,7 @@ public interface ProductService {
     SingleProductResponse updateProduct(int id ,
                                         ProductUpdateRequest productRequest);
 
-    void deleteProduct(int id);
+    SingleProductResponse deleteProduct(int id);
 
     ProductResponse getProductsByGender(boolean gender,
                                         int pageNo,

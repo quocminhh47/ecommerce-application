@@ -1,20 +1,21 @@
 import React from 'react'
 import './css/Header.css'
-import {Link, useNavigate} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function HeaderComponent(props) {
 
     const navigate = useNavigate();
+    const statusBIll = ['unsolved', 'canceled', 'accepted', 'purchased']
 
     const logoutHandler = () => {
         const token = window.localStorage.getItem("accessToken")
-        if(token) {
+        if (token) {
             window.localStorage.removeItem("accessToken");
             alert("Logout success")
         }
         else {
             alert('You has been logout before')
-        }       
+        }
         navigate('/login')
 
     }
@@ -37,15 +38,27 @@ export default function HeaderComponent(props) {
 
                                 <li><Link to="/" className="nav-link">Products</Link></li>
 
-                                <li><Link to="/bills" className="nav-link">Bills</Link></li>
+                                {/* <li><Link to="/bills" className="nav-link">Bills</Link></li> */}
+                                <li className="has-children">
+                                    <a href="/bills" className="nav-link">Bills</a>
+                                    <ul className="dropdown arrow-top">                                        
+                                        {                                            
+                                            statusBIll.map(item => 
+                                                <li><a href={`/bills/status/${item}`} className="nav-link">{item}</a></li>
+                                            )
+                                        }
+                                    </ul>
+                                </li>
 
                                 <li >
-                                    <Link to="/brands" className="nav-link">Category</Link>                                   
+                                    <Link to="/brands" className="nav-link">Category</Link>
                                 </li>
 
                                 <li><Link to="/customers" className="nav-link">Customers</Link></li>
 
                                 <li><Link to="/signup" className="nav-link">Create Account</Link></li>
+
+                                <li><Link to="/bills/report" className="nav-link">Sale Report</Link></li>
 
                                 <li><Link to="/login" className="nav-link" onClick={() => logoutHandler()}>{props.status ? 'Logout' : ''}</Link></li>
 

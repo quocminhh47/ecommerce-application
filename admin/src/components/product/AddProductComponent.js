@@ -16,6 +16,7 @@ export default function AddProductComponent() {
     const { productId } = useParams();
     const navigate = useNavigate();
     const [loginStatus, setLoginStatus] = useState();
+    const [updatePage, setUpdatePage] = useState({})
 
     if (!LoginService.checkAuthorization()) {
         navigate('/login')
@@ -26,16 +27,16 @@ export default function AddProductComponent() {
 
     // product props
     const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
-    const [quantity, setQuantity] = useState('');
+    const [price, setPrice] = useState(0);
+    const [quantity, setQuantity] = useState(0);
     const [status, setStatus] = useState('');
-    const [discount, setDiscount] = useState('');
-    const [hidden, setHidden] = useState('');
-    const [guarantee, setGuarantee] = useState('');
-    const [gender, setGender] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [hidden, setHidden] = useState(false);
+    const [guarantee, setGuarantee] = useState(0);
+    const [gender, setGender] = useState(true);
     const [isWaterProof, setIsWaterProof] = useState(true);
-    const [size, setSize] = useState('');
-    const [brandId, setBrandId] = useState('');
+    const [size, setSize] = useState(1);
+    const [brandId, setBrandId] = useState();
     const [description, setDescription] = useState('');
     const [thumbnail, setThumbnail] = useState('');
     const [brandName, setBrandName] = useState('');
@@ -52,6 +53,8 @@ export default function AddProductComponent() {
     const [discountErr, setDiscountErr] = useState('');
     const [guaranteeErr, setGuaranteeErr] = useState('');
     const [sizeErr, setSizeErr] = useState('');
+    const [thumbnailErr, setThumbnailErr] = useState('')
+    const [brandErr, setBrandErr] = useState();
 
     //fetch brands
     useEffect(() => {
@@ -83,7 +86,7 @@ export default function AddProductComponent() {
                 setGender(data.gender);
                 setBrandName(data.brandName)
                 setBrandId(data.brandId)
-                
+
                 setFirstImage(data.productImages[0])
                 setSecondImage(data.productImages[1])
                 setLastImage(data.productImages[2])
@@ -195,13 +198,17 @@ export default function AddProductComponent() {
                     alert("Update failed, check again")
                     console.log(e)
                     const validationMess = e.response.data.validationErrors;
-                    if(validationMess) {
+                    if (validationMess) {
                         setNameErr(validationMess.name)
                         setPrice(validationMess.price)
                         setQuantityErr(validationMess.quantity)
                         setStatusErr(validationMess.status)
                         setDiscountErr(validationMess.discount)
                         setGuaranteeErr(validationMess.guaranteeTime)
+                        setThumbnailErr(validationMess.thumbnail)
+                        setSizeErr(validationMess.size)
+                        setUpdatePage(e.response.data)
+                        setBrandErr(validationMess.brandId)
                     }
                 })
         }
@@ -214,6 +221,19 @@ export default function AddProductComponent() {
                     window.location.href = "/"
                 })
                 .catch(e => {
+                    const validationMess = e.response.data.validationErrors;
+                    if (validationMess) {
+                        setNameErr(validationMess.name)
+                        setPriceErr(validationMess.price)
+                        setQuantityErr(validationMess.quantity)
+                        setStatusErr(validationMess.status)
+                        setDiscountErr(validationMess.discount)
+                        setGuaranteeErr(validationMess.guaranteeTime)
+                        setThumbnailErr(validationMess.thumbnail)
+                        setSizeErr(validationMess.size)
+                        setBrandErr(validationMess.brandId)
+                        setUpdatePage(e.response.data)
+                    }
                     if (e.response.status == 400) {
                         console.log(e)
                         alert("Data invalid, try again!")
@@ -234,7 +254,7 @@ export default function AddProductComponent() {
 
                     <div className="col-md-4 mb-3">
                         <div>
-                            <label htmlFor='name'>Name :{nameErr}</label>
+                            <label htmlFor='name'>Name : <span style={{ color: "red" }}>{nameErr}</span></label>
                             <input type="text" className="form-control" id="name"
                                 value={name} onChange={(e) => setName(e.target.value)} />
                         </div>
@@ -242,14 +262,14 @@ export default function AddProductComponent() {
 
                     <div className="col-md-4 mb-3">
                         <div >
-                            <label htmlFor='price'>Price :{priceErr}</label>
+                            <label htmlFor='price'>Price : <span style={{ color: "red" }}>{priceErr}</span></label>
                             <input type="text" className="form-control" id="price"
                                 value={price} onChange={(e) => setPrice(e.target.value)} />
                         </div>
                     </div>
                     <div className="col-md-4 mb-3">
                         <div >
-                            <label htmlFor='quantity'>Quantity :{quantityErr}</label>
+                            <label htmlFor='quantity'>Quantity :<span style={{ color: "red" }}>{quantityErr}</span></label>
                             <input type="number" className="form-control" id="quantity"
                                 value={quantity} onChange={(e) => setQuantity(e.target.value)} />
                         </div>
@@ -260,7 +280,7 @@ export default function AddProductComponent() {
 
                     <div className="col-md-4 mb-3">
                         <div >
-                            <label htmlFor='status'>Status :{statusErr}</label>
+                            <label htmlFor='status'>Status :<span style={{ color: "red" }}>{statusErr}</span></label>
                             <input type="text" className="form-control" id="status"
                                 value={status} onChange={(e) => setStatus(e.target.value)} />
                         </div>
@@ -268,7 +288,7 @@ export default function AddProductComponent() {
 
                     <div className="col-md-4 mb-3">
                         <div >
-                            <label htmlFor='discount'>Discount :{discountErr}</label>
+                            <label htmlFor='discount'>Discount :<span style={{ color: "red" }}>{discountErr}</span></label>
                             <input type="number" className="form-control" id="discount"
                                 value={discount} onChange={(e) => setDiscount(e.target.value)} />
                         </div>
@@ -276,7 +296,7 @@ export default function AddProductComponent() {
 
                     <div className="col-md-4 mb-3">
                         <div >
-                            <label htmlFor='discount'>Guarantee (Months) :{guaranteeErr}</label>
+                            <label htmlFor='discount'>Guarantee (Months) :<span style={{ color: "red" }}>{guaranteeErr}</span></label>
                             <input type="number" className="form-control" id="guarantee"
                                 value={guarantee} onChange={(e) => setGuarantee(e.target.value)} />
                         </div>
@@ -287,7 +307,7 @@ export default function AddProductComponent() {
 
                     <div className="col-md-4 mb-3">
                         <div >
-                            <label htmlFor='discount'>Size (mm) (Months) :{sizeErr}</label>
+                            <label htmlFor='discount'>Size (mm) (Months) :<span style={{ color: "red" }}>{sizeErr}</span></label>
                             <input type="text" className="form-control" id="size"
                                 value={size} onChange={(e) => setSize(e.target.value)} />
                         </div>
@@ -295,12 +315,14 @@ export default function AddProductComponent() {
 
                     <div className="col-md-4 mb-3">
                         <div >
-                            <label htmlFor='brandSelect'>Brand &emsp; </label>
+                            <label htmlFor='brandSelect'>Brand: <span style={{ color: "red" }}>{brandErr}</span> </label>
                             <br />
-                            <select className="form-select" id="brandSelect" onChange={(e) => {
-                                console.log(e.target.value)
-                                setBrandId(e.target.value)
-                            }} >
+                            <select className="form-select" id="brandSelect"                            
+                                onChange={(e) => {
+                                    console.log(e.target.value)
+                                    setBrandId(e.target.value)
+                                }} >
+                                <option>---SELECT---</option>
                                 {
                                     brands.map(brand =>
                                         <option value={brand.id} key={brand.id} name="brand"
@@ -316,7 +338,7 @@ export default function AddProductComponent() {
 
                     <div className="col-md-4 mb-3">
                         <div >
-                            <label htmlFor='genderSelect'>Gender </label><br />
+                            <label htmlFor='genderSelect'>Gender:  </label><br />
                             <select className="form-select" id="genderSelect"
                                 onChange={(e) => {
                                     setGender(e.target.value)
@@ -348,7 +370,7 @@ export default function AddProductComponent() {
 
 
                     <div className="col-md-4 mb-3">
-                        <label htmlFor='waterProofSelect'>WaterProof </label><br />
+                        <label htmlFor='waterProofSelect'>Water Proof </label><br />
                         <select className="form-select" id="waterProofSelect" onChange={(e) => {
                             setIsWaterProof(e.target.value)
                         }}>
@@ -377,7 +399,7 @@ export default function AddProductComponent() {
                 </div>
                 <div className="form-row">
                     <div className="col-md-6 mb-3">
-                        <label htmlFor="validationDefault03">Thumbnail&nbsp;</label>
+                        <label htmlFor="validationDefault03">Thumbnail : <span style={{ color: "red" }}>{thumbnailErr}</span></label>
                         <input type="file" id="validationDefault03" onChange={(e) => {
                             onThumbnailChange(e)
                         }} />

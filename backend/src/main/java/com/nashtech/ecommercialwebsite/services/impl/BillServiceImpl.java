@@ -6,10 +6,8 @@ import com.nashtech.ecommercialwebsite.data.repository.ProductRepository;
 import com.nashtech.ecommercialwebsite.data.repository.UserRepository;
 import com.nashtech.ecommercialwebsite.dto.request.BillRequest;
 import com.nashtech.ecommercialwebsite.dto.request.CartItemUpdateDto;
-import com.nashtech.ecommercialwebsite.dto.response.BillDetailReponse;
-import com.nashtech.ecommercialwebsite.dto.response.BillItemResponse;
-import com.nashtech.ecommercialwebsite.dto.response.BillPaginationResponse;
-import com.nashtech.ecommercialwebsite.dto.response.BillResponse;
+import com.nashtech.ecommercialwebsite.dto.response.*;
+import com.nashtech.ecommercialwebsite.exceptions.BadRequestException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.services.BillService;
 import com.nashtech.ecommercialwebsite.services.JwtService;
@@ -22,6 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,8 +45,6 @@ public class BillServiceImpl implements BillService {
     private final ProductRepository productRepository;
 
     private final UserRepository userRepository;
-
-    private final LoginStatusServiceImpl loginStatusService;
 
 
     @Override
@@ -82,7 +81,7 @@ public class BillServiceImpl implements BillService {
             billDetail.setPrice(product.getPrice()); //price per one product
 
             billResponse.getCartDetails().add(mapToBillItemResponse(item, product));
-            billResponse.setPriceTotal(item.getProductQuantity() * product.getPrice());
+           // billResponse.setPriceTotal(item.getProductQuantity() * product.getPrice());
 
             bill.getBillDetails().add(billDetail);
 
@@ -233,7 +232,6 @@ public class BillServiceImpl implements BillService {
             BillDetailReponse billDetailReponse = mapper.map(bill, BillDetailReponse.class);
             billDetailReponse.setUsername(user.getUsername());
             billResponseList.add(billDetailReponse);
-            //System.out.println(billDetailReponse.toString());
 
         });
         return billResponseList;
@@ -271,6 +269,27 @@ public class BillServiceImpl implements BillService {
         Page<Bill> bills = billRepository.findBillByStatus(pageable, statusValueConverted);
 
         return getContent(bills);
+    }
+
+    @Override
+    public BillReportResponse getSaleReportByDateRange(String dateStart, String dateEnd) {
+        LocalDate start = LocalDate.parse(dateStart);
+        LocalDate end = LocalDate.parse(dateEnd);
+        if(start.isAfter(end)){
+            throw new BadRequestException("Date start is must before date end!!");
+        }
+        Long sale = billRepository.getSaleByRangeOfDate(dateStart, dateEnd);
+        if(sale == null) {
+            return new BillReportResponse(null, null);
+        }
+        List<BillDetailReponse> billResponseList = new ArrayList<>();
+        billRepository.getBillsByDate(dateStart, dateEnd).forEach(bill -> {
+            BillDetailReponse billDetailReponse = mapper.map(bill, BillDetailReponse.class);
+            billDetailReponse.setUsername(bill.getAccount().getUsername());
+            billResponseList.add(billDetailReponse);
+        });
+
+        return  new BillReportResponse(sale, billResponseList);
     }
 
 
@@ -315,34 +334,13 @@ public class BillServiceImpl implements BillService {
             case "canceled":
                 statusValueConverted = BILL_STATUS_CANCELED;
                 break;
-            default:
+            case "unsolved":
                 statusValueConverted = BILL_STATUS_UNSOLVED;
+                break;
+
         }
         return statusValueConverted;
     }
-//
-//    private BillResponse convertBillToBillResponse(Bill bill, Account user) {
-//        BillResponse billResponse = new BillResponse();
-//        bill.getBillDetails().forEach(item -> {
-//
-//            BillItemResponse itemResponse = BillItemResponse.builder()
-//                    .productId(item.getProduct().getId())
-//                    .productName(item.getProduct().getName())
-//                    .productQuantity(item.getQuantity())
-//                    .productPrice(item.getPrice())
-//                    .build();
-//
-//            billResponse.getCartDetails().add(itemResponse);
-//        });
-//
-//        billResponse.setBillId(bill.getID());
-//        billResponse.setPriceTotal(bill.getPriceTotal());
-//        billResponse.setFirstName(user.getFirstName());
-//        billResponse.setLastName(user.getLastName());
-//        billResponse.setPhone(user.getPhone());
-//        billResponse.setAddress(user.getAddress());
-//        billResponse.setEmail(user.getUsername());
-//
-//        return billResponse;
-//    }
+
+
 }

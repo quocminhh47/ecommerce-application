@@ -3,6 +3,7 @@ package com.nashtech.ecommercialwebsite.services;
 import com.nashtech.ecommercialwebsite.dto.request.BillRequest;
 import com.nashtech.ecommercialwebsite.dto.response.BillDetailReponse;
 import com.nashtech.ecommercialwebsite.dto.response.BillPaginationResponse;
+import com.nashtech.ecommercialwebsite.dto.response.BillReportResponse;
 import com.nashtech.ecommercialwebsite.dto.response.BillResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,4 +31,5 @@ public interface BillService {
                                                String sortBy,
                                                String sortDir,
                                                String status);
+    BillReportResponse getSaleReportByDateRange(String dateStart, String dateEnd);
 }

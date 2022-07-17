@@ -1,10 +1,12 @@
 package com.nashtech.ecommercialwebsite.controller.admin;
 
 import com.nashtech.ecommercialwebsite.dto.response.BillPaginationResponse;
+import com.nashtech.ecommercialwebsite.dto.response.BillReportResponse;
 import com.nashtech.ecommercialwebsite.dto.response.BillResponse;
 import com.nashtech.ecommercialwebsite.services.BillService;
 import com.nashtech.ecommercialwebsite.utils.AppConstants;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,5 +74,11 @@ public class BillManagementController {
     public BillResponse changeBillStatus(@RequestParam("bill") int billId,
             @RequestParam("status") String status) {
         return billService.changeBilStatus(billId, status);
+    }
+
+    @GetMapping("/report")
+    public BillReportResponse getSaleReport(@Param("start") String dateStart,
+                                            @Param("end") String dateEnd) {
+        return billService.getSaleReportByDateRange(dateStart, dateEnd);
     }
 }

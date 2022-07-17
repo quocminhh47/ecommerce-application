@@ -149,6 +149,9 @@ function DetailProductComponent() {
         })
         .catch(err => {
             console.log(err);
+            if(err.response.data) {
+                alert(err.response.data.message)
+            }
         })
     }
 

@@ -1,13 +1,13 @@
-import axios from 'axios'
 import React, { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useParams } from 'react-router-dom'
 import BillService from '../../services/BillService'
 import HeaderComponent from '../header/HeaderComponent'
 import AuthService from '../../services/AuthService'
 
 
 export default function ListBillComponent() {
-
+    const {status} = useParams();
+    const[billStatus, setBillStatus] = useState('')
     const [bills, setBills] = useState({})
     const [loginStatus, setLoginStatus] = useState({})
     const [billContent, setBillContent] = useState([])
@@ -16,14 +16,18 @@ export default function ListBillComponent() {
 
     const navigate = useNavigate()
 
+    // ----------Fetch list bill---------
     useEffect(() => {
-        BillService.getAllBillsAdmin()
+        if(!status) {
+            console.log("no status");
+            BillService.getAllBillsAdmin()
             .then(res => {
                 console.log(res.data)
                 if (res.status === 200) {
                     setBills(res.data)
                     setLoginStatus(true)
                     setBillContent(res.data.billContent)
+                    setBillReload(res.data)
                 }
             })
             .catch(err => {
@@ -34,6 +38,30 @@ export default function ListBillComponent() {
                     navigate('/login')
                 }
             })
+        }
+        else {
+            console.log("have status");
+            setBillStatus("List "+ status + " bills" )
+            BillService.getAllBillsByStatusAdmin(status)
+            .then(res => {
+                console.log(res.data)
+                if (res.status === 200) {
+                    setBills(res.data)
+                    setLoginStatus(true)
+                    setBillContent(res.data.billContent)
+                    setBillReload(res.data)
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                if (err.response.status == '403') {
+                    alert("You are not authorized!")
+                    setLoginStatus(false)
+                    navigate('/login')
+                }
+            })
+        }
+       
     }, [billReload])
 
     const changeBillStatusHandler = (e, billId) => {
@@ -41,16 +69,7 @@ export default function ListBillComponent() {
         console.log(statusValue);
         console.log(billId)
 
-        // const token = localStorage.getItem("accessToken")
-        // AuthService.checkUserAuth(token);
-        // const url = `http://localhost:8080/admin/api/bills/change/status?bill=${billId}&status=${statusValue}`
-        // const params = {        
-        //     headers: {
-        //         'Authorization': `Bearer ${token}`
-        //     }
-        // }
         BillService.changeBillStatus(billId, statusValue)
-        // axios.put(url, params)
         .then(res => {
             console.log(res.data)
             if(res.status === 200) {
@@ -71,6 +90,7 @@ export default function ListBillComponent() {
             <section className="ftco-section">
                 <div className="container">
                     <h2 className="text-center"> List Bills </h2>
+                    <h3 style={{fontWeight:"lighter"}}>{billStatus}</h3>
                     <table className="table">
                         <thead className="thead-primary">
                             <th> ID</th>

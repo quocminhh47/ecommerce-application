@@ -12,7 +12,7 @@ class CommentSerivce {
                 'Authorization': `Bearer ${token}`
             }
         }
-        AuthService.checkUserAuth(token);
+        // AuthService.checkUserAuth(token);
         const url = COMMENT_BASE_API_URL + "product/"+productId;
         console.log(url);
 

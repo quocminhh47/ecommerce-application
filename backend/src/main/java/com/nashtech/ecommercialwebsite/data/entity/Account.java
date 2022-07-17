@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -87,18 +88,16 @@ public class Account {
         this.role = role;
     }
 
- /*   public Account(Long id,
-                   String username,
-                   String firstName,
-                   String lastName,
-                   String password,
-                   Role role) {
-        this.id = id;
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.password = password;
-        this.role = role;
-    }*/
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(getId(), account.getId()) && Objects.equals(getUsername(), account.getUsername()) && Objects.equals(getFirstName(), account.getFirstName()) && Objects.equals(getLastName(), account.getLastName()) && Objects.equals(getPassword(), account.getPassword()) && Objects.equals(getPhone(), account.getPhone()) && Objects.equals(getAddress(), account.getAddress()) && Objects.equals(getIsNonLocked(), account.getIsNonLocked()) && Objects.equals(getEnabled(), account.getEnabled()) && Objects.equals(getRole(), account.getRole()) && Objects.equals(getCart(), account.getCart());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUsername(), getFirstName(), getLastName(), getPassword(), getPhone(), getAddress(), getIsNonLocked(), getEnabled(), getRole(), getCart());
+    }
 }

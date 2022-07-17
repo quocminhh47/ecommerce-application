@@ -39,7 +39,6 @@ public class ProductServiceImpl implements ProductService {
     private final JwtUtils jwtUtils;
     private final ProductRepository productRepository;
     private final ModelMapper mapper;
-//    private final ProductImagesRepository imagesRepository;
     private final BrandRepository brandRepository;
     private final LoginStatusService loginStatusService;
 
@@ -52,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
                         String.format("Product not found with id: %s", id)));
 
         SingleProductResponse singleProductResponse = mapper.map(product, SingleProductResponse.class);
-        singleProductResponse.setProductImages(product.getProductImages());
+      //  singleProductResponse.setProductImages(product.getProductImages());
 
         Double ratingPointsFromProduct = ratingRepository.getRatingPointsFromProduct(id);
 
@@ -68,10 +67,9 @@ public class ProductServiceImpl implements ProductService {
             singleProductResponse.setIsUserLogged(true);
 
             singleProductResponse.setLoginStatusResponse(loginStatusService.getLoginStatus(request));
-
-            RatingResponse ratingResponse = new RatingResponse(
-                    ratingPointsFromProduct,
-                    ratingRepository.getUserRatingPointsByProduct(account.getId(), id));
+            Integer userRatingPointsAboutProduct =  ratingRepository.getUserRatingPointsByProduct(account.getId(), id);
+            RatingResponse ratingResponse =
+                    new RatingResponse( ratingPointsFromProduct, userRatingPointsAboutProduct);
 
             singleProductResponse.setRatingResponse(ratingResponse);
 
@@ -145,9 +143,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public SingleProductResponse saveProduct(ProductRequest productRequest) {
-        if (productRequest.getThumbnail() == null) {
-            productRequest.setThumbnail(DEFAULT_IMAGE_URL);
-        }
         Product product = mapToEntity(productRequest);//product now include produc info + brand + list image
         product.setCreatedAt(LocalDateTime.now());
 
@@ -185,12 +180,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(int id) {
+    public SingleProductResponse deleteProduct(int id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Product not found with id: %s", id)));
         product.setHidden(true);
-        productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        return mapper.map(savedProduct, SingleProductResponse.class);
     }
 
     @Override

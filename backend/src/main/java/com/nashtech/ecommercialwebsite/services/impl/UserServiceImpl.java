@@ -11,6 +11,7 @@ import com.nashtech.ecommercialwebsite.dto.response.UserAccountDto;
 import com.nashtech.ecommercialwebsite.dto.response.UserAccountResponse;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.services.ConfirmationTokenService;
+import com.nashtech.ecommercialwebsite.services.LoginStatusService;
 import com.nashtech.ecommercialwebsite.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     private final ConfirmationTokenService confirmationTokenService;
 
-    private final LoginStatusServiceImpl loginStatusService;
+    private final LoginStatusService loginStatusService;
 
     private final UserRepository userRepository;
 
@@ -49,25 +50,6 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     private final ModelMapper mapper;
-
-/*    @Override
-    public UserDetails loadUserByUsername(String username)  throws UsernameNotFoundException {
-        Account user  = userRepository.findAccountByUsername(username)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
-       *//* if(!user.getEnabled()) throw
-                new UnauthorizedException(String.format(USER_NOT_ACTIVED, username));
-
-        if(user.getLocked()) throw
-                new UnauthorizedException(String.format(USER_NOT_AUTHORIZED, username));*//*
-
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                getGrantedAuthorities(user)
-        );
-    }*/
-
 
     //Handle when user register - and this give token
     public String signUpUser(Account userAccount) {

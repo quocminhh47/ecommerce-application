@@ -97,9 +97,8 @@ public class ProductManagementController {
                     content = {@Content(examples = {@ExampleObject()})}),
 
     })
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") int id) {
-        productService.deleteProduct(id);
-        return new ResponseEntity<>("DELETED", HttpStatus.OK);
+    public SingleProductResponse deleteProduct(@PathVariable("id") int id) {
+        return productService.deleteProduct(id);
     }
 
     @PostMapping("/gallery")

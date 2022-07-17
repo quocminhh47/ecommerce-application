@@ -4,6 +4,22 @@ import AuthService from './AuthService';
 class BillService {
     getAllBillsAdmin() {
         const ALL_BILLS_API_URL = "http://localhost:8080/admin/api/bills/all";
+        console.log(ALL_BILLS_API_URL);
+        const token = localStorage.getItem("accessToken")
+        AuthService.checkUserAuth(token);
+
+        const params = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }
+
+        return axios.get(ALL_BILLS_API_URL, params)
+    }
+
+    getAllBillsByStatusAdmin(billStatus) {
+        const ALL_BILLS_API_URL = `http://localhost:8080/admin/api/bills/${billStatus}`;
+        console.log(ALL_BILLS_API_URL);
 
         const token = localStorage.getItem("accessToken")
         AuthService.checkUserAuth(token);
@@ -16,6 +32,7 @@ class BillService {
 
         return axios.get(ALL_BILLS_API_URL, params)
     }
+    
 
     getBillDetail(id) {
         const DETAIL_BILLS_API_URL = "http://localhost:8080/admin/api/bills/detail/" + id;
@@ -68,6 +85,20 @@ class BillService {
             }
         }
        return axios.put(url,{},params)
+    }
+
+    getSaleFromDateRange(dateStart, dateEnd) {
+        const url = `http://localhost:8080/admin/api/bills/report?dateStart=${dateStart}&dateEnd=${dateEnd}`
+        const token = localStorage.getItem("accessToken")
+        AuthService.checkUserAuth(token);
+
+        const params = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }
+
+        return axios.get(url, params)
     }
 
 

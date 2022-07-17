@@ -19,6 +19,8 @@ import SignupComponent from './components/signup/SignupComponent';
 import ProtectedRoutes from './components/ProtectedRoute';
 import ListBillComponent from './components/bill/ListBillComponent';
 import SingleBillComponent from './components/bill/SingleBillComponent';
+import BillReportComponent from './components/bill/BillReportComponent';
+
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
         <Route path='/customers/:customerId' element={<SingleCustomerComponent />} />
         <Route path='/bills' element={<ListBillComponent />} />
         <Route path='/bills/:billId' element={<SingleBillComponent />} />
+        <Route path='/bills/status/:status' element={<ListBillComponent />} />
+        <Route path='/bills/report' element={<BillReportComponent />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
       <FooterComponent />

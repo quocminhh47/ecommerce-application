@@ -11,6 +11,7 @@ import com.nashtech.ecommercialwebsite.dto.response.CommentResponse;
 import com.nashtech.ecommercialwebsite.dto.response.ListCommentResponse;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.exceptions.UnauthorizedException;
+import com.nashtech.ecommercialwebsite.security.jwt.JwtUtils;
 import com.nashtech.ecommercialwebsite.services.CommentService;
 import com.nashtech.ecommercialwebsite.services.JwtService;
 import lombok.AllArgsConstructor;
@@ -35,6 +36,8 @@ public class CommentServiceImpl implements CommentService {
     private final ProductRepository productRepo;
 
     private final JwtService jwtService;
+
+    private final JwtUtils jwtUtils;
 
     private final UserRepository userRepo;
 
@@ -79,10 +82,11 @@ public class CommentServiceImpl implements CommentService {
             username = null;
         }
         else {
-            username = jwtService.getUsernameFromToken(token);
+            if(jwtUtils.validateJwtToken(token)){
+                username = jwtService.getUsernameFromToken(token);
+            }
+            else username = null;
         }
-
-
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("PRoduct with Id %s not found", productId))
@@ -97,10 +101,23 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponse deleteComment(int commentId, HttpServletRequest request) {
-        //TODO: check comments is belong to this user or not
+//        String token = jwtService.parseJwt(request);
+//        System.out.println("token " + token);
+//        String username;
+//        if (token == null) {
+//            throw new UnauthorizedException("This comment is not belong to you!");
+//        }
+//        else {
+//            username = jwtService.getUsernameFromToken(token);
+//            System.out.println(username);
+//        }
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Comment with ID: %s not found", commentId)));
+        //check comment is belong to user who send request delete or not
+//        if(!username.equals(comment.getAccount().getUsername())) {
+//            throw new UnauthorizedException("This comment is not belong to you!");
+//        }
         commentRepo.delete(comment);
        return mapper.map(comment, CommentResponse.class);
     }
