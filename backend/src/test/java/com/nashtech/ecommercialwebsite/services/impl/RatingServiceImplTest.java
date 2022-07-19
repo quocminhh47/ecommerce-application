@@ -46,22 +46,22 @@ class RatingServiceImplTest {
         ratingRequest = new UserRatingRequest(1,1);
     }
 
-    @Test
-    void givenProductIdAndHttpRequest_whenGetUserRatingInfo_thenReturnRatingResponse() {
-        //given
-        when(jwtService.parseJwt(request)).thenReturn("BearerToken");
-        when(jwtService.getUsernameFromToken("BearerToken")).thenReturn("username");
-        when(userRepository.findAccountByUsername("username")).thenReturn(Optional.of(account));
-        when(ratingRepository.getRatingPointsFromProduct(1)).thenReturn(1D);
-        when(account.getId()).thenReturn(1);
-        when(ratingRepository.getUserRatingPointsByProduct(account.getId(),1)).thenReturn(1);
-
-        //when
-        RatingResponse actualResponse = ratingServiceImpl.getUserRatingByProduct(1, request);
-
-        //then
-        assertThat(actualResponse.getProductRatingPoints()).isEqualTo(1D);
-        assertThat(actualResponse.getUserRatingPoints()).isEqualTo(1);
-    }
+//    @Test
+//    void givenProductIdAndHttpRequest_whenGetUserRatingInfo_thenReturnRatingResponse() {
+//        //given
+//        when(jwtService.parseJwt(request)).thenReturn("BearerToken");
+//        when(jwtService.getUsernameFromToken("BearerToken")).thenReturn("username");
+//        when(userRepository.findAccountByUsername("username")).thenReturn(Optional.of(account));
+//        when(ratingRepository.getRatingPointsFromProduct(1)).thenReturn(1D);
+//        when(account.getId()).thenReturn(1);
+//        when(ratingRepository.getUserRatingPointsByProduct(account.getId(),1)).thenReturn(1);
+//
+//        //when
+//        RatingResponse actualResponse = ratingServiceImpl.getUserRatingByProduct(1, request);
+//
+//        //then
+//        assertThat(actualResponse.getProductRatingPoints()).isEqualTo(1D);
+//        assertThat(actualResponse.getUserRatingPoints()).isEqualTo(1);
+//    }
 
 }

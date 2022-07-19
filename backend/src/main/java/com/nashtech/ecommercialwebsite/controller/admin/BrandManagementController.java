@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
@@ -39,7 +41,10 @@ public class BrandManagementController {
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
                     description = "Not found - The brand resources was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
     })
     @GetMapping("/{id}")
     public ResponseEntity<SingleBrandResponse> getBrandById(@PathVariable("id") int id) {
@@ -56,7 +61,10 @@ public class BrandManagementController {
                  description = "FORBIDDEN - You have no permission to access this resource"),
          @ApiResponse( responseCode = "404",
                  description = "Not found - The brand resources was not found",
-                 content = {@Content(examples = {@ExampleObject(value = "")})})
+                 content = {@Content(examples = {@ExampleObject()})}),
+         @ApiResponse(responseCode = "500",
+                 description = "Internal Error - There were some error while processing in server",
+                 content = {@Content(examples = {@ExampleObject()})})
  })
     @GetMapping()
     public ResponseEntity<BrandResponse> getAllBrands(
@@ -88,7 +96,10 @@ public class BrandManagementController {
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
                     description = "Not found - The request resources was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
     })
     public ResponseEntity<SingleBrandResponse> createNewBrand(@Valid @RequestBody BrandRequest brandRequest) {
         return new ResponseEntity<>(brandService.save(brandRequest), HttpStatus.CREATED);
@@ -106,7 +117,10 @@ public class BrandManagementController {
                     description = "FORBIDDEN - You have no permission to access this resource"),
             @ApiResponse( responseCode = "404",
                     description = "Not found - The request resources was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
     })
     public ResponseEntity<SingleBrandResponse> updateBrand(@PathVariable("id") int id,
                                                 @Valid @RequestBody BrandRequest brandRequest)

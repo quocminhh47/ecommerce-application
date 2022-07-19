@@ -13,6 +13,7 @@ import com.nashtech.ecommercialwebsite.dto.response.CartItemsResponse;
 import com.nashtech.ecommercialwebsite.dto.response.CartResponse;
 import com.nashtech.ecommercialwebsite.exceptions.InternalServerException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
+import com.nashtech.ecommercialwebsite.services.AuthenticationFacadeService;
 import com.nashtech.ecommercialwebsite.services.CartItemService;
 import com.nashtech.ecommercialwebsite.services.CartService;
 import com.nashtech.ecommercialwebsite.services.JwtService;
@@ -43,11 +44,12 @@ public class CartItemServiceImpl implements CartItemService {
 
     private final ModelMapper mapper;
 
+    private final AuthenticationFacadeService authenticationFacadeService;
+
 
     @Override
-    public CartResponse getAllCartItemsOfUser(HttpServletRequest request) {
-        String token = jwtService.parseJwt(request);
-        String username = jwtService.getUsernameFromToken(token);
+    public CartResponse getAllCartItemsOfUser() {
+        String username = authenticationFacadeService.getCurentUsername();
         Cart cart = cartService.findCartByUsername(username);
         List<CartItemsResponse> cartItemsResponses = cartItemsRepo.findAllByCart_Id(cart.getId())
                 .stream()
@@ -69,9 +71,8 @@ public class CartItemServiceImpl implements CartItemService {
 
 
     @Override
-    public CartItemDto addProductToCart(int productId, HttpServletRequest request) {
-        String token = jwtService.parseJwt(request);
-        String username = jwtService.getUsernameFromToken(token);
+    public CartItemDto addProductToCart(int productId) {
+        String username = authenticationFacadeService.getCurentUsername();
 
         Cart cart = cartService.findCartByUsername(username);
 
@@ -99,12 +100,11 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItemDto removeProductFromCart(int productId, HttpServletRequest request) {
+    public CartItemDto removeProductFromCart(int productId) {
         productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        String token = jwtService.parseJwt(request);
-        String username = jwtService.getUsernameFromToken(token);
+        String username = authenticationFacadeService.getCurentUsername();
 
         Cart cart = cartService.findCartByUsername(username);
         int cartId = cart.getId();
@@ -122,10 +122,8 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartResponse updateCartItems(CartUpdateRequest cartUpdateRequest, HttpServletRequest request) {
-
-        String token = jwtService.parseJwt(request);
-        String username = jwtService.getUsernameFromToken(token);
+    public CartResponse updateCartItems(CartUpdateRequest cartUpdateRequest) {
+        String username = authenticationFacadeService.getCurentUsername();
 
         Cart cart = cartService.findCartByUsername(username);
         List<CartDetail> cartDetails =  cart.getCartDetails();

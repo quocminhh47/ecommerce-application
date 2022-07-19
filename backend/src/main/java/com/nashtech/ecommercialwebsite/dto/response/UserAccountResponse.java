@@ -20,5 +20,5 @@ public class UserAccountResponse {
 
     private boolean last;
 
-    LoginStatusResponse loginStatus = new LoginStatusResponse();
+//    LoginStatusResponse loginStatus = new LoginStatusResponse();
 }

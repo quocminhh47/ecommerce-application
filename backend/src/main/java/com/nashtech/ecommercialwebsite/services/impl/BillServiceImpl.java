@@ -9,8 +9,8 @@ import com.nashtech.ecommercialwebsite.dto.request.CartItemUpdateDto;
 import com.nashtech.ecommercialwebsite.dto.response.*;
 import com.nashtech.ecommercialwebsite.exceptions.BadRequestException;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
+import com.nashtech.ecommercialwebsite.services.AuthenticationFacadeService;
 import com.nashtech.ecommercialwebsite.services.BillService;
-import com.nashtech.ecommercialwebsite.services.JwtService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -19,9 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,8 +33,6 @@ import static com.nashtech.ecommercialwebsite.utils.AppConstants.*;
 @AllArgsConstructor
 public class BillServiceImpl implements BillService {
 
-    private final JwtService jwtService;
-
     private final BillRepository billRepository;
 
     private final ModelMapper mapper;
@@ -46,15 +41,15 @@ public class BillServiceImpl implements BillService {
 
     private final UserRepository userRepository;
 
+    private final AuthenticationFacadeService authenticationFacade;
+
 
     @Override
-    public BillResponse orderProducts(HttpServletRequest request, BillRequest billRequest) {
-        String token = jwtService.parseJwt(request);
-        String username = jwtService.getUsernameFromToken(token);
-
-        Account user = userRepository.findAccountByUsername(username)
+    public BillResponse orderProducts(BillRequest billRequest) {
+        String currentPrincipalName = authenticationFacade.getCurentUsername();
+        Account user = userRepository.findAccountByUsername(currentPrincipalName)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Username %s not found", username)));
+                        String.format("Username %s not found", currentPrincipalName)));
 
         List<Product> products = productRepository.findAll();
         Map<Integer, Product> productMap = products.stream()
@@ -81,7 +76,6 @@ public class BillServiceImpl implements BillService {
             billDetail.setPrice(product.getPrice()); //price per one product
 
             billResponse.getCartDetails().add(mapToBillItemResponse(item, product));
-           // billResponse.setPriceTotal(item.getProductQuantity() * product.getPrice());
 
             bill.getBillDetails().add(billDetail);
 
@@ -107,43 +101,13 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public BillResponse getBillById(HttpServletRequest request, int billId) {
-
-        String token = jwtService.parseJwt(request);
-        String username = jwtService.getUsernameFromToken(token);
-
-        Account user = userRepository.findAccountByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Username %s not found", username)));
+    public BillResponse getBillById(int billId) {
 
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Bill %s not found", billId)));
 
-        BillResponse billResponse = new BillResponse();
-        bill.getBillDetails().forEach(item -> {
-
-            BillItemResponse itemResponse = BillItemResponse.builder()
-                    .productId(item.getProduct().getId())
-                    .productName(item.getProduct().getName())
-                    .productQuantity(item.getQuantity())
-                    .productPrice(item.getPrice())
-                    .build();
-
-            billResponse.getCartDetails().add(itemResponse);
-        });
-
-        billResponse.setBillId(bill.getId());
-        billResponse.setStatus(bill.getStatus());
-        billResponse.setPriceTotal(bill.getPriceTotal());
-        billResponse.setFirstName(user.getFirstName());
-        billResponse.setLastName(user.getLastName());
-        billResponse.setPhone(user.getPhone());
-        billResponse.setAddress(user.getAddress());
-        billResponse.setEmail(user.getUsername());
-
-        return billResponse;
-
+        return convertBillToBillResponse(bill);
     }
 
     @Override
@@ -152,30 +116,8 @@ public class BillServiceImpl implements BillService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Bill %s not found", billId)));
 
-        Account user = bill.getAccount();
+        return convertBillToBillResponse(bill);
 
-        BillResponse billResponse = new BillResponse();
-        bill.getBillDetails().forEach(item -> {
-
-            BillItemResponse itemResponse = BillItemResponse.builder()
-                    .productId(item.getProduct().getId())
-                    .productName(item.getProduct().getName())
-                    .productQuantity(item.getQuantity())
-                    .productPrice(item.getPrice())
-                    .build();
-
-            billResponse.getCartDetails().add(itemResponse);
-        });
-        billResponse.setBillId(bill.getId());
-        billResponse.setPriceTotal(bill.getPriceTotal());
-
-        billResponse.setFirstName(user.getFirstName());
-        billResponse.setLastName(user.getLastName());
-        billResponse.setPhone(user.getPhone());
-        billResponse.setAddress(user.getAddress());
-        billResponse.setEmail(user.getUsername());
-
-        return billResponse;
     }
 
     @Override
@@ -187,44 +129,19 @@ public class BillServiceImpl implements BillService {
                         String.format("Bill Id: %s not found", billId)
                 ));
         bill.setStatus(statusValueConverted);
-        billRepository.save(bill);
+        Bill updatedBill = billRepository.save(bill);
 
-        Account user = bill.getAccount();
-
-        BillResponse billResponse = new BillResponse();
-        bill.getBillDetails().forEach(item -> {
-
-            BillItemResponse itemResponse = BillItemResponse.builder()
-                    .productId(item.getProduct().getId())
-                    .productName(item.getProduct().getName())
-                    .productQuantity(item.getQuantity())
-                    .productPrice(item.getPrice())
-                    .build();
-
-            billResponse.getCartDetails().add(itemResponse);
-        });
-        billResponse.setBillId(bill.getId());
-        billResponse.setPriceTotal(bill.getPriceTotal());
-
-        billResponse.setFirstName(user.getFirstName());
-        billResponse.setLastName(user.getLastName());
-        billResponse.setPhone(user.getPhone());
-        billResponse.setAddress(user.getAddress());
-        billResponse.setEmail(user.getUsername());
-
-        return billResponse;
+        return convertBillToBillResponse(updatedBill);
     }
 
     @Override
-    public List<BillDetailReponse> getBillByAccount(HttpServletRequest request) {
+    public List<BillDetailReponse> getBillByAccount() {
         List<BillDetailReponse> billResponseList = new ArrayList<>();
 
-        String token = jwtService.parseJwt(request);
-        String username = jwtService.getUsernameFromToken(token);
-
-        Account user = userRepository.findAccountByUsername(username)
+        String currentPrincipalName = authenticationFacade.getCurentUsername();
+        Account user = userRepository.findAccountByUsername(currentPrincipalName)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Username %s not found", username)));
+                        String.format("Username %s not found", currentPrincipalName)));
 
         List<Bill> bills = billRepository.findBillByAccount(user);
 
@@ -275,11 +192,11 @@ public class BillServiceImpl implements BillService {
     public BillReportResponse getSaleReportByDateRange(String dateStart, String dateEnd) {
         LocalDate start = LocalDate.parse(dateStart);
         LocalDate end = LocalDate.parse(dateEnd);
-        if(start.isAfter(end)){
+        if (start.isAfter(end)) {
             throw new BadRequestException("Date start is must before date end!!");
         }
         Long sale = billRepository.getSaleByRangeOfDate(dateStart, dateEnd);
-        if(sale == null) {
+        if (sale == null) {
             return new BillReportResponse(null, null);
         }
         List<BillDetailReponse> billResponseList = new ArrayList<>();
@@ -289,7 +206,7 @@ public class BillServiceImpl implements BillService {
             billResponseList.add(billDetailReponse);
         });
 
-        return  new BillReportResponse(sale, billResponseList);
+        return new BillReportResponse(sale, billResponseList);
     }
 
 
@@ -342,5 +259,32 @@ public class BillServiceImpl implements BillService {
         return statusValueConverted;
     }
 
+    private BillResponse convertBillToBillResponse(Bill bill) {
+        Account user = bill.getAccount();
+
+        BillResponse billResponse = BillResponse.builder()
+                .billId(bill.getId())
+                .cartDetails(new ArrayList<>())
+                .priceTotal(bill.getPriceTotal())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .address(user.getAddress())
+                .email(user.getUsername())
+                .build();
+
+        bill.getBillDetails().forEach(item -> {
+            BillItemResponse itemResponse = BillItemResponse.builder()
+                    .productId(item.getProduct().getId())
+                    .productName(item.getProduct().getName())
+                    .productQuantity(item.getQuantity())
+                    .productPrice(item.getPrice())
+                    .build();
+
+            billResponse.getCartDetails().add(itemResponse);
+        });
+
+        return billResponse;
+    }
 
 }

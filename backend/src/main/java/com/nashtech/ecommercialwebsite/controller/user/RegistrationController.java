@@ -35,7 +35,10 @@ public class RegistrationController {
             @ApiResponse( responseCode = "201", description = "OK - Successfully created account"),
             @ApiResponse( responseCode = "400",
                     description = "Bad Request - The request is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
     })
     public TokenResponse register(@Valid @RequestBody RegistrationRequest registrationRequest){
         return registrationService.register(registrationRequest, USER_ROLE);
@@ -55,7 +58,10 @@ public class RegistrationController {
                     content = {@Content(examples = {@ExampleObject(value = "")})}),
             @ApiResponse( responseCode = "404",
                     description = "Not found - The request resources was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
 
     })
     public RegistrationResponse confirm(@RequestParam("token") String token) {

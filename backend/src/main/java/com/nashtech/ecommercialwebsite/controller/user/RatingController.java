@@ -12,10 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Tag(name = "Rating Resources",
@@ -31,21 +28,21 @@ public class RatingController {
     }
 
    @GetMapping("/ratings")
-    //@PreAuthorize("hasRole('USER')")
-    @Operation(summary = "Get rating information", description = "Provides the rating information of user about product")
+    @Operation(summary = "Get rating of product", description = "Provides the rating information of user about product")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "OK - Successfully retrieved"),
             @ApiResponse( responseCode = "400",
                     description = "Bad Request - The request is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject})}),
             @ApiResponse( responseCode = "404",
                     description = "Not found - The resource was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
-
+                    content = {@Content(examples = {@ExampleObject})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
     })
-    public ResponseEntity<RatingResponse> getRatingInfo(HttpServletRequest request,
-                                                        @RequestParam("product-id") int productId) {
-        return new ResponseEntity<>(ratingService.getUserRatingByProduct( productId, request), HttpStatus.OK);
+    public ResponseEntity<RatingResponse> getRatingInfo(@RequestParam("product-id") int productId) {
+        return new ResponseEntity<>(ratingService.getUserRatingByProduct( productId), HttpStatus.OK);
     }
 
     @PostMapping()
@@ -54,16 +51,19 @@ public class RatingController {
             @ApiResponse( responseCode = "201", description = "OK - Successfully rating"),
             @ApiResponse( responseCode = "400",
                     description = "Bad Request - The rating is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
             @ApiResponse( responseCode = "401",
                     description = "Unauthorized -  Authorization information is missing or invalid"),
+            @ApiResponse( responseCode = "403",
+                    description = "Forbidden -  The request is not permitted"),
             @ApiResponse( responseCode = "404",
                     description = "Not found - The request resources was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})})
+                    content = {@Content(examples = {@ExampleObject})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
     })
-    public ResponseEntity<UserRatingResponse> rateProduct(
-            @Valid @RequestBody UserRatingRequest userRatingRequest,
-            HttpServletRequest request){
-        return new ResponseEntity<>(ratingService.rateProduct(userRatingRequest, request), HttpStatus.CREATED);
+    public ResponseEntity<UserRatingResponse> rateProduct( @Valid @RequestBody UserRatingRequest userRatingRequest){
+        return new ResponseEntity<>(ratingService.rateProduct(userRatingRequest), HttpStatus.CREATED);
     }
 }

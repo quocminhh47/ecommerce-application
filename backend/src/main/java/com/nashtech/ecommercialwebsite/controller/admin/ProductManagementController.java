@@ -15,12 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Tag(name = "Product Resources Management",
@@ -53,6 +49,9 @@ public class ProductManagementController {
             @ApiResponse(responseCode = "404",
                     description = "Not found - This product was not found",
                     content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
 
     })
     public SingleProductResponse saveProduct(@Valid @RequestBody ProductRequest productRequest) {
@@ -74,6 +73,9 @@ public class ProductManagementController {
             @ApiResponse(responseCode = "404",
                     description = "Not found - This product was not found",
                     content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
 
     })
     public SingleProductResponse updateProduct(@PathVariable("id") int id,
@@ -95,6 +97,9 @@ public class ProductManagementController {
             @ApiResponse(responseCode = "404",
                     description = "Not found - This product was not found",
                     content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
 
     })
     public SingleProductResponse deleteProduct(@PathVariable("id") int id) {
@@ -111,14 +116,29 @@ public class ProductManagementController {
                     content = {@Content(examples = {@ExampleObject()})}),
             @ApiResponse(responseCode = "404",
                     description = "Not found - The request resources was not found",
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
                     content = {@Content(examples = {@ExampleObject()})})
     })
-    public FileUploadResponse upLoad(
-            @RequestParam(value = "file", required = true) MultipartFile multipartFile) {
+    public FileUploadResponse upLoad( @RequestParam(value = "file") MultipartFile multipartFile) {
         return cloudinaryService.upload(multipartFile);
     }
 
     @GetMapping()
+    @Operation(summary = "Get products list by pagination", description = "Provides all products in pagination")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK - Successfully retrieved"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request - The request is invalid",
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "404",
+                    description = "Not found - The product list was not found",
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
+    })
     @ResponseStatus(HttpStatus.OK)
     public ProductResponse getAllProducts(
             @RequestParam(
@@ -132,8 +152,7 @@ public class ProductManagementController {
                     String sortBy,
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir,
-            HttpServletRequest request) {
-        return productService.getAllProducts(pageNo, pageSize, sortBy, sortDir, request);
+                    String sortDir) {
+        return productService.getAllProducts(pageNo, pageSize, sortBy, sortDir);
     }
 }

@@ -14,12 +14,11 @@ public interface UserService {
      UserAccountResponse getAllUserAccounts(int pageNo,
                                             int pageSize,
                                             String sortBy,
-                                            String sortDirection,
-                                            HttpServletRequest request);
+                                            String sortDirection);
 
-     UserAccountDto getAccountById(int id,HttpServletRequest request);
+     UserAccountDto getAccountById(int id);
 
-     UserAccountDto changeUserAccountStatus(UserRequest userRequest, int userId,HttpServletRequest request);
+     UserAccountDto changeUserAccountStatus(UserRequest userRequest, int userId);
 
      void createShoppingCart(String username);
 

@@ -43,8 +43,6 @@ class CommentServiceImplTest {
     Account account;
     CommentResponse expectedCommentRes;
     CommentRequest commentRequest;
-    String username = "username";
-    String token = "token";
 
     @BeforeEach
     void setUp() {
@@ -62,40 +60,26 @@ class CommentServiceImplTest {
     @Test
     void givenCommentRequestAndHttpRequest_whenComment_thenReturnCommentResponse() {
         //given
-        when(productRepository.findById(1)).thenReturn(Optional.of(product));
-        when(jwtService.parseJwt(request)).thenReturn(token);
-        when(jwtService.getUsernameFromToken(token)).thenReturn(username);
-        when(userRepository.findAccountByUsername(username)).thenReturn(Optional.of(account));
-        ArgumentCaptor<Comment> commentCaptor = ArgumentCaptor.forClass(Comment.class);
-//        verify(capturedComment)
-        ArgumentCaptor<LocalDateTime> dateTimeCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
-        Comment comment = mock(Comment.class);
-//        verify(comment).setCmtTime(dateTimeCaptor.capture());
-//        verify(comment).setAccount(account);
-        when(Comment.builder()
-                .message(commentRequest.getMessage())
-                .cmtTime(dateTimeCaptor.capture())
-                .product(product)
-                .account(account)
-                .build()).thenReturn(comment);
+//        when(productRepository.findById(1)).thenReturn(Optional.of(product));
+//        when(jwtService.parseJwt(request)).thenReturn("BearerToken");
+//        when(jwtService.getUsernameFromToken("BearerToken")).thenReturn("username");
+//        when(userRepository.findAccountByUsername("username")).thenReturn(Optional.of(account));
+//
+//        ArgumentCaptor<LocalDateTime> dateTimeCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+//        ArgumentCaptor<Comment> commentCaptor = ArgumentCaptor.forClass(Comment.class);
+//        Comment savedComment = mock(Comment.class);
+//        when(mapper.map(savedComment, CommentResponse.class)).thenReturn(expectedCommentRes);
+//        when(account.getUsername()).thenReturn("username");
+//        //when
+//        CommentResponse actualCommentResponse = commentServiceImpl.comment(commentRequest, request, 1);
+//
+//        //then
+//        assertThat(actualCommentResponse.getCmtTime()).isEqualTo(dateTimeCaptor.capture());
+//        verify(commentRepository).save(commentCaptor.capture());
+//        verify(expectedCommentRes).setUserName(account.getUsername());
+//        assertThat(actualCommentResponse.getMessage()).isEqualTo(commentRequest.getMessage());
 
-//        verify(commentRepository).save(capturedComment.capture());
-//        Comment capturedCommentValue = capturedComment.getValue();
 
-        verify(commentRepository).save(commentCaptor.capture());
-        Comment savedComment = mock(Comment.class);
-        when(commentRepository.save(commentCaptor.capture())).thenReturn(savedComment);
-        when(mapper.map(savedComment, CommentResponse.class)).thenReturn(expectedCommentRes);
-
-        //when
-        CommentResponse actualCommentResponse = commentServiceImpl.comment(commentRequest, request, 1);
-        //then
-        assertThat(dateTimeCaptor.getValue()).isEqualTo(actualCommentResponse.getCmtTime());
-        verify(expectedCommentRes).setUserName(username);
-        assertThat(actualCommentResponse).isEqualTo(expectedCommentRes);
     }
 
-    @Test
-    void deleteComment() {
-    }
 }

@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface CartItemService {
 
-    CartResponse getAllCartItemsOfUser(HttpServletRequest request);
+    CartResponse getAllCartItemsOfUser();
 
-    CartItemDto addProductToCart(int productId, HttpServletRequest request);
+    CartItemDto addProductToCart(int productId);
 
-    CartItemDto removeProductFromCart(int productId, HttpServletRequest request);
+    CartItemDto removeProductFromCart(int productId);
 
-    CartResponse updateCartItems(CartUpdateRequest cartUpdateRequest, HttpServletRequest request);
+    CartResponse updateCartItems(CartUpdateRequest cartUpdateRequest);
 
 }

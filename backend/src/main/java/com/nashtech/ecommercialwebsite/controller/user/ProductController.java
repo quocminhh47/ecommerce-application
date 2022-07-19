@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 
 @Tag(name = "Product Resources",
@@ -37,9 +36,12 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "OK - Successfully retrieved"),
             @ApiResponse(responseCode = "400",
                     description = "Bad Request - The request is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
             @ApiResponse(responseCode = "404",
                     description = "Not found - The product list was not found",
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
                     content = {@Content(examples = {@ExampleObject()})})
     })
     public ResponseEntity<ProductResponse> getAllProducts(
@@ -54,13 +56,12 @@ public class ProductController {
                     String sortBy,
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir,
-            HttpServletRequest request
+                    String sortDir
     ) {
 
         return new
                 ResponseEntity<>(
-                productService.getAllAvailableProducts(false, pageNo, pageSize, sortBy, sortDir, request),
+                productService.getAllAvailableProducts(false, pageNo, pageSize, sortBy, sortDir),
                 HttpStatus.OK);
     }
 
@@ -71,15 +72,17 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "OK - Successfully retrieved"),
             @ApiResponse(responseCode = "400",
                     description = "Bad Request - The request is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
             @ApiResponse(responseCode = "404",
                     description = "Not found - This product was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
 
     })
-    public ResponseEntity<SingleProductResponse> findProductById(@PathVariable("id") int id,
-                                                                 HttpServletRequest request) {
-        return new ResponseEntity<>(productService.findProductById(id, request), HttpStatus.OK);
+    public ResponseEntity<SingleProductResponse> findProductById(@PathVariable("id") int id) {
+        return new ResponseEntity<>(productService.findProductById(id), HttpStatus.OK);
     }
 
     @GetMapping("/brand/{brandName}")
@@ -88,10 +91,13 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "OK - Successfully retrieved"),
             @ApiResponse(responseCode = "400",
                     description = "Bad Request - The request is invalid",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
             @ApiResponse(responseCode = "404",
                     description = "Not found - The product list was not found",
-                    content = {@Content(examples = {@ExampleObject(value = "")})}),
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
 
     })
     public ResponseEntity<ProductResponse> getAllProductsByBrand(
@@ -107,20 +113,29 @@ public class ProductController {
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
                     String sortDir,
-            @PathVariable("brandName") String brandName,
-            HttpServletRequest request) {
+            @PathVariable("brandName") String brandName) {
 
         return new ResponseEntity<>(
                 productService.getProductsByBrandName(
-                        brandName.toUpperCase(),
-                        pageNo,
-                        pageSize,
-                        sortBy,
-                        sortDir,
-                        request), HttpStatus.OK);
+                        brandName.toUpperCase(), pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
 
+
     @GetMapping("/gender/{gender}")
+    @Operation(summary = "Filter products by gender ", description = "Provides all products  in gender selected")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK - Successfully retrieved"),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request - The request is invalid",
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "404",
+                    description = "Not found - The product list was not found",
+                    content = {@Content(examples = {@ExampleObject()})}),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal Error - There were some error while processing in server",
+                    content = {@Content(examples = {@ExampleObject()})})
+
+    })
     public ResponseEntity<ProductResponse> getAllProductsByGender(
             @RequestParam(
                     value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false)
@@ -134,19 +149,11 @@ public class ProductController {
             @RequestParam(
                     value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
                     String sortDir,
-            @PathVariable("gender") boolean gender,
-            HttpServletRequest request) {
+            @PathVariable("gender") boolean gender) {
 
         return new ResponseEntity<>(
-                productService.getProductsByGender(
-                        gender,
-                        pageNo,
-                        pageSize,
-                        sortBy,
-                        sortDir,
-                        request), HttpStatus.OK);
+                productService.getProductsByGender(gender, pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
-
 
 
 }

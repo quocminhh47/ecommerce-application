@@ -11,24 +11,19 @@ import com.nashtech.ecommercialwebsite.dto.response.RatingResponse;
 import com.nashtech.ecommercialwebsite.dto.response.UserRatingResponse;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.exceptions.UnauthorizedException;
-import com.nashtech.ecommercialwebsite.security.jwt.JwtUtils;
-import com.nashtech.ecommercialwebsite.services.JwtService;
+import com.nashtech.ecommercialwebsite.services.AuthenticationFacadeService;
 import com.nashtech.ecommercialwebsite.services.RatingService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class RatingServiceImpl implements RatingService {
-
-    private final JwtService jwtService;
-
-    private final JwtUtils jwtUtils;
 
     private final RatingRepository ratingRepository;
 
@@ -38,47 +33,42 @@ public class RatingServiceImpl implements RatingService {
 
     private final ModelMapper mapper;
 
+    private final AuthenticationFacadeService authenticationFacadeService;
+
     @Override
-    public RatingResponse getUserRatingByProduct(int productId, HttpServletRequest request) {
-        String token = jwtService.parseJwt(request);
-
-        String username = jwtService.getUsernameFromToken(token);
-
-        Account user = userRepository.findAccountByUsername(username)
+    public RatingResponse getUserRatingByProduct(int productId) {
+        String username = authenticationFacadeService.getCurentUsername();
+        Account account = userRepository.findAccountByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Username %s not found", username)));
-
+                        String.format("Username %s not found ", username)));
         return new RatingResponse(
                ratingRepository.getRatingPointsFromProduct(productId),
-               ratingRepository.getUserRatingPointsByProduct(user.getId(), productId)
+               ratingRepository.getUserRatingPointsByProduct(account.getId(), productId)
        );
     }
 
     @Override
-    public UserRatingResponse rateProduct(UserRatingRequest userRatingRequest,
-                                          HttpServletRequest request) {
+    public UserRatingResponse rateProduct(UserRatingRequest userRatingRequest) {
 
-        String token = jwtService.parseJwt(request);
-        // token valid
-        if(token != null && jwtUtils.validateJwtToken(token)) {
-            String username = jwtService.getUsernameFromToken(token);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // authentication valid
+        if(authentication != null) {
+            String currentUser = authenticationFacadeService.getCurentUsername();
 
             Product product = productRepository.findById(userRatingRequest.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException(
                             String.format("Product not found with id: %s", userRatingRequest.getProductId())));
 
-            Account account = userRepository.findAccountByUsername(username)
+            Account account = userRepository.findAccountByUsername(currentUser)
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            String.format("Username %s not found ", username)));
+                            String.format("Username %s not found ", currentUser)));
 
             //retrieve rating information by userId and productId
-            RatingResponse ratingResponse = getUserRatingByProduct(
-                    userRatingRequest.getProductId(), request
-            );
+            RatingResponse ratingResponse = getUserRatingByProduct(userRatingRequest.getProductId());
 
             //user's never rated this product before -> create new rating
             if(ratingResponse.getUserRatingPoints() == null) {
-                log.info(String.format("FIRST TIME RATING PRODUCT OF USER  %s",username));
+                log.info(String.format("FIRST TIME RATING PRODUCT OF USER  %s",currentUser));
                 Rating rating = Rating.builder()
                         .ratingPoints(userRatingRequest.getRatingPoints())
                         .product(product)

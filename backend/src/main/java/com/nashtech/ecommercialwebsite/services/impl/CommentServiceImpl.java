@@ -12,6 +12,7 @@ import com.nashtech.ecommercialwebsite.dto.response.ListCommentResponse;
 import com.nashtech.ecommercialwebsite.exceptions.ResourceNotFoundException;
 import com.nashtech.ecommercialwebsite.exceptions.UnauthorizedException;
 import com.nashtech.ecommercialwebsite.security.jwt.JwtUtils;
+import com.nashtech.ecommercialwebsite.services.AuthenticationFacadeService;
 import com.nashtech.ecommercialwebsite.services.CommentService;
 import com.nashtech.ecommercialwebsite.services.JwtService;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,15 +42,16 @@ public class CommentServiceImpl implements CommentService {
 
     private ModelMapper mapper;
 
+    private final AuthenticationFacadeService authenticationFacadeService;
+
     @Override
-    public CommentResponse comment(CommentRequest commentRequest, HttpServletRequest request, int productId) {
+    public CommentResponse comment(CommentRequest commentRequest, int productId) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("PRoduct with Id %s not found", productId))
+                        String.format("Product with Id %s not found", productId))
                 );
-        String token = jwtService.parseJwt(request);
-        if (token == null) throw new UnauthorizedException("User invalid");
-        String username = jwtService.getUsernameFromToken(token);
+
+        String username = authenticationFacadeService.getCurentUsername();
         Account account = userRepo.findAccountByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Account %s not found", username)));
 
@@ -74,19 +74,9 @@ public class CommentServiceImpl implements CommentService {
                                                        int pageSize,
                                                        String sortBy,
                                                        String sortDirection,
-                                                       int productId,
-                                                       HttpServletRequest request) {
-        String token = jwtService.parseJwt(request);
-        String username;
-        if (token == null) {
-            username = null;
-        }
-        else {
-            if(jwtUtils.validateJwtToken(token)){
-                username = jwtService.getUsernameFromToken(token);
-            }
-            else username = null;
-        }
+                                                       int productId) {
+        String username = authenticationFacadeService.getCurentUsername();
+
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("PRoduct with Id %s not found", productId))
@@ -100,24 +90,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse deleteComment(int commentId, HttpServletRequest request) {
-//        String token = jwtService.parseJwt(request);
-//        System.out.println("token " + token);
-//        String username;
-//        if (token == null) {
-//            throw new UnauthorizedException("This comment is not belong to you!");
-//        }
-//        else {
-//            username = jwtService.getUsernameFromToken(token);
-//            System.out.println(username);
-//        }
+    public CommentResponse deleteComment(int commentId) {
+
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Comment with ID: %s not found", commentId)));
-        //check comment is belong to user who send request delete or not
-//        if(!username.equals(comment.getAccount().getUsername())) {
-//            throw new UnauthorizedException("This comment is not belong to you!");
-//        }
+
         commentRepo.delete(comment);
        return mapper.map(comment, CommentResponse.class);
     }

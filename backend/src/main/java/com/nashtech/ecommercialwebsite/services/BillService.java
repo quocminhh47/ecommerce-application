@@ -11,15 +11,15 @@ import java.util.List;
 
 public interface BillService {
 
-    BillResponse orderProducts(HttpServletRequest request, BillRequest billRequest);
+    BillResponse orderProducts( BillRequest billRequest);
 
-    BillResponse getBillById(HttpServletRequest request, int billId);
+    BillResponse getBillById( int billId);
 
     BillResponse getSingleBillDetail(int billId);
 
     BillResponse changeBilStatus(int billId, String status) ;
 
-    List<BillDetailReponse> getBillByAccount(HttpServletRequest request);
+    List<BillDetailReponse> getBillByAccount();
 
     BillPaginationResponse getAllBills(int pageNo,
                                        int pageSize,

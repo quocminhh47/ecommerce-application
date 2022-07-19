@@ -8,15 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface CommentService {
 
-    CommentResponse comment(CommentRequest commentRequest, HttpServletRequest request, int productId);
+    CommentResponse comment(CommentRequest commentRequest, int productId);
 
     ListCommentResponse getAllCommentsByProduct(int pageNo,
                                                 int pageSize,
                                                 String sortBy,
                                                 String sortDir,
-                                                int productId,
-                                                HttpServletRequest request);
+                                                int productId);
 
-    CommentResponse deleteComment(int commentId, HttpServletRequest request);
+    CommentResponse deleteComment(int commentId);
 
 }

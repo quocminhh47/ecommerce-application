@@ -12,33 +12,28 @@ import java.util.List;
 
 public interface ProductService {
 
-    SingleProductResponse findProductById(int id, HttpServletRequest request);
-//    SingleProductResponse findProductById(int id);
+    SingleProductResponse findProductById(int id);
 
     ProductResponse getAllProducts(int pageNo,
                                    int pageSize,
                                    String sortBy,
-                                   String sortDirection,
-                                   HttpServletRequest request);
+                                   String sortDirection);
 
     ProductResponse getAllAvailableProducts( boolean hidden ,
                                              int pageNo,
                                              int pageSize,
                                              String sortBy,
-                                             String sortDirection,
-                                             HttpServletRequest request);
+                                             String sortDirection);
 
     ProductResponse getProductsByBrandName(String brandName,
                                            int pageNo,
                                            int pageSize,
                                            String sortBy,
-                                           String sortDirection,
-                                           HttpServletRequest request);
+                                           String sortDirection);
 
     SingleProductResponse saveProduct(ProductRequest productRequest);
 
-    SingleProductResponse updateProduct(int id ,
-                                        ProductUpdateRequest productRequest);
+    SingleProductResponse updateProduct(int id , ProductUpdateRequest productRequest);
 
     SingleProductResponse deleteProduct(int id);
 
@@ -46,8 +41,7 @@ public interface ProductService {
                                         int pageNo,
                                         int pageSize,
                                         String sortBy,
-                                        String sortDirection,
-                                        HttpServletRequest request);
+                                        String sortDirection);
 
 
 }

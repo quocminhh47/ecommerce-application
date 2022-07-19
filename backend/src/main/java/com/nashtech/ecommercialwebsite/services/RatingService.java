@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface RatingService {
 
-    RatingResponse getUserRatingByProduct(int productId, HttpServletRequest request);
+    RatingResponse getUserRatingByProduct(int productId);
 
-    UserRatingResponse rateProduct(UserRatingRequest userRatingRequest, HttpServletRequest request);
+    UserRatingResponse rateProduct(UserRatingRequest userRatingRequest);
 
 }
