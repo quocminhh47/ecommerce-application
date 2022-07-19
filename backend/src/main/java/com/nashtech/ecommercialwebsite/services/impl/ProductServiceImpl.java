@@ -59,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
                     new RatingResponse(ratingPointsFromProduct, userRatingPointsAboutProduct);
             singleProductResponse.setRatingResponse(ratingResponse);
         }
-        else singleProductResponse.setRatingResponse(null);
+        else singleProductResponse.setRatingResponse(new RatingResponse(ratingPointsFromProduct, null));
 
         return singleProductResponse;
 
